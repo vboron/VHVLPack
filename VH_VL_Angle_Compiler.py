@@ -19,10 +19,8 @@ e.g.
 # *************************************************************************
 # Import libraries
 
-# argparse for commandline tags, pandas and numpy for table, os for reading directory
+# argparse for commandline tags, os for reading directory, and subprocess for running external program
 import argparse
-import pandas as pd
-import numpy as np
 import os
 import subprocess
 
