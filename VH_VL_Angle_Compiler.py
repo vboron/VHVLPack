@@ -103,22 +103,18 @@ def run_abpackingangle(pdb_files, generate_pdb_names):
 
             # Uses the subprocess module to call abpackingangle and inputs the headers/.pdb lists
             # into the program as arguments
-            #p1 = subprocess.check_output(['echo', '-p', list1, list2])
             p1 = subprocess.check_output(['abpackingangle', '-p', list1, '-q', list2])
             outfile.write(p1)
     return
 
 #*************************************************************************
-#*** Main program                                                      ***
+#***                               Main                                ***
 #*************************************************************************
 
 pdb_direct = make_commandline_flags()
-#print('pdb_direct', pdb_direct)
 
 pdb_files = read_directory(pdb_direct)
-#print('files', pdb_files)
 
 generate_pdb_names = extract_pdb_name(pdb_direct)
-#print('generate_pdb_names', generate_pdb_names)
 
 calculate_angles = run_abpackingangle(pdb_files, generate_pdb_names)
