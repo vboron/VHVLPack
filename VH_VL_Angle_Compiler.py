@@ -19,33 +19,26 @@ e.g.
 # *************************************************************************
 # Import libraries
 
-# argparse for commandline tags, os for reading directory, and subprocess for running external program
-import argparse
+# sys to take args from commandline, os for reading directory, and subprocess for running external program
 import os
 import subprocess
+import sys
 
 # *************************************************************************
-def make_commandline_flags():
-    """Create command line tags for importing pdb directory
+def get_pdbdirectory():
+    """Read the directory name from the commandline argument
 
     Return: pdb_directory      --- Directory of PBD files that will be processed for VH-VL packing angles
 
     15.03.2021  Original   By: VAB
     """
 
-    # Call parser
-    parser = argparse.ArgumentParser()
-
-    # Set command line tags. nargs='?' specifies that for an empty argument the default value will be taken. Help args
-    # can be called using --h and will display the message in 'help='.
-    # commandline input: $python3 VH_VL_Angle_Compiler.py -d
-    parser.add_argument('-d', '--directory', help='Directory of PDB files for VH-VL processing')
-    args = parser.parse_args()
-    pdb_direct = args.directory
+    # Take the commandline input as the directory
+    pdb_direct = sys.argv[1]
     return pdb_direct
 
 #*************************************************************************
-def read_directory(pdb_direct):
+def read_directory_for_PDB_files(pdb_direct):
     """Print a list of all files that are PDB files in the called directory
 
     Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
@@ -59,7 +52,7 @@ def read_directory(pdb_direct):
     # commandline. Adds all these .pdb files to the list.
     files = []
     for file in os.listdir(pdb_direct):
-        if file.endswith(".pdb"):
+        if file.endswith(".pdb") or file.endswith(".ent"):
             files.append(file)
     return files
 
@@ -78,7 +71,7 @@ def extract_pdb_name(pdb_direct):
     # name without the extension into a list.
     pdb_names = []
     for pdb in os.listdir(pdb_direct):
-        if pdb.endswith(".pdb"):
+        if pdb.endswith(".pdb") or file.endswith(".ent"):
             pdb_name = os.path.splitext(pdb)[0]
             pdb_names.append(pdb_name)
     return pdb_names
@@ -96,25 +89,32 @@ def run_abpackingangle(pdb_files, generate_pdb_names):
         """
 
     # Opens an txt file in binary writing mode and feeds the file output into it
-    with open('out.txt', 'wb') as outfile:
+    with open('out.txt', 'w') as outfile:
         # Takes the two lists made in files and combines them into lists of tuples that have
         # the name linked to the file.
-        for list1, list2 in zip(pdb_files, generate_pdb_names):
+        for pdb_file, pdb_code in zip(pdb_files, generate_pdb_names):
 
             # Uses the subprocess module to call abpackingangle and inputs the headers/.pdb lists
             # into the program as arguments
-            p1 = subprocess.check_output(['abpackingangle', '-p', list1, '-q', list2])
-            outfile.write(p1)
+            #p1 = subprocess.check_output(['echo', '-p', pdb_file, list2])
+            angle_results = subprocess.check_output(['abpackingangle', '-p', pdb_file, '-q', pdb_code])
+
+            # Converts the output of the subprocess into normal string
+            angle_results = str(angle_results, 'utf-8')
+            outfile.write(angle_results)
     return
 
 #*************************************************************************
-#***                               Main                                ***
+#*** Main program                                                      ***
 #*************************************************************************
 
-pdb_direct = make_commandline_flags()
+pdb_direct = get_pdbdirectory()
+#print(pdb_direct)
 
-pdb_files = read_directory(pdb_direct)
+pdb_files = read_directory_for_PDB_files(pdb_direct)
+#print('files', pdb_files)
 
 generate_pdb_names = extract_pdb_name(pdb_direct)
+#print('generate_pdb_names', generate_pdb_names)
 
 calculate_angles = run_abpackingangle(pdb_files, generate_pdb_names)
