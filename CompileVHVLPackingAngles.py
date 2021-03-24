@@ -53,7 +53,7 @@ def read_directory_for_PDB_files(pdb_direct):
     files = []
     for file in os.listdir(pdb_direct):
         if file.endswith(".pdb") or file.endswith(".ent"):
-            files.append(file)
+            files.append(os.path.abspath(file))
     return files
 
 #*************************************************************************
