@@ -34,7 +34,10 @@ def get_pdbdirectory():
     """
 
     # Take the commandline input as the directory
-    pdb_direct = sys.argv[1]
+    if sys.argv[1] != '':
+        pdb_direct = sys.argv[1]
+    else:
+        pdb_direct = '.'
     return pdb_direct
 
 #*************************************************************************
