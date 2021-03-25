@@ -99,6 +99,8 @@ def run_abpackingangle(pdb_files, generate_pdb_names):
             #p1 = subprocess.check_output(['echo', '-p', pdb_file, list2])
             try:
                 angle_results = subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])
+
+            # bypasses any files that raise an error and the abpackingangle cannot run
             except subprocess.CalledProcessError:
                 continue
             # Converts the output of the subprocess into normal string
