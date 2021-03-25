@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 '''
 Program:    VH_VL_Angle_Compiler
 File:       VH_VL_Angle_Compiler.py
@@ -97,8 +97,10 @@ def run_abpackingangle(pdb_files, generate_pdb_names):
             # Uses the subprocess module to call abpackingangle and inputs the headers/.pdb lists
             # into the program as arguments
             #p1 = subprocess.check_output(['echo', '-p', pdb_file, list2])
-            angle_results = subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])
-
+            try:
+                angle_results = subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])
+            except subprocess.CalledProcessError:
+                continue
             # Converts the output of the subprocess into normal string
             angle_results = str(angle_results, 'utf-8')
             outfile.write(angle_results)
