@@ -33,7 +33,7 @@ def get_pdbdirectory():
     15.03.2021  Original   By: VAB
     """
 
-    # Take the commandline input as the directory
+    # Take the commandline input as the directory, otherwise look in current directory
     if sys.argv[1] != '':
         pdb_direct = sys.argv[1]
     else:
@@ -56,7 +56,7 @@ def read_directory_for_PDB_files(pdb_direct):
     files = []
     for file in os.listdir(pdb_direct):
         if file.endswith(".pdb") or file.endswith(".ent"):
-            files.append(os.path.abspath(file))
+            files.append('{}/{}'.format(pdb_direct, file))
     return files
 
 #*************************************************************************
