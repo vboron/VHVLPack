@@ -60,10 +60,11 @@ def read_directory_for_PDB_files(pdb_direct):
     return files
 
 #*************************************************************************
-def read_pdbfiles_as_lines():
+def read_pdbfiles_as_lines(pdb_files):
     """Read PDB files as lines
 
-    Return: lines       --- PDB file split into lines
+    Input:  pdb_files   --- All PDB files in the directory
+    Return: lines       --- PDB files split into lines
 
 
     10.03.2021  Original   By: VAB
@@ -78,7 +79,7 @@ def read_pdbfiles_as_lines():
 def prep_table(lines):
     """Build table for atom information using pandas dataframes
 
-    Input:  pdb_files      --- All PDB files in the directory
+    Input:  lines      --- All PDB files split into lines
     Return: ftable     --- Sorted table of information about all atoms in the PDB file:
    e.g.
 
@@ -94,14 +95,14 @@ def prep_table(lines):
     c = ["residue", "res_num"]
 
     # Search for lines that contain 'ATOM' and add to atom_lines list
-    for items in pdb_files:
+    for items in lines:
         if items.startswith('ATOM'):
             atom_lines.append(items)
 
     # Locate specific atom information by line indices and label them. Compound all the data into one list.
     for res_data in atom_lines:
         residue = res_data[17:20]
-        res_num = int(res_data[23:27])
+        res_num = res_data[23:27]
         res_id = "{}{}".format(residue, res_num)
         res_info = [residue, res_num]
         table.append(res_info)
@@ -121,8 +122,8 @@ pdb_direct = get_pdbdirectory()
 pdb_files = read_directory_for_PDB_files(pdb_direct)
 #print(pdb_files)
 
-lines = read_pdbfiles_as_lines()
-print(lines)
+lines = read_pdbfiles_as_lines(pdb_files)
+#print(lines)
 
 ftable = prep_table(lines)
-#print(ftable)
+print(ftable)
