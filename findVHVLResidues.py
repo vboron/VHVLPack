@@ -133,23 +133,25 @@ def prep_table(lines):
     res_name_one = []
 
     # Assign column names for residue table
-    c = ['pdb_code', "residue", "res_num"]
+    c = ["residue"]
 
     # Search for lines that contain 'ATOM' and add to atom_lines list
     for items in lines:
         if items.startswith('ATOM'):
             atom_lines.append(items)
 
+
+        #res_name_one.append(res_one)
+
     # Locate specific atom information by line indices and label them. Compound all the data into one list.
     for res_data in atom_lines:
+        res_num = (res_data[23:27]).strip()
         residue = (res_data[17:20]).strip()
         res_one = one_letter_code(residue)
-        res_name_one.append(res_one)
-        res_num = (res_data[23:27]).strip()
-        res_id = "{}{}".format(res_name_one, res_num)
-        pdb_code = generate_pdb_names
-        res_info = [pdb_code, res_name_one, res_num]
-        table.append(res_info)
+        res_id = "{}{}".format(res_one, res_num)
+        #pdb_code = generate_pdb_names
+        #res_info = [res_id]
+        table.append(res_id)
 
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(table, columns=c)
