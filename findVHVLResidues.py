@@ -199,4 +199,4 @@ ftable = prep_table(lines)
 #VHVL_residues = filtering_for_VH_VL_residues(ftable)
 
 VHVLtable = VH_VL_relevant_residues(ftable)
-print(VHVLtable)
+print(VHVLcode)
