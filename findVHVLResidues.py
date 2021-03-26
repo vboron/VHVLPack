@@ -96,6 +96,27 @@ def read_pdbfiles_as_lines(pdb_files):
     return lines
 
 #*************************************************************************
+def one_letter_code(res_kind):
+
+	"""
+	Go from the three-letter code to the one-letter code.
+
+	Input:  res_kind     --- The three-code residue identifier
+    Return: one_letter   --- The one-letter residue identifier
+
+    20.10.2020  Original   By: LD
+    """
+
+	dic = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+     'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
+     'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
+     'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','XAA': 'X', 'UNK':'X'}
+	if len(res_kind) % 3 != 0:
+		raise ValueError("error")
+	one_letter = dic[res_kind]
+	return one_letter
+
+#*************************************************************************
 def prep_table(lines):
     """Build table for atom information using pandas dataframes
 
@@ -113,7 +134,7 @@ def prep_table(lines):
     # Create blank lists for lines in file that contain atom information
     atom_lines = []
     table = []
-
+    res_name_one = []
     # Assign column names for residue table
     c = ["residue", "res_num"]
 
@@ -125,10 +146,11 @@ def prep_table(lines):
     # Locate specific atom information by line indices and label them. Compound all the data into one list.
     for res_data in atom_lines:
         residue = (res_data[17:20]).strip()
-
+        res_one = one_letter_code(residue)
+        res_name_one.append(res_one)
         res_num = (res_data[23:27]).strip()
-        res_id = "{}{}".format(residue, res_num)
-        res_info = [residue, res_num]
+        res_id = "{}{}".format(res_name_one, res_num)
+        res_info = [res_name_one, res_num]
         table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
@@ -137,40 +159,6 @@ def prep_table(lines):
     return ftable
 
 #*************************************************************************
-def filtering_for_VH_VL_residues(ftable):
-    """Compare specified atom type in specified residue against atoms in other residues within specified distance
-
-    Input:  ftable     --- Sorted table of information on all residues in PDB files
-    Output: otable     --- Output table that contains the atoms (of specified parameters) and the distances between them
-   e.g.
-
-
-    10.03.2021  Original   By: VAB
-    """
-
-    if zip(pdb_files, generate_pdb_names) == ('LYS', '38') or ('LYS', '40') or ('LYS', '41') or ('LYS', '44') or ('LYS', '46') or ('LYS', '87') or ('HIS', '33') or ('HIS', '42') or ('HIS', '45') or ('HIS', 60) or (HIS, 62) or (HIS, 91) or (HIS, 105):
-        ResA = ResA[ResA.atom_typ == atom_kind]
-    ResB = ftable[ftable.res_num != res_numb]
-    if atom_kind != '':
-        ResB = ResB[ResB.atom_typ == atom_kind]
-    # Label relevant information from ftable data. .iterrows iterates though all of the rows in the table and returns
-    # a Series for each row. .values calls the values present in specified spot in the table.
-    for index in ResA.iterrows():
-        coordsAX = ftable.x_coord.values[index[0]]
-        coordsAY = ftable.y_coord.values[index[0]]
-        coordsAZ = ftable.z_coord.values[index[0]]
-        res_numA = ftable.res_num.values[index[0]]
-        residueA = ftable.residue.values[index[0]]
-        atom_typA = ftable.atom_typ.values[index[0]]
-        atom_numA = ftable.atom_num.values[index[0]]
-
-
-                c2 = ['from atom', 'res', 'res no.', 'dist (A)', 'to atom', 'res', 'res no.']
-                out_table = []
-                out_data = [atom_typA, residueA, res_numA, '{:.3f}'.format(distAB), atom_typB, residueB, res_numB]
-                out_table.append(out_data)
-                otable = pd.DataFrame(out_table, columns=c2)
-                print(otable)
 
 
 #*************************************************************************
@@ -187,7 +175,9 @@ pdb_files = read_directory_for_PDB_files(pdb_direct)
 lines = read_pdbfiles_as_lines(pdb_files)
 #print(lines)
 
+one_res = one_letter_code(res_kind)
+
 ftable = prep_table(lines)
 #print(ftable)
 
-VHVL_residues = filtering_for_VH_VL_residues(ftable)
+#VHVL_residues = filtering_for_VH_VL_residues(ftable)
