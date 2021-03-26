@@ -96,12 +96,11 @@ def read_pdbfiles_as_lines(pdb_files):
     return lines
 
 #*************************************************************************
-def one_letter_code(res_kind):
+def one_letter_code(residue):
 
 	"""
 	Go from the three-letter code to the one-letter code.
 
-	Input:  res_kind     --- The three-code residue identifier
     Return: one_letter   --- The one-letter residue identifier
 
     20.10.2020  Original   By: LD
@@ -111,9 +110,9 @@ def one_letter_code(res_kind):
      'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
      'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
      'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','XAA': 'X', 'UNK':'X'}
-	if len(res_kind) % 3 != 0:
+	if len(residue) % 3 != 0:
 		raise ValueError("error")
-	one_letter = dic[res_kind]
+	one_letter = dic[residue]
 	return one_letter
 
 #*************************************************************************
@@ -135,6 +134,7 @@ def prep_table(lines):
     atom_lines = []
     table = []
     res_name_one = []
+
     # Assign column names for residue table
     c = ["residue", "res_num"]
 
@@ -174,8 +174,6 @@ pdb_files = read_directory_for_PDB_files(pdb_direct)
 
 lines = read_pdbfiles_as_lines(pdb_files)
 #print(lines)
-
-one_res = one_letter_code(res_kind)
 
 ftable = prep_table(lines)
 #print(ftable)
