@@ -98,22 +98,19 @@ def read_pdbfiles_as_lines(pdb_files):
 #*************************************************************************
 def one_letter_code(residue):
 
-	"""
-	Go from the three-letter code to the one-letter code.
+    """
+    Go from the three-letter code to the one-letter code.
 
     Return: one_letter   --- The one-letter residue identifier
 
     20.10.2020  Original   By: LD
     """
 
-	dic = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
-     'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
-     'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
-     'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','XAA': 'X', 'UNK':'X'}
-	if len(residue) % 3 != 0:
-		raise ValueError("error")
-	one_letter = dic[residue]
-	return one_letter
+    dic = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K', 'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N', 'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W', 'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','XAA': 'X', 'UNK':'X'}
+    if len(residue) % 3 != 0:
+        raise ValueError("error")
+    one_letter = dic[residue]
+    return one_letter
 
 #*************************************************************************
 def prep_table(lines):
