@@ -41,6 +41,26 @@ def get_pdbdirectory():
     return pdb_direct
 
 #*************************************************************************
+def extract_pdb_name(pdb_direct):
+    """Print a list of headers of PDB files in the called directory
+
+    Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
+    Return: pdb_name     --- Names of all PDB files in the directory
+
+
+    18.03.2021  Original   By: VAB
+    """
+
+    # Iternates over all files in directory, checks if they are pdb files and returns the
+    # name without the extension into a list.
+    pdb_names = []
+    for pdb in os.listdir(pdb_direct):
+        if pdb.endswith(".pdb") or pdb.endswith(".ent"):
+            pdb_name = os.path.splitext(pdb)[0]
+            pdb_names.append(pdb_name)
+    return pdb_names
+
+#*************************************************************************
 def read_directory_for_PDB_files(pdb_direct):
     """Print a list of all files that are PDB files in the called directory
 
@@ -82,7 +102,10 @@ def prep_table(lines):
     Input:  lines      --- All PDB files split into lines
     Return: ftable     --- Sorted table of information about all atoms in the PDB file:
    e.g.
-
+     residue res_num
+0        ASP      1
+1        ASP      1
+2        ASP      1
 
     10.03.2021  Original   By: VAB
     """
