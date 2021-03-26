@@ -68,9 +68,9 @@ def read_pdbfiles_as_lines():
 
     10.03.2021  Original   By: VAB
     """
-    for structure_file in os.listdir(pdb_direct):
-        text_file = open('{}/{}'.format(pdb_direct, structure_file), "r")
-        # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
+    for structure_files in pdb_files:
+        text_file = open(structure_files, "r")
+    # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
         lines = text_file.read().split('\n')
     return lines
 
