@@ -101,6 +101,7 @@ def one_letter_code(residue):
     """
     Go from the three-letter code to the one-letter code.
 
+    Input:  residue      --- Three-letter residue identifier
     Return: one_letter   --- The one-letter residue identifier
 
     20.10.2020  Original   By: LD
@@ -117,20 +118,18 @@ def prep_table(lines):
     """Build table for atom information using pandas dataframes
 
     Input:  lines      --- All PDB files split into lines
-    Return: ftable     --- Sorted table of information about all atoms in the PDB file:
-   e.g.
-     residue res_num
-0        ASP      1
-1        ASP      1
-2        ASP      1
+    Return: ftable     --- Sorted table that contains the residue id:
+    e.g.
+         residue
+    0         D1
 
     10.03.2021  Original   By: VAB
+    26.03.2021  V2.0       By: VAB
     """
 
     # Create blank lists for lines in file that contain atom information
     atom_lines = []
     table = []
-    res_name_one = []
 
     # Assign column names for residue table
     c = ["residue"]
@@ -143,15 +142,16 @@ def prep_table(lines):
 
         #res_name_one.append(res_one)
 
-    # Locate specific atom information by line indices and label them. Compound all the data into one list.
+    # Locate specific residue information, covert three-letter identifier into one-letter and formulate residue id
+    # e.g. D1, Q460 etc.
     for res_data in atom_lines:
         res_num = (res_data[23:27]).strip()
         residue = (res_data[17:20]).strip()
         res_one = one_letter_code(residue)
         res_id = "{}{}".format(res_one, res_num)
         #pdb_code = generate_pdb_names
-        #res_info = [res_id]
-        table.append(res_id)
+        res_info = [res_id]
+        table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(table, columns=c)
@@ -159,8 +159,26 @@ def prep_table(lines):
     return ftable
 
 #*************************************************************************
+def VH_VL_relevant_residues(ftable):
+    """Filter table for residues relevant for VH-VL packing
 
+    Input:  ftable     --- Sorted table that contains the residue id
+    Return:  :
+    e.g.
 
+    26.03.2021  Original   By: VAB
+    """
+
+    VHVLtable = ftable[ftable.res_id == 'L38' or 'L40' or 'L41' or 'L44' or 'L46' or 'L87' or 'H33' or 'H42' or 'H45' or 'H60' or 'H62' or 'H91' or 'H105']
+    for res_code in VHVLtable.iterrows:
+        VHVLcode = ftable.res_id.values[index[0]]
+        c2 = ['VH-VL residues']
+        out_table = []
+        out_data = [VHVLcode]
+        out_table.append(out_data)
+        otable = pd.DataFrame(out_table, columns=c2)
+
+    return otable
 #*************************************************************************
 #*** Main program                                                      ***
 #*************************************************************************
@@ -176,6 +194,9 @@ lines = read_pdbfiles_as_lines(pdb_files)
 #print(lines)
 
 ftable = prep_table(lines)
-print(ftable)
+#print(ftable)
 
 #VHVL_residues = filtering_for_VH_VL_residues(ftable)
+
+VHVLtable = VH_VL_relevant_residues(ftable)
+print(VHVLtable)
