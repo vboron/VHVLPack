@@ -142,6 +142,8 @@ def prep_table(lines):
 
 pdb_direct = get_pdbdirectory()
 
+generate_pdb_names = extract_pdb_name(pdb_direct)
+
 pdb_files = read_directory_for_PDB_files(pdb_direct)
 #print(pdb_files)
 
