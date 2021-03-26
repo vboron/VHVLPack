@@ -133,7 +133,7 @@ def prep_table(lines):
     res_name_one = []
 
     # Assign column names for residue table
-    c = ["residue", "res_num"]
+    c = ['pdb_code', "residue", "res_num"]
 
     # Search for lines that contain 'ATOM' and add to atom_lines list
     for items in lines:
@@ -147,7 +147,8 @@ def prep_table(lines):
         res_name_one.append(res_one)
         res_num = (res_data[23:27]).strip()
         res_id = "{}{}".format(res_name_one, res_num)
-        res_info = [res_name_one, res_num]
+        pdb_code = generate_pdb_names
+        res_info = [pdb_code, res_name_one, res_num]
         table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
@@ -173,6 +174,6 @@ lines = read_pdbfiles_as_lines(pdb_files)
 #print(lines)
 
 ftable = prep_table(lines)
-#print(ftable)
+print(ftable)
 
 #VHVL_residues = filtering_for_VH_VL_residues(ftable)
