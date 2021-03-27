@@ -186,7 +186,7 @@ def VH_VL_relevant_residues(ftable):
 
     #create a table of just res_id values
     ftable = ftable[['res_id']]
-    print(ftable)
+    #print(ftable)
 
     return ftable
 #*************************************************************************
