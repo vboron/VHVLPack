@@ -145,11 +145,11 @@ def prep_table(lines):
 
     # Locate specific residue information, covert three-letter identifier into one-letter
     for res_data in atom_lines:
-        res_num  = (res_data[23:27]).strip()
-        chain    = (res_data[21:22]).strip()
+        res_num  = str(res_data[23:27]).strip()
+        chain    = str(res_data[21:22]).strip()
         residue  = (res_data[17:20]).strip()
-        res_one  = one_letter_code(residue)
-        L_H_position  = "{}{}".format(chain, res_num)
+        res_one  = str(one_letter_code(residue))
+        L_H_position  = str("{}{}".format(chain, res_num))
         res_info = [chain, res_one, res_num, L_H_position]
         table.append(res_info)
     # Use pandas to build a data table from compiled residue info and column headers:
@@ -170,18 +170,18 @@ def VH_VL_relevant_residues(ftable):
     26.03.2021  Original   By: VAB
     """
 
-    ftable = ftable[ftable['residue'].str.contains('L38 ' or 'L40' or 'L41' or 'L44' or 'L46' or 'L87' or 'H33' or 'H42' or 'H45' or 'H60' or 'H62' or 'H91' or 'H105')]
+    ftable = ftable[ftable['L/H position'] == 'L38' or 'L40' or 'L41' or 'L44' or 'L46' or 'L87' or 'H33' or 'H42' or 'H45' or 'H60' or 'H62' or 'H91' or 'H105']
 
     print(ftable)
-    for res_code in ftable.iterrows:
-        VHVLcode = ftable.res_id.values[res_code[0]]
-        c2 = ['VH-VL residues']
-        out_table = []
-        out_data = [VHVLcode]
-        out_table.append(out_data)
-        otable = pd.DataFrame(data=out_table, columns=c2)
+    #for res_code in ftable.iterrows:
+        #VHVLcode = ftable.res_id.values[res_code[0]]
+        #c2 = ['VH-VL residues']
+        #out_table = []
+        #out_data = [VHVLcode]
+        #out_table.append(out_data)
+        #otable = pd.DataFrame(data=out_table, columns=c2)
 
-    return otable
+    return ftable
 #*************************************************************************
 #*** Main program                                                      ***
 #*************************************************************************
@@ -197,9 +197,9 @@ lines = read_pdbfiles_as_lines(pdb_files)
 #print(lines)
 
 ftable = prep_table(lines)
-print(ftable)
+#print(ftable)
 
 #VHVL_residues = filtering_for_VH_VL_residues(ftable)
 
-#VHVLtable = VH_VL_relevant_residues(ftable)
-#print(VHVLcode)
+VHVLtable = VH_VL_relevant_residues(ftable)
+print(VHVLtable)
