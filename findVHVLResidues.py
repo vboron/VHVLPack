@@ -179,12 +179,13 @@ def VH_VL_relevant_residues(ftable):
     ftable = ftable[ftable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
     #print(ftable)
 
+    out_table = []
+
     for index in ftable.iterrows():
         one_letter_res = ftable['residue'].values[index[0]]
         res_numb = ftable['number'].values[index[0]]
         res_id = '{}{}'.format(one_letter_res, res_numb)
         c2 = ['VH-VL residues']
-        out_table = []
         out_data = [res_id]
         out_table.append(out_data)
         otable = pd.DataFrame(data=out_table, columns=c2)
