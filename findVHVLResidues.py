@@ -153,8 +153,8 @@ def prep_table(lines):
 
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(data=table, columns=c)
-    #print(ftable.residue)
-    #print(atom_lines)
+
+    # Remove all row duplicates
     ftable = ftable.drop_duplicates()
     return ftable
 
