@@ -93,6 +93,7 @@ def read_pdbfiles_as_lines(pdb_files):
         text_file = open(structure_files, "r")
     # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
         lines = text_file.read().split('\n')
+
     return lines
 
 #*************************************************************************
@@ -181,16 +182,12 @@ def VH_VL_relevant_residues(ftable):
 
     out_table = []
 
-    for index in ftable.iterrows():
-        one_letter_res = ftable['residue'].values[index[0]]
-        res_numb = ftable['number'].values[index[0]]
-        res_id = '{}{}'.format(one_letter_res, res_numb)
-        c2 = ['VH-VL residues']
-        out_data = [res_id]
-        out_table.append(out_data)
-        otable = pd.DataFrame(data=out_table, columns=c2)
+    ftable['res_id'] = ftable['residue'].str.cat(ftable['number'],sep='')
+    ftable = ftable.iloc[:,4]
+    ftable = ftable.rename(columns={'': 'res_id'})
+    print(ftable)
 
-    return otable
+    return ftable
 #*************************************************************************
 #*** Main program                                                      ***
 #*************************************************************************
