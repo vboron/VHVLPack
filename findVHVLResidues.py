@@ -170,18 +170,26 @@ def VH_VL_relevant_residues(ftable):
     26.03.2021  Original   By: VAB
     """
 
-    # Find all of the key residues for VH/VL packing
+    # Find all of the key residues for VH/VL packing:
+    # e.g  chain residue number L/H position
+    # 267      L       Q     38          L38
+    # 285      L       S     40          L40
+    # 291      L       G     41          L41
+    # 308      L       P     44          L44
     ftable = ftable[ftable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
-    print(ftable)
-    #for res_code in ftable.iterrows:
-        #VHVLcode = ftable.res_id.values[res_code[0]]
-        #c2 = ['VH-VL residues']
-        #out_table = []
-        #out_data = [VHVLcode]
-        #out_table.append(out_data)
-        #otable = pd.DataFrame(data=out_table, columns=c2)
+    #print(ftable)
 
-    return ftable
+    for index in ftable.iterrows():
+        one_letter_res = ftable['residue'].values[index[0]]
+        res_numb = ftable['number'].values[index[0]]
+        res_id = '{}{}'.format(one_letter_res, res_numb)
+        c2 = ['VH-VL residues']
+        out_table = []
+        out_data = [res_id]
+        out_table.append(out_data)
+        otable = pd.DataFrame(data=out_table, columns=c2)
+
+    return otable
 #*************************************************************************
 #*** Main program                                                      ***
 #*************************************************************************
