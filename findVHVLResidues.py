@@ -132,7 +132,7 @@ def prep_table(lines):
     table = []
 
     # Assign column names for residue table
-    c = ["residue"]
+    c = ['chain', "residue", 'number']
 
     # Search for lines that contain 'ATOM' and add to atom_lines list
     for items in lines:
@@ -146,15 +146,17 @@ def prep_table(lines):
     # e.g. D1, Q460 etc.
     for res_data in atom_lines:
         res_num = (res_data[23:27]).strip()
+
         residue = (res_data[17:20]).strip()
         res_one = one_letter_code(residue)
-        res_id = "{}{}".format(res_one, res_num)
+        #res_id = "{}{}".format(res_one, res_num)
         #pdb_code = generate_pdb_names
         res_info = [res_id]
         table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
-    ftable = pd.DataFrame(table, columns=c)
+    ftable = pd.DataFrame(data=table, columns=c)
+    #print(ftable.residue)
     #print(atom_lines)
     return ftable
 
@@ -169,14 +171,16 @@ def VH_VL_relevant_residues(ftable):
     26.03.2021  Original   By: VAB
     """
 
-    VHVLtable = ftable[ftable.res_id == 'L38' or 'L40' or 'L41' or 'L44' or 'L46' or 'L87' or 'H33' or 'H42' or 'H45' or 'H60' or 'H62' or 'H91' or 'H105']
-    for res_code in VHVLtable.iterrows:
-        VHVLcode = ftable.res_id.values[index[0]]
+    ftable = ftable[ftable['residue'].str.contains('L38 ' or 'L40' or 'L41' or 'L44' or 'L46' or 'L87' or 'H33' or 'H42' or 'H45' or 'H60' or 'H62' or 'H91' or 'H105')]
+
+    print(ftable)
+    for res_code in ftable.iterrows:
+        VHVLcode = ftable.res_id.values[res_code[0]]
         c2 = ['VH-VL residues']
         out_table = []
         out_data = [VHVLcode]
         out_table.append(out_data)
-        otable = pd.DataFrame(out_table, columns=c2)
+        otable = pd.DataFrame(data=out_table, columns=c2)
 
     return otable
 #*************************************************************************
@@ -199,4 +203,4 @@ ftable = prep_table(lines)
 #VHVL_residues = filtering_for_VH_VL_residues(ftable)
 
 VHVLtable = VH_VL_relevant_residues(ftable)
-print(VHVLcode)
+#print(VHVLcode)
