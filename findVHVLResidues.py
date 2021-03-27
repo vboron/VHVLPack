@@ -183,8 +183,9 @@ def VH_VL_relevant_residues(ftable):
     out_table = []
 
     ftable['res_id'] = ftable['residue'].str.cat(ftable['number'],sep='')
-    ftable = ftable.iloc[:,4]
-    ftable = ftable.rename(columns={'': 'res_id'})
+
+    #create a table of just res_id values
+    ftable = ftable[['res_id']]
     print(ftable)
 
     return ftable
