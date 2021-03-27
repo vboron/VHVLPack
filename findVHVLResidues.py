@@ -170,8 +170,8 @@ def VH_VL_relevant_residues(ftable):
     26.03.2021  Original   By: VAB
     """
 
-    ftable = ftable[ftable['L/H position'] == 'L38' or 'L40' or 'L41' or 'L44' or 'L46' or 'L87' or 'H33' or 'H42' or 'H45' or 'H60' or 'H62' or 'H91' or 'H105']
-
+    # Find all of the key residues for VH/VL packing
+    ftable = ftable[ftable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
     print(ftable)
     #for res_code in ftable.iterrows:
         #VHVLcode = ftable.res_id.values[res_code[0]]
