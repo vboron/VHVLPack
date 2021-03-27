@@ -120,8 +120,10 @@ def prep_table(lines):
     Input:  lines      --- All PDB files split into lines
     Return: ftable     --- Sorted table that contains the residue id:
     e.g.
-         residue
-    0         D1
+         chain residue number
+    0        L       D      1
+    1        L       D      1
+    2        L       D      1
 
     10.03.2021  Original   By: VAB
     26.03.2021  V2.0       By: VAB
@@ -139,19 +141,14 @@ def prep_table(lines):
         if items.startswith('ATOM'):
             atom_lines.append(items)
 
-
-        #res_name_one.append(res_one)
-
-    # Locate specific residue information, covert three-letter identifier into one-letter and formulate residue id
-    # e.g. D1, Q460 etc.
+    # Locate specific residue information, covert three-letter identifier into one-letter
     for res_data in atom_lines:
-        res_num = (res_data[23:27]).strip()
-
-        residue = (res_data[17:20]).strip()
-        res_one = one_letter_code(residue)
-        #res_id = "{}{}".format(res_one, res_num)
-        #pdb_code = generate_pdb_names
-        res_info = [res_id]
+        res_num  = (res_data[23:27]).strip()
+        chain    = (res_data[21:22]).strip()
+        residue  = (res_data[17:20]).strip()
+        res_one  = one_letter_code(residue)
+        #res_id  = "{}{}".format(res_one, res_num)
+        res_info = [chain, res_one, res_num]
         table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
@@ -198,9 +195,9 @@ lines = read_pdbfiles_as_lines(pdb_files)
 #print(lines)
 
 ftable = prep_table(lines)
-#print(ftable)
+print(ftable)
 
 #VHVL_residues = filtering_for_VH_VL_residues(ftable)
 
-VHVLtable = VH_VL_relevant_residues(ftable)
+#VHVLtable = VH_VL_relevant_residues(ftable)
 #print(VHVLcode)
