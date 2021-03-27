@@ -120,10 +120,12 @@ def prep_table(lines):
     Input:  lines      --- All PDB files split into lines
     Return: ftable     --- Sorted table that contains the residue id:
     e.g.
-         chain residue number
-    0        L       D      1
-    1        L       D      1
-    2        L       D      1
+          chain residue number L/H position
+    0        L       D      1           L1
+    8        L       I      2           L2
+    16       L       V      3           L3
+    23       L       L      4           L4
+    31       L       T      5           L5
 
     10.03.2021  Original   By: VAB
     26.03.2021  V2.0       By: VAB
@@ -134,7 +136,7 @@ def prep_table(lines):
     table = []
 
     # Assign column names for residue table
-    c = ['chain', "residue", 'number']
+    c = ['chain', "residue", 'number', 'L/H position']
 
     # Search for lines that contain 'ATOM' and add to atom_lines list
     for items in lines:
@@ -147,10 +149,9 @@ def prep_table(lines):
         chain    = (res_data[21:22]).strip()
         residue  = (res_data[17:20]).strip()
         res_one  = one_letter_code(residue)
-        #res_id  = "{}{}".format(res_one, res_num)
-        res_info = [chain, res_one, res_num]
+        L_H_position  = "{}{}".format(chain, res_num)
+        res_info = [chain, res_one, res_num, L_H_position]
         table.append(res_info)
-
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(data=table, columns=c)
 
