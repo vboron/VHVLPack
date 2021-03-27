@@ -155,6 +155,7 @@ def prep_table(lines):
     ftable = pd.DataFrame(data=table, columns=c)
     #print(ftable.residue)
     #print(atom_lines)
+    ftable = ftable.drop_duplicates()
     return ftable
 
 #*************************************************************************
