@@ -93,7 +93,7 @@ def read_pdbfiles_as_lines(pdb_files):
     for structure_file in pdb_files:
         text_file = open(structure_file, "r")
     # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
-        lines = lines.append(text_file.read().split('\n'))
+        lines.append(text_file.read().split('\n'))
     lines = str(lines)
     return lines
 
@@ -151,7 +151,7 @@ def prep_table(lines):
         chain    = str(res_data[21:22]).strip()
         residue  = (res_data[17:20]).strip()
         res_one  = str(one_letter_code(residue))
-        L_H_position  = str("{}{}".format(chain, res_num))
+        L_H_position = str("{}{}".format(chain, res_num))
         res_info = [chain, res_one, res_num, L_H_position]
         table.append(res_info)
     # Use pandas to build a data table from compiled residue info and column headers:
@@ -181,9 +181,7 @@ def VH_VL_relevant_residues(vtable):
     vtable = vtable[vtable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
     #print(vtable)
 
-    out_table = []
-
-    vtable['res_id'] = vtable['residue'].str.cat(vtable['number'],sep='')
+    vtable['res_id'] = vtable['residue'].str.cat(vtable['number'], sep='')
 
     #create a table of just res_id values
     otable = vtable[['res_id']]
@@ -195,19 +193,19 @@ def VH_VL_relevant_residues(vtable):
 #*************************************************************************
 
 pdb_direct = get_pdbdirectory()
-print('pdb_direct', pdb_direct)
+#print('pdb_direct', pdb_direct)
 
 generate_pdb_names = extract_pdb_name(pdb_direct)
-print('generate_pdb_names', generate_pdb_names)
+#print('generate_pdb_names', generate_pdb_names)
 
 pdb_files = read_directory_for_PDB_files(pdb_direct)
-print(pdb_files)
+#print(pdb_files) # a list of all pdb files (full paths)
 
 pdb_lines = read_pdbfiles_as_lines(pdb_files)
-print('pdb_lines', pdb_lines)
+#print('pdb_lines', pdb_lines)
 
 ftable = prep_table(pdb_lines)
-print('ftable', ftable)
+#print('ftable', ftable)
 
 VHVLtable = VH_VL_relevant_residues(ftable)
 print('VHVLtable', VHVLtable)
