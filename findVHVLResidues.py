@@ -42,7 +42,7 @@ def get_pdbdirectory():
 
 #*************************************************************************
 def extract_pdb_name(pdb_direct):
-    """Print a list of headers of PDB files in the called directory
+    """Return a list of headers of PDB files in the called directory
 
     Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
     Return: pdb_name     --- Names of all PDB files in the directory
@@ -89,11 +89,12 @@ def read_pdbfiles_as_lines(pdb_files):
 
     10.03.2021  Original   By: VAB
     """
-    for structure_files in pdb_files:
-        text_file = open(structure_files, "r")
+    lines = []
+    for structure_file in pdb_files:
+        text_file = open(structure_file, "r")
     # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
-        lines = text_file.read().split('\n')
-
+        lines = lines.append(text_file.read().split('\n'))
+    lines = str(lines)
     return lines
 
 #*************************************************************************
@@ -161,10 +162,10 @@ def prep_table(lines):
     return ftable
 
 #*************************************************************************
-def VH_VL_relevant_residues(ftable):
+def VH_VL_relevant_residues(vtable):
     """Filter table for residues relevant for VH-VL packing
 
-    Input:  ftable     --- Sorted table that contains the residue id
+    Input:  vtable     --- Sorted table that contains the residue id
     Return:  :
     e.g.
 
@@ -177,36 +178,36 @@ def VH_VL_relevant_residues(ftable):
     # 285      L       S     40          L40
     # 291      L       G     41          L41
     # 308      L       P     44          L44
-    ftable = ftable[ftable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
-    #print(ftable)
+    vtable = vtable[vtable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
+    #print(vtable)
 
     out_table = []
 
-    ftable['res_id'] = ftable['residue'].str.cat(ftable['number'],sep='')
+    vtable['res_id'] = vtable['residue'].str.cat(vtable['number'],sep='')
 
     #create a table of just res_id values
-    ftable = ftable[['res_id']]
-    #print(ftable)
+    otable = vtable[['res_id']]
+    #print(vtable)
 
-    return ftable
+    return otable
 #*************************************************************************
 #*** Main program                                                      ***
 #*************************************************************************
 
 pdb_direct = get_pdbdirectory()
+print('pdb_direct', pdb_direct)
 
 generate_pdb_names = extract_pdb_name(pdb_direct)
+print('generate_pdb_names', generate_pdb_names)
 
 pdb_files = read_directory_for_PDB_files(pdb_direct)
-#print(pdb_files)
+print(pdb_files)
 
-lines = read_pdbfiles_as_lines(pdb_files)
-#print(lines)
+pdb_lines = read_pdbfiles_as_lines(pdb_files)
+print('pdb_lines', pdb_lines)
 
-ftable = prep_table(lines)
-#print(ftable)
-
-#VHVL_residues = filtering_for_VH_VL_residues(ftable)
+ftable = prep_table(pdb_lines)
+print('ftable', ftable)
 
 VHVLtable = VH_VL_relevant_residues(ftable)
-print(VHVLtable)
+print('VHVLtable', VHVLtable)
