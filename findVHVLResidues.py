@@ -79,6 +79,7 @@ def read_directory_for_PDB_files(pdb_direct):
             files.append('{}/{}'.format(pdb_direct, file))
     return files
 
+
 #*************************************************************************
 def read_pdbfiles_as_lines(pdb_files):
     """Read PDB files as lines
@@ -96,6 +97,22 @@ def read_pdbfiles_as_lines(pdb_files):
         lines.append(text_file.read().split('\n'))
     lines = str(lines)
     return lines
+
+#*************************************************************************
+def pdb_lines_as_dictionary(directory, file_lines):
+    """Print a list of all files that are PDB files in the called directory
+
+    Input:  directory    --- Directory of PBD files that will be processed for VH-VL packing angles
+    Return:         --- All PDB files in the directory
+
+
+    28.03.2021  Original   By: VAB
+    """
+
+    for pdb_file in directory:
+        for fline in file_lines:
+            pdb_dict = {pdb_file: fline}
+    return pdb_dict
 
 #*************************************************************************
 def one_letter_code(residue):
@@ -204,8 +221,11 @@ pdb_files = read_directory_for_PDB_files(pdb_direct)
 pdb_lines = read_pdbfiles_as_lines(pdb_files)
 #print('pdb_lines', pdb_lines)
 
-ftable = prep_table(pdb_lines)
+pdb_dictionary = pdb_lines_as_dictionary(pdb_direct, pdb_lines)
+print(pdb_dictionary)
+
+#ftable = prep_table(pdb_lines)
 #print('ftable', ftable)
 
-VHVLtable = VH_VL_relevant_residues(ftable)
-print('VHVLtable', VHVLtable)
+#VHVLtable = VH_VL_relevant_residues(ftable)
+#print('VHVLtable', VHVLtable)
