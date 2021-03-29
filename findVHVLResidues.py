@@ -81,7 +81,7 @@ def read_directory_for_PDB_files(pdb_direct):
 
 
 #*************************************************************************
-def read_pdbfiles_as_lines(files):
+def read_pdbfiles_as_lines(files, names):
     """Read PDB files as lines
 
     Input:  pdb_files   --- All PDB files in the directory
@@ -96,17 +96,20 @@ def read_pdbfiles_as_lines(files):
 
     for structure_file in files:
         text_file = open(structure_file, "r")
+        structure_file = structure_file.replace('{}/'.format(pdb_direct), '')
+        structure_file = structure_file[:-4]
     # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
         lines.append(text_file.read().split('\n'))
-        pdb_dict = {structure_file: lines}
-        print(pdb_dict)
+
+
  # Search for lines that contain 'ATOM' and add to atom_lines list
         for pdb_file_split in lines:
             #pdb_atom_lines = []
             for line in pdb_file_split:
                 if str(line).strip().startswith('ATOM'):
                     atom_lines.append(line)
-
+        pdb_dict = {structure_file: atom_lines}
+        print(pdb_dict)
     return atom_lines
 
 #*************************************************************************
@@ -223,7 +226,7 @@ generate_pdb_names = extract_pdb_name(pdb_direct)
 pdb_files = read_directory_for_PDB_files(pdb_direct)
 #print(pdb_files) # a list of all pdb files (full paths)
 
-pdb_lines = read_pdbfiles_as_lines(pdb_files)
+pdb_lines = read_pdbfiles_as_lines(pdb_files, generate_pdb_names)
 #print(pdb_lines)
 
 #pdb_dictionary = pdb_lines_as_dictionary(pdb_direct, pdb_lines)
