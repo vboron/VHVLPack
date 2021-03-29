@@ -81,7 +81,7 @@ def read_directory_for_PDB_files(pdb_direct):
 
 
 #*************************************************************************
-def read_pdbfiles_as_lines(pdb_files):
+def read_pdbfiles_as_lines(files):
     """Read PDB files as lines
 
     Input:  pdb_files   --- All PDB files in the directory
@@ -90,13 +90,24 @@ def read_pdbfiles_as_lines(pdb_files):
 
     10.03.2021  Original   By: VAB
     """
+
     lines = []
-    for structure_file in pdb_files:
+    atom_lines = []
+
+    for structure_file in files:
         text_file = open(structure_file, "r")
     # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
         lines.append(text_file.read().split('\n'))
-    lines = str(lines)
-    return lines
+        pdb_dict = {structure_file: lines}
+        print(pdb_dict)
+ # Search for lines that contain 'ATOM' and add to atom_lines list
+        for pdb_file_split in lines:
+            #pdb_atom_lines = []
+            for line in pdb_file_split:
+                if str(line).strip().startswith('ATOM'):
+                    atom_lines.append(line)
+
+    return atom_lines
 
 #*************************************************************************
 def pdb_lines_as_dictionary(directory, file_lines):
@@ -115,7 +126,7 @@ def pdb_lines_as_dictionary(directory, file_lines):
     return pdb_dict
 
 #*************************************************************************
-def one_letter_code(residue):
+def one_letter_code(res):
 
     """
     Go from the three-letter code to the one-letter code.
@@ -127,9 +138,9 @@ def one_letter_code(residue):
     """
 
     dic = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K', 'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N', 'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W', 'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','XAA': 'X', 'UNK':'X'}
-    if len(residue) % 3 != 0:
+    if len(res) % 3 != 0:
         raise ValueError("error")
-    one_letter = dic[residue]
+    one_letter = dic[res]
     return one_letter
 
 #*************************************************************************
@@ -151,22 +162,16 @@ def prep_table(lines):
     """
 
     # Create blank lists for lines in file that contain atom information
-    atom_lines = []
     table = []
 
     # Assign column names for residue table
     c = ['chain', "residue", 'number', 'L/H position']
 
-    # Search for lines that contain 'ATOM' and add to atom_lines list
-    for items in lines:
-        if items.startswith('ATOM'):
-            atom_lines.append(items)
-
     # Locate specific residue information, covert three-letter identifier into one-letter
-    for res_data in atom_lines:
+    for res_data in lines:
         res_num  = str(res_data[23:27]).strip()
         chain    = str(res_data[21:22]).strip()
-        residue  = (res_data[17:20]).strip()
+        residue  = str(res_data[17:21]).strip()
         res_one  = str(one_letter_code(residue))
         L_H_position = str("{}{}".format(chain, res_num))
         res_info = [chain, res_one, res_num, L_H_position]
@@ -219,7 +224,7 @@ pdb_files = read_directory_for_PDB_files(pdb_direct)
 #print(pdb_files) # a list of all pdb files (full paths)
 
 pdb_lines = read_pdbfiles_as_lines(pdb_files)
-print('pdb_lines', pdb_lines)
+#print(pdb_lines)
 
 #pdb_dictionary = pdb_lines_as_dictionary(pdb_direct, pdb_lines)
 #print(pdb_dictionary)
