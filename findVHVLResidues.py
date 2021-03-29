@@ -219,13 +219,13 @@ pdb_files = read_directory_for_PDB_files(pdb_direct)
 #print(pdb_files) # a list of all pdb files (full paths)
 
 pdb_lines = read_pdbfiles_as_lines(pdb_files)
-#print('pdb_lines', pdb_lines)
+print('pdb_lines', pdb_lines)
 
-pdb_dictionary = pdb_lines_as_dictionary(pdb_direct, pdb_lines)
-print(pdb_dictionary)
+#pdb_dictionary = pdb_lines_as_dictionary(pdb_direct, pdb_lines)
+#print(pdb_dictionary)
 
-#ftable = prep_table(pdb_lines)
+ftable = prep_table(pdb_lines)
 #print('ftable', ftable)
 
-#VHVLtable = VH_VL_relevant_residues(ftable)
-#print('VHVLtable', VHVLtable)
+VHVLtable = VH_VL_relevant_residues(ftable)
+#print(VHVLtable)
