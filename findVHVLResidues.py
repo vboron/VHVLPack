@@ -46,6 +46,7 @@ def extract_pdb_name(pdb_direct):
 
     Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
     Return: pdb_name     --- Names of all PDB files in the directory
+    e.g. ['5DMG_2', '5DQ9_3']
 
 
     18.03.2021  Original   By: VAB
@@ -66,6 +67,8 @@ def read_directory_for_PDB_files(pdb_direct):
 
     Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
     Return: files        --- All PDB files in the directory
+    e.g. ['/Users/veronicaboron/Desktop/git/VH_VL_Pack/some_pdbs/5DMG_2.pdb',
+    '/Users/veronicaboron/Desktop/git/VH_VL_Pack/some_pdbs/5DQ9_3.pdb']
 
 
     15.03.2021  Original   By: VAB
@@ -81,26 +84,34 @@ def read_directory_for_PDB_files(pdb_direct):
 
 
 #*************************************************************************
-def read_pdbfiles_as_lines(files, names):
-    """Read PDB files as lines
+def read_pdbfiles_as_lines(files):
+    """Read PDB files as lines then make a dictionary of the PDB code and all the lines that start with 'ATOM'
 
     Input:  pdb_files   --- All PDB files in the directory
-    Return: lines       --- PDB files split into lines
-
+    Return: pdb_dict    --- Dictionary containing PDB code of file and all the ATOM lines in that file
+    e.g {'5DMG_2': ['ATOM   4615  N   GLN L   2     -34.713  12.044 -12.438  1.00 44.10           N  ',
+    'ATOM   4616  CA  GLN L   2     -33.620  11.176 -11.893  1.00 43.59           C  ',
+    'ATOM   4617  C   GLN L   2     -33.836   9.696 -12.231  1.00 39.04           C  '...']}
 
     10.03.2021  Original   By: VAB
+    29.03.2021  V2.0       By: VAB
     """
 
     lines = []
     atom_lines = []
 
+    # Search all PDB files inside the list of all PDB files made before
     for structure_file in files:
+
+        # Open each file in 'read' using the file-paths stored in 'files'
         text_file = open(structure_file, "r")
+
+        # For each PDB file name remove the
         structure_file = structure_file.replace('{}/'.format(pdb_direct), '')
         structure_file = structure_file[:-4]
     # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
         lines.append(text_file.read().split('\n'))
-
+        #print(lines)
 
  # Search for lines that contain 'ATOM' and add to atom_lines list
         for pdb_file_split in lines:
@@ -109,24 +120,9 @@ def read_pdbfiles_as_lines(files, names):
                 if str(line).strip().startswith('ATOM'):
                     atom_lines.append(line)
         pdb_dict = {structure_file: atom_lines}
-        print(pdb_dict)
-    return atom_lines
-
-#*************************************************************************
-def pdb_lines_as_dictionary(directory, file_lines):
-    """Print a list of all files that are PDB files in the called directory
-
-    Input:  directory    --- Directory of PBD files that will be processed for VH-VL packing angles
-    Return:         --- All PDB files in the directory
-
-
-    28.03.2021  Original   By: VAB
-    """
-
-    for pdb_file in directory:
-        for fline in file_lines:
-            pdb_dict = {pdb_file: fline}
+        #print(pdb_dict)
     return pdb_dict
+
 
 #*************************************************************************
 def one_letter_code(res):
@@ -168,17 +164,19 @@ def prep_table(lines):
     table = []
 
     # Assign column names for residue table
-    c = ['chain', "residue", 'number', 'L/H position']
+    c = ['PDB Code', 'chain', "residue", 'number', 'L/H position']
 
     # Locate specific residue information, covert three-letter identifier into one-letter
-    for res_data in lines:
-        res_num  = str(res_data[23:27]).strip()
-        chain    = str(res_data[21:22]).strip()
-        residue  = str(res_data[17:21]).strip()
-        res_one  = str(one_letter_code(residue))
-        L_H_position = str("{}{}".format(chain, res_num))
-        res_info = [chain, res_one, res_num, L_H_position]
-        table.append(res_info)
+    for key, value in lines.items():
+        pdb_code = key
+        for data in value:
+            res_num  = str(data[23:27]).strip()
+            chain    = str(data[21:22]).strip()
+            residue  = str(data[17:21]).strip()
+            res_one  = str(one_letter_code(residue))
+            L_H_position = str("{}{}".format(chain, res_num))
+            res_info = [pdb_code, chain, res_one, res_num, L_H_position]
+            table.append(res_info)
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(data=table, columns=c)
 
@@ -224,16 +222,13 @@ generate_pdb_names = extract_pdb_name(pdb_direct)
 #print('generate_pdb_names', generate_pdb_names)
 
 pdb_files = read_directory_for_PDB_files(pdb_direct)
-#print(pdb_files) # a list of all pdb files (full paths)
+print(pdb_files) # a list of all pdb files (full paths)
 
-pdb_lines = read_pdbfiles_as_lines(pdb_files, generate_pdb_names)
+pdb_lines = read_pdbfiles_as_lines(pdb_files)
 #print(pdb_lines)
 
-#pdb_dictionary = pdb_lines_as_dictionary(pdb_direct, pdb_lines)
-#print(pdb_dictionary)
-
 ftable = prep_table(pdb_lines)
-#print('ftable', ftable)
+#print(ftable)
 
 VHVLtable = VH_VL_relevant_residues(ftable)
 #print(VHVLtable)
