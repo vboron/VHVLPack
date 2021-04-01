@@ -85,7 +85,7 @@ def read_directory_for_PDB_files(pdb_direct):
 
 #*************************************************************************
 def read_pdbfiles_as_lines(files):
-    """Read PDB files as lines then make a dictionary of the PDB code and all the lines that start with 'ATOM'
+    """Read PDB files as lines, then make a dictionary of the PDB code and all the lines that start with 'ATOM'
 
     Input:  pdb_files   --- All PDB files in the directory
     Return: pdb_dict    --- Dictionary containing PDB code of file and all the ATOM lines in that file
@@ -143,7 +143,7 @@ def one_letter_code(res):
     return one_letter
 
 #*************************************************************************
-def prep_table(lines):
+def prep_table(dict_list):
     """Build table for atom information using pandas dataframes
 
     Input:  lines      --- All PDB files split into lines
