@@ -10,16 +10,13 @@ Function:   Find the residue identities corresponding to the numbering for VH-VL
 Description:
 ============
 The program will take PDB files and extract a string of one letter residue codes for the VH-VL-Packing relevant region
+and deposits into csv file
 e.g.
-         code residue number
-273    5DMG_2       Q     38
-291    5DMG_2       P     40
-298    5DMG_2       G     41
-318    5DMG_2       P     44
-334    5DMG_2       R     46
-639    5DMG_2       Y     87
-1062   5DMG_2       A     33
-1136   5DMG_2       G     42
+        code L/H position residue
+273    5DMG_2          L38       Q
+291    5DMG_2          L40       P
+298    5DMG_2          L41       G
+318    5DMG_2          L44       P
 
 --------------------------------------------------------------------------
 """
@@ -190,8 +187,8 @@ def prep_table(dict_list):
                 res_one = str(one_letter_code(residue))
 
                 # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
-                lh_position = str("{}{}".format(chain, res_num))
-                res_info = [pdb_code, chain, res_one, res_num, lh_position]
+                lhposition = str("{}{}".format(chain, res_num))
+                res_info = [pdb_code, chain, res_one, res_num, lhposition]
                 table.append(res_info)
     #print(table)
     # Use pandas to build a data table from compiled residue info and column headers:
@@ -216,8 +213,7 @@ def vh_vl_relevant_residues(vtable):
     vtable = vtable[vtable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
 
     # Create a table of the residue data for the specific locations
-    out_table = vtable.loc[:, ('code', 'residue', 'number')]
-
+    out_table = vtable.loc[:, ('code', 'L/H position', 'residue')]
     return out_table
 
 
@@ -236,4 +232,6 @@ pdb_lines = read_pdbfiles_as_lines(pdb_files)
 init_table = prep_table(pdb_lines)
 
 VHVLtable = vh_vl_relevant_residues(init_table)
-print(VHVLtable)
+
+# index= FALSE removes indexing column from the dataframe
+VHVLtable.to_csv('VHVL_Packing_Residues.csv', index=False)
