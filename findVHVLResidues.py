@@ -111,7 +111,7 @@ def read_pdbfiles_as_lines(files):
         structure_file = structure_file[:-4]
     # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
         lines.append(text_file.read().split('\n'))
-        #print(lines)
+        print(lines)
 
  # Search for lines that contain 'ATOM' and add to atom_lines list
         for pdb_file_split in lines:
@@ -119,9 +119,9 @@ def read_pdbfiles_as_lines(files):
             for line in pdb_file_split:
                 if str(line).strip().startswith('ATOM'):
                     atom_lines.append(line)
-        pdb_dict = {structure_file: atom_lines}
-        #print(pdb_dict)
-    return pdb_dict
+            pdb_dict = {structure_file: atom_lines}
+            #print(pdb_dict)
+        return pdb_dict
 
 
 #*************************************************************************
@@ -162,21 +162,23 @@ def prep_table(lines):
 
     # Create blank lists for lines in file that contain atom information
     table = []
-
+    pdb_code = []
     # Assign column names for residue table
     c = ['PDB Code', 'chain', "residue", 'number', 'L/H position']
 
     # Locate specific residue information, covert three-letter identifier into one-letter
-    for key, value in lines.items():
-        pdb_code = key
-        for data in value:
-            res_num  = str(data[23:27]).strip()
-            chain    = str(data[21:22]).strip()
-            residue  = str(data[17:21]).strip()
-            res_one  = str(one_letter_code(residue))
-            L_H_position = str("{}{}".format(chain, res_num))
-            res_info = [pdb_code, chain, res_one, res_num, L_H_position]
-            table.append(res_info)
+    for key, values in lines.items():
+        if (isinstance(values, list)):
+            for data in values:
+                pdb_code = key
+                res_num  = str(data[23:27]).strip()
+                chain    = str(data[21:22]).strip()
+                residue  = str(data[17:21]).strip()
+                res_one  = str(one_letter_code(residue))
+                L_H_position = str("{}{}".format(chain, res_num))
+                res_info = [pdb_code, chain, res_one, res_num, L_H_position]
+                table.append(res_info)
+    #print(table)
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(data=table, columns=c)
 
@@ -222,7 +224,7 @@ generate_pdb_names = extract_pdb_name(pdb_direct)
 #print('generate_pdb_names', generate_pdb_names)
 
 pdb_files = read_directory_for_PDB_files(pdb_direct)
-print(pdb_files) # a list of all pdb files (full paths)
+#print(pdb_files) # a list of all pdb files (full paths)
 
 pdb_lines = read_pdbfiles_as_lines(pdb_files)
 #print(pdb_lines)
