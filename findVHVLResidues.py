@@ -11,14 +11,22 @@ Description:
 ============
 The program will take PDB files and extract a string of one letter residue codes for the VH-VL-Packing relevant region
 e.g.
-
+         code residue number
+273    5DMG_2       Q     38
+291    5DMG_2       P     40
+298    5DMG_2       G     41
+318    5DMG_2       P     44
+334    5DMG_2       R     46
+639    5DMG_2       Y     87
+1062   5DMG_2       A     33
+1136   5DMG_2       G     42
 
 --------------------------------------------------------------------------
 """
 # *************************************************************************
 # Import libraries
 
-# sys to take args from commandline, os for reading directory, and subprocess for running external program
+# sys to take args from commandline, os for reading directory, and pandas for building dataframes
 import os
 import sys
 import pandas as pd
@@ -28,7 +36,7 @@ import pandas as pd
 def get_pdbdirectory():
     """Read the directory name from the commandline argument
 
-    Return: pdb_directory      --- Directory of PBD files that will be processed for VH-VL packing angles
+    Return: pdb_direct      --- Directory of PBD files that will be processed for VH-VL packing angles
 
     15.03.2021  Original   By: VAB
     """
@@ -45,8 +53,8 @@ def get_pdbdirectory():
 def extract_pdb_name(directory):
     """Return a list of headers of PDB files in the called directory
 
-    Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
-    Return: pdb_name     --- Names of all PDB files in the directory
+    Input:  directory    --- Directory of PBD files that will be processed for VH-VL packing angles
+    Return: pdb_names    --- Names of all PDB files in the directory
     e.g. ['5DMG_2', '5DQ9_3']
 
 
@@ -65,9 +73,9 @@ def extract_pdb_name(directory):
 
 # *************************************************************************
 def read_directory_for_pdb_files(directory):
-    """Print a list of all files that are PDB files in the called directory
+    """Return a list of all files that are PDB files in the called directory with full filepath
 
-    Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
+    Input:  directory    --- Directory of PBD files that will be processed for VH-VL packing angles
     Return: files        --- All PDB files in the directory
     e.g. ['/Users/veronicaboron/Desktop/git/VH_VL_Pack/some_pdbs/5DMG_2.pdb',
     '/Users/veronicaboron/Desktop/git/VH_VL_Pack/some_pdbs/5DQ9_3.pdb']
@@ -77,10 +85,12 @@ def read_directory_for_pdb_files(directory):
     """
 
     # Creates an empty list, then iterates over all files in the directory called from the
-    # commandline. Adds all these .pdb files to the list.
+    # commandline. Adds all these .pdb  and .ent files to the list.
     files = []
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
+
+            # Prepends the directory path to the front of the file name to create full filepath
             files.append('{}/{}'.format(directory, file))
     return files
 
@@ -111,12 +121,12 @@ def read_pdbfiles_as_lines(files):
         # For each PDB file name remove the
         structure_file = structure_file.replace('{}/'.format(pdb_direct), '')
         structure_file = structure_file[:-4]
-    # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
+
+        # Split the opened PDB file at '\n' (the end of a line of text) and returns those lines
         lines.append(text_file.read().split('\n'))
 
-    # Search for lines that contain 'ATOM' and add to atom_lines list
+        # Search for lines that contain 'ATOM' and add to atom_lines list
         for pdb_file_split in lines:
-
             for line in pdb_file_split:
                 if str(line).strip().startswith('ATOM'):
                     atom_lines.append(line)
@@ -150,8 +160,8 @@ def one_letter_code(res):
 def prep_table(dict_list):
     """Build table for atom information using pandas dataframes
 
-    Input:  lines      --- All PDB files split into lines
-    Return: ftable     --- Sorted table that contains the residue id:
+    Input:  dict_list      --- Dictionary of PDB codes associated with 'ATOM' lines
+    Return: ftable         --- Sorted table that contains the details needed to search for the relevant residues:
     e.g.
       PDB Code chain residue number L/H position
 0       5DMG_2     L       Q      2           L2
@@ -162,19 +172,12 @@ def prep_table(dict_list):
     26.03.2021  V2.0       By: VAB
     """
 
-    # Create blank lists for lines in file that contain atom information
-    table = []
-    pdb_code = []
-    # Assign column names for residue table
-    c = ['PDB Code', 'chain', "residue", 'number', 'L/H position']
-
-    # Locate specific residue information, covert three-letter identifier into one-letter
     table = []
 
     # Assign column names for residue table
     c = ['code', 'chain', "residue", 'number', 'L/H position']
 
-    # Locate specific residue information, covert three-letter identifier into one-letter
+    # Locate specific residue information
     for dictionary in dict_list:
         for key, value in dictionary.items():
             pdb_code = key
@@ -182,7 +185,11 @@ def prep_table(dict_list):
                 res_num = str(data[23:27]).strip()
                 chain = str(data[21:22]).strip()
                 residue = str(data[17:21]).strip()
+
+                # Use defined dictionary to convert 3-letter res code to 1-letter
                 res_one = str(one_letter_code(residue))
+
+                # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
                 lh_position = str("{}{}".format(chain, res_num))
                 res_info = [pdb_code, chain, res_one, res_num, lh_position]
                 table.append(res_info)
@@ -199,47 +206,34 @@ def prep_table(dict_list):
 def vh_vl_relevant_residues(vtable):
     """Filter table for residues relevant for VH-VL packing
 
-    Input:  vtable     --- Sorted table that contains the residue id
-    Return:  :
-    e.g.
+    Input:  vtable        --- Sorted table that contains information about the chain, residues, positions of all atoms
+    Return: out_table     --- Sorted table that contains the residue identities of the specified VH/L positions
 
     26.03.2021  Original   By: VAB
     """
 
-    # Find all of the key residues for VH/VL packing:
-    # e.g  chain residue number L/H position
-    # 267      L       Q     38          L38
-    # 285      L       S     40          L40
-    # 291      L       G     41          L41
-    # 308      L       P     44          L44
+    # Look for rows that contain the specified residue locations
     vtable = vtable[vtable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
-    # print(vtable)
 
-    # create a table of just res_id values
-    otable = vtable.loc[:, ('code', 'residue', 'number')]
-    # print(vtable)
+    # Create a table of the residue data for the specific locations
+    out_table = vtable.loc[:, ('code', 'residue', 'number')]
 
-    return otable
+    return out_table
 
 
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
 
-pdb_direct = get_pdbdirectory()
-# print('pdb_direct', pdb_direct)
+pdb_directory = get_pdbdirectory()
 
-generate_pdb_names = extract_pdb_name(pdb_direct)
-# print('generate_pdb_names', generate_pdb_names)
+generate_pdb_names = extract_pdb_name(pdb_directory)
 
-pdb_files = read_directory_for_pdb_files(pdb_direct)
-# print(pdb_files) # a list of all pdb files (full paths)
+pdb_files = read_directory_for_pdb_files(pdb_directory)
 
 pdb_lines = read_pdbfiles_as_lines(pdb_files)
-# print(pdb_lines)
 
 init_table = prep_table(pdb_lines)
-# print(ftable)
 
 VHVLtable = vh_vl_relevant_residues(init_table)
 print(VHVLtable)
