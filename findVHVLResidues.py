@@ -22,7 +22,6 @@ e.g.
 import os
 import sys
 import pandas as pd
-import numpy as np
 
 # *************************************************************************
 def get_pdbdirectory():
@@ -149,12 +148,10 @@ def prep_table(dict_list):
     Input:  lines      --- All PDB files split into lines
     Return: ftable     --- Sorted table that contains the residue id:
     e.g.
-          chain residue number L/H position
-    0        L       D      1           L1
-    8        L       I      2           L2
-    16       L       V      3           L3
-    23       L       L      4           L4
-    31       L       T      5           L5
+      PDB Code chain residue number L/H position
+0       5DMG_2     L       Q      2           L2
+9       5DMG_2     L       V      3           L3
+16      5DMG_2     L       L      4           L4
 
     10.03.2021  Original   By: VAB
     26.03.2021  V2.0       By: VAB
@@ -206,10 +203,8 @@ def VH_VL_relevant_residues(vtable):
     vtable = vtable[vtable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
     #print(vtable)
 
-    vtable['res_id'] = vtable['residue'].str.cat(vtable['number'], sep='')
-
     #create a table of just res_id values
-    otable = vtable[['res_id']]
+    otable = vtable.loc[:, ('code', 'residue', 'number')]
     #print(vtable)
 
     return otable
@@ -233,4 +228,4 @@ ftable = prep_table(pdb_lines)
 #print(ftable)
 
 VHVLtable = VH_VL_relevant_residues(ftable)
-#print(VHVLtable)
+print(VHVLtable)
