@@ -115,7 +115,7 @@ def read_pdbfiles_as_lines(files):
 
  # Search for lines that contain 'ATOM' and add to atom_lines list
         for pdb_file_split in lines:
-            #pdb_atom_lines = []
+
             for line in pdb_file_split:
                 if str(line).strip().startswith('ATOM'):
                     atom_lines.append(line)
