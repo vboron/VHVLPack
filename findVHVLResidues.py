@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-'''
+"""
 Program:    findVHVLResidues
 File:       findVHVLResidues.py
 
@@ -14,7 +14,7 @@ e.g.
 
 
 --------------------------------------------------------------------------
-'''
+"""
 # *************************************************************************
 # Import libraries
 
@@ -22,6 +22,7 @@ e.g.
 import os
 import sys
 import pandas as pd
+
 
 # *************************************************************************
 def get_pdbdirectory():
@@ -39,8 +40,9 @@ def get_pdbdirectory():
         pdb_direct = '.'
     return pdb_direct
 
-#*************************************************************************
-def extract_pdb_name(pdb_direct):
+
+# *************************************************************************
+def extract_pdb_name(directory):
     """Return a list of headers of PDB files in the called directory
 
     Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
@@ -51,17 +53,18 @@ def extract_pdb_name(pdb_direct):
     18.03.2021  Original   By: VAB
     """
 
-    # Iternates over all files in directory, checks if they are pdb files and returns the
+    # Iterates over all files in directory, checks if they are pdb files and returns the
     # name without the extension into a list.
     pdb_names = []
-    for pdb in os.listdir(pdb_direct):
+    for pdb in os.listdir(directory):
         if pdb.endswith(".pdb") or pdb.endswith(".ent"):
             pdb_name = os.path.splitext(pdb)[0]
             pdb_names.append(pdb_name)
     return pdb_names
 
-#*************************************************************************
-def read_directory_for_PDB_files(pdb_direct):
+
+# *************************************************************************
+def read_directory_for_pdb_files(directory):
     """Print a list of all files that are PDB files in the called directory
 
     Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
@@ -76,13 +79,13 @@ def read_directory_for_PDB_files(pdb_direct):
     # Creates an empty list, then iterates over all files in the directory called from the
     # commandline. Adds all these .pdb files to the list.
     files = []
-    for file in os.listdir(pdb_direct):
+    for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
-            files.append('{}/{}'.format(pdb_direct, file))
+            files.append('{}/{}'.format(directory, file))
     return files
 
 
-#*************************************************************************
+# *************************************************************************
 def read_pdbfiles_as_lines(files):
     """Read PDB files as lines, then make a dictionary of the PDB code and all the lines that start with 'ATOM'
 
@@ -110,9 +113,8 @@ def read_pdbfiles_as_lines(files):
         structure_file = structure_file[:-4]
     # Splits the opened PDB file at '\n' (the end of a line of text) and returns those lines
         lines.append(text_file.read().split('\n'))
-        print(lines)
 
- # Search for lines that contain 'ATOM' and add to atom_lines list
+    # Search for lines that contain 'ATOM' and add to atom_lines list
         for pdb_file_split in lines:
 
             for line in pdb_file_split:
@@ -123,7 +125,7 @@ def read_pdbfiles_as_lines(files):
         return pdb_dict
 
 
-#*************************************************************************
+# *************************************************************************
 def one_letter_code(res):
 
     """
@@ -135,13 +137,16 @@ def one_letter_code(res):
     20.10.2020  Original   By: LD
     """
 
-    dic = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K', 'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N', 'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W', 'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','XAA': 'X', 'UNK':'X'}
+    dic = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K', 'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F',
+           'ASN': 'N', 'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W', 'ALA': 'A', 'VAL': 'V', 'GLU': 'E',
+           'TYR': 'Y', 'MET': 'M', 'XAA': 'X', 'UNK': 'X'}
     if len(res) % 3 != 0:
         raise ValueError("error")
     one_letter = dic[res]
     return one_letter
 
-#*************************************************************************
+
+# *************************************************************************
 def prep_table(dict_list):
     """Build table for atom information using pandas dataframes
 
@@ -164,16 +169,22 @@ def prep_table(dict_list):
     c = ['PDB Code', 'chain', "residue", 'number', 'L/H position']
 
     # Locate specific residue information, covert three-letter identifier into one-letter
-    for key, values in lines.items():
-        if (isinstance(values, list)):
-            for data in values:
-                pdb_code = key
-                res_num  = str(data[23:27]).strip()
-                chain    = str(data[21:22]).strip()
-                residue  = str(data[17:21]).strip()
-                res_one  = str(one_letter_code(residue))
-                L_H_position = str("{}{}".format(chain, res_num))
-                res_info = [pdb_code, chain, res_one, res_num, L_H_position]
+    table = []
+
+    # Assign column names for residue table
+    c = ['code', 'chain', "residue", 'number', 'L/H position']
+
+    # Locate specific residue information, covert three-letter identifier into one-letter
+    for dictionary in dict_list:
+        for key, value in dictionary.items():
+            pdb_code = key
+            for data in value:
+                res_num = str(data[23:27]).strip()
+                chain = str(data[21:22]).strip()
+                residue = str(data[17:21]).strip()
+                res_one = str(one_letter_code(residue))
+                lh_position = str("{}{}".format(chain, res_num))
+                res_info = [pdb_code, chain, res_one, res_num, lh_position]
                 table.append(res_info)
     #print(table)
     # Use pandas to build a data table from compiled residue info and column headers:
@@ -183,8 +194,9 @@ def prep_table(dict_list):
     ftable = ftable.drop_duplicates()
     return ftable
 
-#*************************************************************************
-def VH_VL_relevant_residues(vtable):
+
+# *************************************************************************
+def vh_vl_relevant_residues(vtable):
     """Filter table for residues relevant for VH-VL packing
 
     Input:  vtable     --- Sorted table that contains the residue id
@@ -201,31 +213,33 @@ def VH_VL_relevant_residues(vtable):
     # 291      L       G     41          L41
     # 308      L       P     44          L44
     vtable = vtable[vtable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
-    #print(vtable)
+    # print(vtable)
 
-    #create a table of just res_id values
+    # create a table of just res_id values
     otable = vtable.loc[:, ('code', 'residue', 'number')]
-    #print(vtable)
+    # print(vtable)
 
     return otable
-#*************************************************************************
-#*** Main program                                                      ***
-#*************************************************************************
+
+
+# *************************************************************************
+# *** Main program                                                      ***
+# *************************************************************************
 
 pdb_direct = get_pdbdirectory()
-#print('pdb_direct', pdb_direct)
+# print('pdb_direct', pdb_direct)
 
 generate_pdb_names = extract_pdb_name(pdb_direct)
-#print('generate_pdb_names', generate_pdb_names)
+# print('generate_pdb_names', generate_pdb_names)
 
-pdb_files = read_directory_for_PDB_files(pdb_direct)
-#print(pdb_files) # a list of all pdb files (full paths)
+pdb_files = read_directory_for_pdb_files(pdb_direct)
+# print(pdb_files) # a list of all pdb files (full paths)
 
 pdb_lines = read_pdbfiles_as_lines(pdb_files)
-#print(pdb_lines)
+# print(pdb_lines)
 
-ftable = prep_table(pdb_lines)
-#print(ftable)
+init_table = prep_table(pdb_lines)
+# print(ftable)
 
-VHVLtable = VH_VL_relevant_residues(ftable)
+VHVLtable = vh_vl_relevant_residues(init_table)
 print(VHVLtable)
