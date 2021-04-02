@@ -12,11 +12,11 @@ Description:
 The program will take PDB files and extract a string of one letter residue codes for the VH-VL-Packing relevant region
 and deposits into csv file
 e.g.
-        code L/H position residue
-273    5DMG_2          L38       Q
-291    5DMG_2          L40       P
-298    5DMG_2          L41       G
-318    5DMG_2          L44       P
+      code L/H position residue
+    5DMG_2          L38       Q
+    5DMG_2          L40       P
+    5DMG_2          L41       G
+    5DMG_2          L44       P
 
 --------------------------------------------------------------------------
 """
