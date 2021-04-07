@@ -54,7 +54,6 @@ def extract_pdb_name(directory):
     Return: pdb_names    --- Names of all PDB files in the directory
     e.g. ['5DMG_2', '5DQ9_3']
 
-
     18.03.2021  Original   By: VAB
     """
 
@@ -75,8 +74,7 @@ def read_directory_for_pdb_files(directory):
     Input:  directory    --- Directory of PBD files that will be processed for VH-VL packing angles
     Return: files        --- All PDB files in the directory
     e.g. ['/Users/veronicaboron/Desktop/git/VH_VL_Pack/some_pdbs/5DMG_2.pdb',
-    '/Users/veronicaboron/Desktop/git/VH_VL_Pack/some_pdbs/5DQ9_3.pdb']
-
+     '/Users/veronicaboron/Desktop/git/VH_VL_Pack/some_pdbs/5DQ9_3.pdb']
 
     15.03.2021  Original   By: VAB
     """
@@ -96,27 +94,22 @@ def read_directory_for_pdb_files(directory):
 def read_pdbfiles_as_lines(files):
     """Read PDB files as lines, then make a dictionary of the PDB code and all the lines that start with 'ATOM'
 
-    Input:  pdb_files   --- All PDB files in the directory
-    Return: pdb_dict    --- Dictionary containing PDB code of file and all the ATOM lines in that file
-    e.g {'5DMG_2': ['ATOM   4615  N   GLN L   2     -34.713  12.044 -12.438  1.00 44.10           N  ',
-    'ATOM   4616  CA  GLN L   2     -33.620  11.176 -11.893  1.00 43.59           C  ',
-    'ATOM   4617  C   GLN L   2     -33.836   9.696 -12.231  1.00 39.04           C  '...']}
+    Input:  files       --- Paths to all PDB files present in the directory
+    Return: pdb_dict    --- Dictionary of PDB names with all of the lines containing atom details
+    e.g.
+[{'5DMG_2': ['ATOM   4615  N   GLN L   2     -34.713  12.044 -12.438  1.00 44.10         N  ',...']}, {'5DQ9_3':...']}]
 
     10.03.2021  Original   By: VAB
-    29.03.2021  V2.0       By: VAB
     """
 
     lines = []
     atom_lines = []
-
-    # Search all PDB files inside the list of all PDB files made before
+    pdb_dict = []
     for structure_file in files:
-
-        # Open each file in 'read' using the file-paths stored in 'files'
         text_file = open(structure_file, "r")
 
-        # For each PDB file name remove the
-        structure_file = structure_file.replace('{}/'.format(pdb_direct), '')
+        # Remove the path and the extension from the name of the PDB file
+        structure_file = structure_file.replace('{}/'.format(pdb_directory), '')
         structure_file = structure_file[:-4]
 
         # Split the opened PDB file at '\n' (the end of a line of text) and returns those lines
@@ -127,9 +120,13 @@ def read_pdbfiles_as_lines(files):
             for line in pdb_file_split:
                 if str(line).strip().startswith('ATOM'):
                     atom_lines.append(line)
-            pdb_dict = {structure_file: atom_lines}
-            #print(pdb_dict)
-        return pdb_dict
+
+        # Associate the name of the file with the relevant lines in a dictionary
+        pdb_dic = {structure_file: atom_lines}
+
+        # Add these to a list to avoid overwriting
+        pdb_dict.append(pdb_dic)
+    return pdb_dict
 
 
 # *************************************************************************
@@ -190,7 +187,7 @@ def prep_table(dict_list):
                 lhposition = str("{}{}".format(chain, res_num))
                 res_info = [pdb_code, chain, res_one, res_num, lhposition]
                 table.append(res_info)
-    #print(table)
+
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(data=table, columns=c)
 
