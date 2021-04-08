@@ -97,40 +97,34 @@ def read_pdbfiles_as_lines(files):
     Input:  files       --- Paths to all PDB files present in the directory
     Return: pdb_dict    --- Dictionary of PDB names with all of the lines containing atom details
     e.g.
-[{'5DMG_2': ['ATOM   4615  N   GLN L   2     -34.713  12.044 -12.438  1.00 44.10         N  ',...']}, {'5DQ9_3':...']}]
+{'5DMG_2': ['ATOM   4615  N   GLN L   2     -34.713  12.044 -12.438  1.00 44.10         N  ',...'], '5DQ9_3':...'}
 
     10.03.2021  Original   By: VAB
     """
 
-    lines = []
-    atom_lines = []
-    pdb_dict = []
+    pdb_dict = {}
+
     for structure_file in files:
-        text_file = open(structure_file, "r")
+        atom_lines = []
+        with open(structure_file, "r") as text_file:
 
-        # Remove the path and the extension from the name of the PDB file
-        structure_file = structure_file.replace('{}/'.format(pdb_directory), '')
-        structure_file = structure_file[:-4]
+            # Remove the path and the extension from the name of the PDB file
+            structure_file = structure_file.replace('{}/'.format(pdb_directory), '')
+            structure_file = structure_file[:-4]
 
-        # Split the opened PDB file at '\n' (the end of a line of text) and returns those lines
-        lines.append(text_file.read().split('\n'))
-
-        # Search for lines that contain 'ATOM' and add to atom_lines list
-        for pdb_file_split in lines:
-            for line in pdb_file_split:
+            # Search for lines that contain 'ATOM' and add to atom_lines list
+            for line in text_file.read().split('\n'):
                 if str(line).strip().startswith('ATOM'):
                     atom_lines.append(line)
 
-        # Associate the name of the file with the relevant lines in a dictionary
-        pdb_dic = {structure_file: atom_lines}
+            # Associate the name of the file with the relevant lines in a dictionary
+            pdb_dict[structure_file] = atom_lines
 
-        # Add these to a list to avoid overwriting
-        pdb_dict.append(pdb_dic)
     return pdb_dict
 
 
 # *************************************************************************
-def one_letter_code(res):
+def one_letter_code(pdb, res):
 
     """
     Go from the three-letter code to the one-letter code.
@@ -144,14 +138,15 @@ def one_letter_code(res):
     dic = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K', 'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F',
            'ASN': 'N', 'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W', 'ALA': 'A', 'VAL': 'V', 'GLU': 'E',
            'TYR': 'Y', 'MET': 'M', 'XAA': 'X', 'UNK': 'X'}
-    if len(res) % 3 != 0:
-        raise ValueError("error")
+    if res not in dic:
+        raise ValueError("{}: {} not in dic".format(pdb, res))
+
     one_letter = dic[res]
     return one_letter
 
 
 # *************************************************************************
-def prep_table(dict_list):
+def prep_table(dictionary):
     """Build table for atom information using pandas dataframes
 
     Input:  dict_list      --- Dictionary of PDB codes associated with 'ATOM' lines
@@ -172,21 +167,24 @@ def prep_table(dict_list):
     c = ['code', 'chain', "residue", 'number', 'L/H position']
 
     # Locate specific residue information
-    for dictionary in dict_list:
-        for key, value in dictionary.items():
-            pdb_code = key
-            for data in value:
-                res_num = str(data[23:27]).strip()
-                chain = str(data[21:22]).strip()
-                residue = str(data[17:21]).strip()
+    for key, value in dictionary.items():
+        pdb_code = key
+        for data in value:
+            items = data.split()
+            res_num = items[5]
+            chain = items[4]
+            residue = items[3]
 
-                # Use defined dictionary to convert 3-letter res code to 1-letter
-                res_one = str(one_letter_code(residue))
+            # Use defined dictionary to convert 3-letter res code to 1-letter
+            try:
+                res_one = str(one_letter_code(key, residue))
+            except ValueError:
+                continue
 
-                # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
-                lhposition = str("{}{}".format(chain, res_num))
-                res_info = [pdb_code, chain, res_one, res_num, lhposition]
-                table.append(res_info)
+            # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
+            lhposition = str("{}{}".format(chain, res_num))
+            res_info = [pdb_code, chain, res_one, res_num, lhposition]
+            table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(data=table, columns=c)
