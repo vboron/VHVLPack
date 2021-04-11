@@ -57,7 +57,7 @@ def make_res_seq(file):
 
 
 # *************************************************************************
-def run(table):
+def encode(table):
     columns = ['code', "res_charge", "res_sc_nr", "res_compactness", "res_hydrophob"]
     seq_df = pd.DataFrame(columns=columns)
     for row in table.itertuples():
@@ -72,7 +72,6 @@ def run(table):
             seq_df = seq_df.append(
                 {'code': code, "res_charge": charge_of_res, "res_sc_nr": nr_side_chain_atoms_res,
                  "res_compactness": compactness_res, "res_hydrophob": hydrophobicity_res}, ignore_index=True)
-
     return seq_df
 
 
@@ -116,6 +115,59 @@ def charge(resi):
 
 
 # *************************************************************************
+def combine_by_pdb_code(table):
+    col = ['code', 'encoded_res']
+    itable = []
+    for row in table.itertuples():
+        code = row[1]
+
+        # charge
+        a = row[2]
+
+        # side chain number
+        b = row[3]
+
+        # compactness
+        c = row[4]
+
+        # hydrophobicity
+        d = row[5]
+
+        # the last comma and space had to be added to avoid deletion of of the first vector of each added residue
+        res_encoded = '{}, {}, {}, {}, '.format(a, b, c, d)
+        res = [code, res_encoded]
+        itable.append(res)
+
+    temp_df = pd.DataFrame(data=itable, columns=col)
+
+    # combine all of the encoded residues for a specific pdb file into a single row
+    enc_df = temp_df.groupby(temp_df['code']).aggregate(np.sum)
+    enc_df = enc_df.reset_index()
+    enc_df.reset_index()['encoded_res']
+
+    # re-make pdb codes as a single column
+    pdb_code_df = pd.Series(enc_df.code, name='code')
+
+    #
+    res_df = pd.DataFrame(enc_df.encoded_res.str.split(', ').tolist(),
+                      columns=['L38a', 'L38b', 'L38c', 'L38d', 'L40a', 'L40b', 'L40c', 'L40d',
+                               'L41a', 'L41b', 'L41c', 'L41d', 'L44a', 'L44b', 'L44c', 'L44d',
+                               'L46a', 'L46b', 'L46c', 'L46d', 'L87a', 'L87b', 'L87c', 'L87d',
+                               'H33a', 'H33b', 'H33c', 'H33d', 'H42a', 'H42b', 'H42c', 'H42d',
+                               'H45a', 'H45b', 'H45c', 'H45d', 'H60a', 'H60b', 'H60c', 'H60d',
+                               'H62a', 'H62b', 'H62c', 'H62d', 'H91a', 'H91b', 'H91c', 'H91d',
+                               'H105a', 'H105b', 'H105c', 'H105d', 'trash'])
+    res_df = res_df.iloc[:, :-1]
+
+    encoded_df = pd.concat([pdb_code_df, res_df], axis=1)
+    return encoded_df
+
+
+
+
+
+
+# *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
 
@@ -126,5 +178,8 @@ res_seq = make_res_seq(read_file)
 # print(res_seq)
 
 
-parameters = run(res_seq)
-print(parameters)
+parameters = encode(res_seq)
+# print(parameters.groupby(['code']))
+
+results = combine_by_pdb_code(parameters)
+results.to_csv('things.csv', index=False)
