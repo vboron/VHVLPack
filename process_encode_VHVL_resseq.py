@@ -9,57 +9,107 @@ Function:   Encode VH/VL packing amino acids into 4d vectors for machine learnin
 
 Description:
 ============
-Program uses the residue identities
+Program uses the residue identities for VH/VL relevant residues and encodes them using 4 vectors (hydrophobicity,
+side chain size, charge, and compactness) then appends the packing angle to produce a data table:
+e.g.
 
---------------------------------------------------------------------------
+code	L38a	L38b	L38c	L38d	L40a	...     angle
+12E8_1	0	       5	   4	-0.69	   0            -54.9
+12E8_2	0	       5	   4	-0.69	   0            -48.5
+15C8_1	0	       5	   4	-0.69	   0            -42.3
+1A0Q_1	0.5	       6	   4	-0.4	   0            -45.6
+------------------------------------------------
 """
 # *************************************************************************
 # Import libraries
 
-# sys to take args from commandline, os for reading directory, subprocess for running external program, pandas
-# for making dataframes
+# sys to take args from commandline, os for reading directory, pandas for making dataframes
 import sys
 sys.path.append('/serv/www/html_lilian/libs')
 sys.path.append('./CDRH3lib')
 sys.path.append('~/sync_project/WWW/CDRH3loop')
-import os
 import pandas as pd
 import numpy as np
-import joblib
-import time
+
 
 
 # *************************************************************************
 def read_csv():
-    """Read the directory name from the commandline argument
+    """Read the file containing pdb id and the VHVL residue identity
 
-        Return: pdb_direct      --- Directory of PBD files that will be processed for VH-VL packing angles
+        Return: res_file      --- Data file with residue identities read by column names
 
         15.03.2021  Original   By: VAB
         """
 
-    columns = ['code', 'L/H position', 'residue']
+    # The column names contained in the .csv file
+    col1 = ['code', 'L/H position', 'residue']
 
     # Take the commandline input as the directory, otherwise look in current directory
     if sys.argv[1] != '':
-        res_file = pd.read_csv(sys.argv[1], usecols=columns)
+        res_file = pd.read_csv(sys.argv[1], usecols=col1)
+
     return res_file
 
 
 # *************************************************************************
-def make_res_seq(file):
+def make_res_seq(rfile):
+    """Take all individual residue identities for a pdb file and combine them into a single sequence for
+    each individual pdb
 
+    Return: seq_df      --- Dataframe containing the pdb code and the sequence of VHVL residues for each pdb
+    e.g.
+        code        residue
+0     12E8_1  QPGPLFYELVKYQ
+1     12E8_2  QPGPLFYELVKYQ
+2     15C8_1  QPGPLYYELDKYQ
+
+    10.04.2021  Original   By: VAB
+    """
+
+    # Add all items under the 'residue' column into one field
     aggregation_func = {'residue': 'sum'}
-    seq_df = file.groupby(file['code']).aggregate(aggregation_func)
+
+    # Group rows  by pdb code and then combine them into one field
+    #         residue
+    # code
+    # 12E8_1  QPGPLFYELVKYQ
+    # 12E8_2  QPGPLFYELVKYQ
+
+    seq_df = rfile.groupby(rfile['code']).aggregate(aggregation_func)
+
+    # Reset the indices back to single row of column names for easier manipulation:
+    #         code        residue
+    # 0     12E8_1  QPGPLFYELVKYQ
+    # 1     12E8_2  QPGPLFYELVKYQ
+
     seq_df = seq_df.reset_index()
-    seq_df.reset_index()['residue']
+    # seq_df.reset_index()['residue']
     return seq_df
 
 
 # *************************************************************************
 def encode(table):
+    """Description:
+    This program replicates the technique for amino - acid encoding used in the paper by Martin & Abhinandan 2010.
+    The amino acids were encoded in 4d vectors for neural network input preparation.The four features calculated were:
+        # 1. total number of side-chain atoms
+        # 2. number of side-chain atoms in shortest path from Calpha to most distal atom
+        # 3. eisenberg consensus hydrophobicity
+        # 4. charge (histidine was assigned +0.5)
+
+    Version:    V2.0
+    Date:       10.04.21
+    Copyright:  (c) UCL, Prof. Andrew C. R. Martin 1994-2021
+
+    17.03.2021  Original   By: Lilian Denzler
+    10.04.2021  V2.0       By: VAB
+    """
+
     columns = ['code', "res_charge", "res_sc_nr", "res_compactness", "res_hydrophob"]
     seq_df = pd.DataFrame(columns=columns)
+
+    # Iterate through all rows in the datatable as sets of tuples
     for row in table.itertuples():
         seq = row[2]
         for res in seq:
@@ -75,7 +125,6 @@ def encode(table):
     return seq_df
 
 
-# *************************************************************************
 def nr_side_chain_atoms(resi):
     # 1. total number of side-chain atoms
     nr_side_chain_atoms_dic = {'A': 1, 'R': 7, "N": 4, "D": 4, "C": 2, "Q": 5, "E": 5, "G": 0, "H": 6, "I": 4,
@@ -116,6 +165,19 @@ def charge(resi):
 
 # *************************************************************************
 def combine_by_pdb_code(table):
+    """Take all individual residue identities for a pdb file and combine them into a single sequence for
+    each individual pdb
+
+    Return: seq_df      --- Dataframe containing the pdb code and the sequence of VHVL residues for each pdb
+    e.g.
+        code        residue
+0     12E8_1  QPGPLFYELVKYQ
+1     12E8_2  QPGPLFYELVKYQ
+2     15C8_1  QPGPLYYELDKYQ
+
+    10.04.2021  Original   By: VAB
+    """
+
     col = ['code', 'encoded_res']
     itable = []
     for row in table.itertuples():
@@ -140,15 +202,17 @@ def combine_by_pdb_code(table):
 
     temp_df = pd.DataFrame(data=itable, columns=col)
 
-    # combine all of the encoded residues for a specific pdb file into a single row
+    # Combine all of the encoded residues for a specific pdb file into a single row
     enc_df = temp_df.groupby(temp_df['code']).aggregate(np.sum)
     enc_df = enc_df.reset_index()
-    enc_df.reset_index()['encoded_res']
+    #enc_df.reset_index()['encoded_res']
 
-    # re-make pdb codes as a single column
+    # Re-make pdb codes as a single column
     pdb_code_df = pd.Series(enc_df.code, name='code')
 
-    #
+    # Split combined codes into separate fields with the position and parameter as the column name
+    # ('trash' column created because the adjustment above that corrects data removal
+    # ends up creating a blank column)
     res_df = pd.DataFrame(enc_df.encoded_res.str.split(', ').tolist(),
                       columns=['L38a', 'L38b', 'L38c', 'L38d', 'L40a', 'L40b', 'L40c', 'L40d',
                                'L41a', 'L41b', 'L41c', 'L41d', 'L44a', 'L44b', 'L44c', 'L44d',
@@ -157,14 +221,24 @@ def combine_by_pdb_code(table):
                                'H45a', 'H45b', 'H45c', 'H45d', 'H60a', 'H60b', 'H60c', 'H60d',
                                'H62a', 'H62b', 'H62c', 'H62d', 'H91a', 'H91b', 'H91c', 'H91d',
                                'H105a', 'H105b', 'H105c', 'H105d', 'trash'])
+
+    # Remove the blank column
     res_df = res_df.iloc[:, :-1]
 
+    # Add column containing pdb codes to the table of encoded residues
     encoded_df = pd.concat([pdb_code_df, res_df], axis=1)
-    return encoded_df
 
+    col2 = ['code', 'angle']
 
+    # Take the second input from the commandline (which will be the table of pdb codes and their packing angles)
+    if sys.argv[2] != '':
+        angle_file = pd.read_csv(sys.argv[2], usecols=col2)
+    # training_df = encoded_df.append([angle_file])
 
-
+    # Angle column will be added to the table of encoded residues and the table is sorted by code
+    # to make sure all the data is for the right pdb file
+    training_df = pd.merge(encoded_df, angle_file, how="right", on=["code"], sort=True)
+    return training_df
 
 
 # *************************************************************************
@@ -175,11 +249,11 @@ read_file = read_csv()
 # print(read_file)
 
 res_seq = make_res_seq(read_file)
-# print(res_seq)
+#print(res_seq)
 
 
 parameters = encode(res_seq)
 # print(parameters.groupby(['code']))
 
 results = combine_by_pdb_code(parameters)
-results.to_csv('things.csv', index=False)
+# results.to_csv('things.csv', index=False)
