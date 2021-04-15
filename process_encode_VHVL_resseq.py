@@ -255,4 +255,4 @@ parameters = encode(res_seq)
 # print(parameters.groupby(['code']))
 
 results = combine_by_pdb_code(parameters)
-results.to_csv('things.csv', index=False)
+results.to_csv('VHVL_res_and_angles.csv', index=False)
