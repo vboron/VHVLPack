@@ -57,6 +57,7 @@ def make_res_seq(rfile):
     """Take all individual residue identities for a pdb file and combine them into a single sequence for
     each individual pdb
 
+    Input:  rfile       --- Dataframe containing residue identities for VHVL region
     Return: seq_df      --- Dataframe containing the pdb code and the sequence of VHVL residues for each pdb
     e.g.
         code        residue
@@ -168,12 +169,12 @@ def combine_by_pdb_code(table):
     """Take all individual residue identities for a pdb file and combine them into a single sequence for
     each individual pdb
 
-    Return: seq_df      --- Dataframe containing the pdb code and the sequence of VHVL residues for each pdb
+    Input:  table            --- Data frame containing the residue sequence for each pdb
+    Return: training_df      --- Dataframe containing the pdb code, all encoded residues and the packing angle
     e.g.
-        code        residue
-0     12E8_1  QPGPLFYELVKYQ
-1     12E8_2  QPGPLFYELVKYQ
-2     15C8_1  QPGPLYYELDKYQ
+        code L38a L38b L38c   L38d L40a  ...  H91d H105a H105b H105c  H105d angle
+0     12E8_1    0    5    4  -0.69    0  ...  0.02     0     5     4  -0.69 -54.9
+1     12E8_2    0    5    4  -0.69    0  ...  0.02     0     5     4  -0.69 -48.5
 
     10.04.2021  Original   By: VAB
     """
@@ -205,7 +206,6 @@ def combine_by_pdb_code(table):
     # Combine all of the encoded residues for a specific pdb file into a single row
     enc_df = temp_df.groupby(temp_df['code']).aggregate(np.sum)
     enc_df = enc_df.reset_index()
-    #enc_df.reset_index()['encoded_res']
 
     # Re-make pdb codes as a single column
     pdb_code_df = pd.Series(enc_df.code, name='code')
@@ -233,7 +233,6 @@ def combine_by_pdb_code(table):
     # Take the second input from the commandline (which will be the table of pdb codes and their packing angles)
     if sys.argv[2] != '':
         angle_file = pd.read_csv(sys.argv[2], usecols=col2)
-    # training_df = encoded_df.append([angle_file])
 
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file
@@ -256,4 +255,4 @@ parameters = encode(res_seq)
 # print(parameters.groupby(['code']))
 
 results = combine_by_pdb_code(parameters)
-# results.to_csv('things.csv', index=False)
+results.to_csv('things.csv', index=False)
