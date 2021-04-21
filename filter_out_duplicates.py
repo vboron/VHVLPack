@@ -48,9 +48,16 @@ def remove_duplicates():
     if sys.argv[1] != '':
         res_file = pd.read_csv(sys.argv[1], usecols=col1)
 
+    # removes any lines that don't contain angles
+    res_file = res_file[res_file['angle'].str.contains('Packing angle') == False]
+
+    # makes the code column just the pdb code, so that all versions can be combined
     res_file['code'] = res_file['code'].str[:5]
 
+    # angle needs to be converted to a float to be averaged
+    res_file['angle'] = res_file['angle'].astype(float)
     aggregation_func = {'angle': 'mean'}
+
     seq_df = res_file.groupby(['code', 'L38a', 'L38b', 'L38c', 'L38d', 'L38e', 'L40a', 'L40b', 'L40c', 'L40d', 'L40e',
                                'L41a', 'L41b', 'L41c', 'L41d', 'L41e', 'L44a', 'L44b', 'L44c', 'L44d', 'L44e',
                                'L46a', 'L46b', 'L46c', 'L46d', 'L46e', 'L87a', 'L87b', 'L87c', 'L87d', 'L87e',
