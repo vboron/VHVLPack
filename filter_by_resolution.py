@@ -105,7 +105,7 @@ def sort_reso(dictionary):
     """
 
     # take the max resolution value from commandline or use 3Å
-    if sys.argv[2] == '':
+    if len(sys.argv) < 3:
         max_reso = 3
     else:
         max_reso = sys.argv[2]
@@ -116,9 +116,19 @@ def sort_reso(dictionary):
             resolution = float(reso)
             if resolution < float(max_reso):
 
+                # find current directory and make a new file in it
+                cwd = os.getcwd()
+                new_directory = 'good_reso_pdbs'
+                path = os.path.join(cwd, new_directory)
+                try:
+                    os.mkdir(path)
+                except OSError:
+                    print("Creation of the directory %s failed" % path)
+                else:
+                    print("Successfully created the directory %s " % path)
+
                 # Make a copy of the file and put it into the second directory
-                shutil.copy('/Users/veronicaboron/Desktop/git/VH_VL_Pack/LH_Combined_Chothia/{}.pdb'.format(pdb_code),
-                            '/Users/veronicaboron/Desktop/git/VH_VL_Pack/Good_reso')
+                shutil.copy(os.path.join(sys.argv[1], '{}.pdb'.format(pdb_code)), path)
     return
 
 
