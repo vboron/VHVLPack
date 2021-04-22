@@ -55,10 +55,20 @@ def read_directory_for_pdb_files(pdb_direct):
     # Creates an empty list, then iterates over all files in the directory called from the
     # commandline. Adds all these .pdb files to the list.
     files = []
+    xray_files = []
+
     for file in os.listdir(pdb_direct):
         if file.endswith(".pdb") or file.endswith(".ent"):
             files.append('{}/{}'.format(pdb_direct, file))
-    return files
+
+    for structure_file in files:
+        with open(structure_file) as text_file:
+
+            # Search for lines that contain 'REMARK 950 RESOLUTION' and add to reso_lines list
+            for line in text_file.read().split('\n'):
+                if str(line).strip().startswith('REMARK 950 METHOD     X-ray'):
+                    xray_files.append(structure_file)
+    return xray_files
 
 
 # *************************************************************************
@@ -77,7 +87,7 @@ def read_pdbfiles_as_lines(files):
 
     for structure_file in files:
         reso_lines = []
-        with open(structure_file, "r") as text_file:
+        with open(structure_file) as text_file:
 
             # Remove the path and the extension from the name of the PDB file
             structure_file = structure_file.replace('{}/'.format(pdb_directory), '')
@@ -88,8 +98,8 @@ def read_pdbfiles_as_lines(files):
                 if str(line).strip().startswith('REMARK 950 RESOLUTION'):
                     reso_lines.append(line[22:])
 
-        # Associate the name of the file with the relevant lines in a dictionary
-        pdb_dict[structure_file] = reso_lines
+            # Associate the name of the file with the relevant lines in a dictionary
+            pdb_dict[structure_file] = reso_lines
 
     return pdb_dict
 
@@ -104,28 +114,28 @@ def sort_reso(dictionary):
 
     """
 
-    # take the max resolution value from commandline or use 3Å
+    # take the max resolution value from commandline or use 5Å
     if len(sys.argv) < 3:
-        max_reso = 3
+        max_reso = 5
     else:
         max_reso = sys.argv[2]
+
+    # find current directory and make a new file in it
+    cwd = os.getcwd()
+    new_directory = 'xray_{}A_pdbs'.format(max_reso)
+    path = os.path.join(cwd, new_directory)
+    try:
+        os.mkdir(path)
+    except OSError:
+        print("Creation of the directory %s failed" % path)
+    else:
+        print("Successfully created the directory %s " % path)
 
     for key, value in dictionary.items():
         pdb_code = key
         for reso in value:
             resolution = float(reso)
             if resolution < float(max_reso):
-
-                # find current directory and make a new file in it
-                cwd = os.getcwd()
-                new_directory = 'good_reso_pdbs'
-                path = os.path.join(cwd, new_directory)
-                try:
-                    os.mkdir(path)
-                except OSError:
-                    print("Creation of the directory %s failed" % path)
-                else:
-                    print("Successfully created the directory %s " % path)
 
                 # Make a copy of the file and put it into the second directory
                 shutil.copy(os.path.join(sys.argv[1], '{}.pdb'.format(pdb_code)), path)
