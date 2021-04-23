@@ -237,6 +237,10 @@ def combine_by_pdb_code(table):
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file
     training_df = pd.merge(encoded_df, angle_file, how="right", on=["code"], sort=True)
+    nan_value = float('NaN')
+    training_df.replace('', nan_value, inplace=True)
+    training_df.dropna(axis=0, how='any', inplace=True)
+
     return training_df
 
 
