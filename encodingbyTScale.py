@@ -1,16 +1,16 @@
 #!/usr/bin/python3
 """
-Program:    process_encode_VHVL_resseq
-File:       process_encode_VHVL_resseq.py
+Program:    encodingbyTScale
+File:       encodingbyTScale.py
 
 Version:    V1.0
-Date:       09.03.2021
+Date:       15.04.2021
 Function:   Encode VH/VL packing amino acids into 4d vectors for machine learning.
 
 Description:
 ============
-Program uses the residue identities for VH/VL relevant residues and encodes them using 4 vectors (hydrophobicity,
-side chain size, charge, and compactness) then appends the packing angle to produce a data table:
+Program uses the residue identities for VH/VL relevant residues and encodes them using 5 vectors (T-Scale)
+then appends the packing angle to produce a data table:
 e.g.
 
 ------------------------------------------------
@@ -99,7 +99,7 @@ def encode(table):
        10.04.2021  Original   By: VAB
        """
 
-    columns = ['code', "res_charge", "res_sc_nr", "res_compactness", "res_hydrophob"]
+    columns = ['code', 'T1', 'T2', 'T3', 'T4', 'T5']
     seq_df = pd.DataFrame(columns=columns)
 
     # Iterate through all rows in the datatable as sets of tuples
@@ -107,53 +107,61 @@ def encode(table):
         seq = row[2]
         for res in seq:
             code = row[1]
-            charge_of_res = charge(res)
-            hydrophobicity_res = hydophobicity(res)
-            compactness_res = compactness(res)
-            nr_side_chain_atoms_res = nr_side_chain_atoms(res)
+            t1_res = t1(res)
+            t2_res = t2(res)
+            t3_res = t3(res)
+            t4_res = t4(res)
+            t5_res = t5(res)
 
             seq_df = seq_df.append(
-                {'code': code, "res_charge": charge_of_res, "res_sc_nr": nr_side_chain_atoms_res,
-                 "res_compactness": compactness_res, "res_hydrophob": hydrophobicity_res}, ignore_index=True)
+                {'code': code, "T1": t1_res, "T2": t2_res,
+                 "T3": t3_res, "T4": t4_res, 'T5': t5_res}, ignore_index=True)
     return seq_df
 
 
-def nr_side_chain_atoms(resi):
-    # 1. total number of side-chain atoms
-    nr_side_chain_atoms_dic = {'A': 1, 'R': 7, "N": 4, "D": 4, "C": 2, "Q": 5, "E": 5, "G": 0, "H": 6, "I": 4,
-                               "L": 4, "K": 15, "M": 4, "F": 7, "P": 4,
-                               "S": 2, "T": 3, "W": 10, "Y": 8, "V": 3, "X": 10.375}  # "X": 10.375
-    nr_side_chain_atoms = nr_side_chain_atoms_dic[resi]
-    return nr_side_chain_atoms
+def t1(resi):
+    T1_dic = {'A': -9.11, 'R': 0.23, "N": -4.62, "D": -4.65, "C": -7.35, "Q": -3, "E": -3.03,
+               "G": -10.61, "H": -1.01, "I": -4.25,
+               "L": -4.38, "K": -2.59, "M": -4.08, "F": 0.49, "P": -5.11,
+               "S": -7.44, "T": -5.97, "W": 5.73, "Y": 2.08, "V": -5.87, "X": -3.73}  # "X" is average
+    T1 = T1_dic[resi]
+    return T1
 
 
-def compactness(resi):
-    # 2. number of side-chain atoms in shortest path from Calpha to most distal atom
-    compactness_dic = {'A': 1, 'R': 6, "N": 3, "D": 3, "C": 2, "Q": 4, "E": 4, "G": 0, "H": 4, "I": 3,
-                       "L": 3, "K": 6, "M": 4, "F": 5, "P": 2,
-                       "S": 2, "T": 2, "W": 6, "Y": 6, "V": 2, "X": 4.45}  # , "X": 4.45
-    compactness = compactness_dic[resi]
-    return compactness
+def t2(resi):
+
+    T2_dic = {'A': -1.63, 'R': 3.89, "N": 0.66, "D": 0.75, "C": -0.86, "Q": 1.72, "E": 1.82, "G": -1.21,
+              "H": -1.31, "I": -0.28, "L": 0.28, "K": 2.34, "M": 0.98, "F": -0.94, "P": -3.54,
+              "S": -0.65, "T": -0.62, "W": -2.67, "Y": -0.47, "V": -0.94, "X": -0.18}  # 'X' is average
+    T2 = T2_dic[resi]
+    return T2
 
 
-def hydophobicity(resi):
-    # 3. eisenberg consensus hydrophobicity
-    # Consensus values: Eisenberg, et al 'Faraday Symp.Chem.Soc'17(1982)109
-    Hydrophathy_index = {'A': 00.250, 'R': -1.800, "N": -0.640, "D": -0.720, "C": 00.040, "Q": -0.690, "E": -0.620,
-                         "G": 00.160, "H": -0.400, "I": 00.730, "L": 00.530, "K": -1.100, "M": 00.260, "F": 00.610,
-                         "P": -0.070,
-                         "S": -0.260, "T": -0.180, "W": 00.370, "Y": 00.020, "V": 00.540, "X": -0.5}  # -0.5 is average
+def t3(resi):
+    T3_dic = {'A': 0.63, 'R': -1.16, "N": 1.16, "D": 1.39, "C": -0.33, "Q": 0.28, "E": 0.51,
+              "G": -0.12, "H": 0.01, "I": -0.15, "L": -0.49, "K": -1.69, "M": -2.34, "F": -0.63, "P": -0.53,
+              "S": 0.68, "T": 1.11, "W": -0.07, "Y": 0.07, "V": 0.28, "X": -0.03}  # -0.03 is average
 
-    hydrophobicity = Hydrophathy_index[resi]
-    return hydrophobicity
+    T3 = T3_dic[resi]
+    return T3
 
 
-def charge(resi):
-    dic = {"D": -1, "K": 1, "R": 1, 'E': -1, 'H': 0.5}
-    charge = 0
-    if resi in dic:
-        charge += dic[resi]
-    return charge
+def t4(resi):
+    T4_dic = {'A': 1.04, 'R': -0.39, "N": -0.22, "D": -0.40, "C": 0.80, "Q": -0.39, "E": -0.58,
+              "G": 0.75, "H": -1.81, "I": 1.40, "L": 1.45, "K": 0.41, "M": 1.64, "F": -1.27, "P": -0.36,
+              "S": -0.17, "T": 0.31, "W": -1.96, "Y": -1.67, "V": 1.10, "X": -0.07}  # -0.07 is average
+
+    T4 = T4_dic[resi]
+    return T4
+
+
+def t5(resi):
+    T5_dic = {'A': 2.26, 'R': -0.06, "N": 0.93, "D": 1.05, "C": 0.98, "Q": 0.33, "E": 0.43,
+              "G": 3.25, "H": -0.21, "I": -0.21, "L": 0.02, "K": -0.21, "M": -0.79, "F": -0.44, "P": -0.29,
+              "S": 1.58, "T": 0.95, "W": -0.54, "Y": -0.35, "V": 0.48, "X": 0.35}  # 0.35 is average
+
+    T5 = T5_dic[resi]
+    return T5
 
 
 # *************************************************************************
@@ -175,21 +183,15 @@ def combine_by_pdb_code(table):
     itable = []
     for row in table.itertuples():
         code = row[1]
-
-        # charge
         a = row[2]
-
-        # side chain number
         b = row[3]
-
-        # compactness
         c = row[4]
-
-        # hydrophobicity
         d = row[5]
+        e = row[6]
+
 
         # the last comma and space had to be added to avoid deletion of of the first vector of each added residue
-        res_encoded = '{}, {}, {}, {}, '.format(a, b, c, d)
+        res_encoded = '{}, {}, {}, {}, {}, '.format(a, b, c, d, e)
         res = [code, res_encoded]
         itable.append(res)
 
@@ -206,13 +208,13 @@ def combine_by_pdb_code(table):
     # ('trash' column created because the adjustment above that corrects data removal
     # ends up creating a blank column)
     res_df = pd.DataFrame(enc_df.encoded_res.str.split(', ').tolist(),
-                      columns=['L38a', 'L38b', 'L38c', 'L38d', 'L40a', 'L40b', 'L40c', 'L40d',
-                               'L41a', 'L41b', 'L41c', 'L41d', 'L44a', 'L44b', 'L44c', 'L44d',
-                               'L46a', 'L46b', 'L46c', 'L46d', 'L87a', 'L87b', 'L87c', 'L87d',
-                               'H33a', 'H33b', 'H33c', 'H33d', 'H42a', 'H42b', 'H42c', 'H42d',
-                               'H45a', 'H45b', 'H45c', 'H45d', 'H60a', 'H60b', 'H60c', 'H60d',
-                               'H62a', 'H62b', 'H62c', 'H62d', 'H91a', 'H91b', 'H91c', 'H91d',
-                               'H105a', 'H105b', 'H105c', 'H105d', 'trash'])
+                      columns=['L38a', 'L38b', 'L38c', 'L38d', 'L38e', 'L40a', 'L40b', 'L40c', 'L40d', 'L40e',
+                               'L41a', 'L41b', 'L41c', 'L41d', 'L41e', 'L44a', 'L44b', 'L44c', 'L44d', 'L44e',
+                               'L46a', 'L46b', 'L46c', 'L46d', 'L46e', 'L87a', 'L87b', 'L87c', 'L87d', 'L87e',
+                               'H33a', 'H33b', 'H33c', 'H33d', 'H33e', 'H42a', 'H42b', 'H42c', 'H42d', 'H42e',
+                               'H45a', 'H45b', 'H45c', 'H45d', 'H45e', 'H60a', 'H60b', 'H60c', 'H60d', 'H60e',
+                               'H62a', 'H62b', 'H62c', 'H62d', 'H62e', 'H91a', 'H91b', 'H91c', 'H91d', 'H91e',
+                               'H105a', 'H105b', 'H105c', 'H105d', 'H105e', 'trash'])
 
     # Remove the blank column
     res_df = res_df.iloc[:, :-1]
@@ -229,6 +231,10 @@ def combine_by_pdb_code(table):
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file
     training_df = pd.merge(encoded_df, angle_file, how="right", on=["code"], sort=True)
+    nan_value = float('NaN')
+    training_df.replace('', nan_value, inplace=True)
+    training_df.dropna(axis=0, how='any', inplace=True)
+
     return training_df
 
 
@@ -244,7 +250,7 @@ res_seq = make_res_seq(read_file)
 
 
 parameters = encode(res_seq)
-# print(parameters.groupby(['code']))
+#print(parameters)
 
 results = combine_by_pdb_code(parameters)
-results.to_csv('VHVLres_and_angles.csv', index=False)
+results.to_csv('VHVLres_and_angles_t.csv', index=False)
