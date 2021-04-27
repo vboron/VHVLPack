@@ -231,7 +231,7 @@ def combine_by_pdb_code(table):
 
 
         # the last comma and space had to be added to avoid deletion of of the first vector of each added residue
-        res_encoded = '{}, {}, {}, {}, {}, {}, {}, {}, {}'.format(a, b, c, d, e, f, g, h, i)
+        res_encoded = '{}, {}, {}, {}, {}, {}, {}, {}, {}, '.format(a, b, c, d, e, f, g, h, i)
         res = [code, res_encoded]
         itable.append(res)
 
@@ -291,10 +291,10 @@ def combine_by_pdb_code(table):
 # *************************************************************************
 
 read_file = read_csv()
-# print(read_file)
+#print(read_file)
 
 res_seq = make_res_seq(read_file)
-#print(res_seq)
+# print(res_seq)
 
 encode = dual_enc(res_seq)
 
