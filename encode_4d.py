@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-Program:    process_encode_VHVL_resseq
-File:       process_encode_VHVL_resseq.py
+Program:    encode_4d
+File:       encode_4d.py
 
 Version:    V1.0
 Date:       09.03.2021
