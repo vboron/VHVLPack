@@ -67,6 +67,9 @@ def remove_duplicates():
                                'H105a', 'H105b', 'H105c', 'H105d']).aggregate(aggregation_func)
     seq_df = seq_df.reset_index()
     seq_df['code'] = seq_df['code'].str[:4]
+
+    seq_df[['code', 'angle']].to_csv('angles.csv', index=False)
+
     return seq_df
 
 
@@ -76,4 +79,4 @@ def remove_duplicates():
 
 results = remove_duplicates()
 
-results.to_csv('no_duplicates_TScaleData.csv', index=False)
+results.to_csv('no_duplicates_4dData.csv', index=False)
