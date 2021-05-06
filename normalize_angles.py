@@ -9,7 +9,8 @@ Function:   Normalize all angles to be between -1 and 1
 
 Description:
 ============
-Program takes the .csv files containing encoded residues and angles and normalizes the angle to be between -1 and 1
+Program takes the .csv files containing T-Scale encoded residues and angles and normalizes
+the angle to be between -1 and 1
 
 ------------------------------------------------
 """
@@ -45,6 +46,7 @@ def read_file():
     if sys.argv[1] != '':
         res_file = pd.read_csv(sys.argv[1], usecols=col1)
 
+    res_file = res_file[res_file['angle'].str.contains('Packing angle') == False]
     return res_file
 
 # *************************************************************************
