@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-Program:    filter_out_duplicates
-File:       filter_out_duplicates.py
+Program:    filter_dup_ts
+File:       filter_dup_ts.py
 
 Version:    V1.0
 Date:       17.04.2021
