@@ -81,5 +81,5 @@ def normalize(data):
 dataframe = read_file()
 
 results = normalize(dataframe)
-results.to_csv('norm_angles.csv', index=False)
+results.to_csv('norm_angles_ts.csv', index=False)
 
