@@ -143,7 +143,7 @@ def convert_to_csv(angles):
         # lines are split into objects in the line by the ':' and assigned variable names
         pdb_name = (line.split(':')[0]).strip()
         angle = (line.split(':')[1]).strip()
-        angle_info = [pdb_name, '{:.1f}'.format(float(angle))]
+        angle_info = [pdb_name, angle]
         table.append(angle_info)
 
     # make table that will contain the pdb and the angle in a csv format
