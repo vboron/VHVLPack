@@ -30,17 +30,16 @@ sys.path.append('./CDRH3lib')
 sys.path.append('~/sync_project/WWW/CDRH3loop')
 import pandas as pd
 import numpy as np
-
-
-
 # *************************************************************************
+
+
 def read_csv():
     """Read the file containing pdb id and the VHVL residue identity
 
-        Return: res_file      --- Data file with residue identities read by column names
+    Return: res_file      --- Data file with residue identities read by column names
 
-        15.03.2021  Original   By: VAB
-        """
+    15.03.2021  Original   By: VAB
+    """
 
     # The column names contained in the .csv file
     col1 = ['code', 'L/H position', 'residue']
