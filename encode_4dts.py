@@ -25,9 +25,6 @@ code	L38a	L38b	L38c	L38d	L40a	...     angle
 
 # sys to take args from commandline, os for reading directory, pandas for making dataframes
 import sys
-sys.path.append('/serv/www/html_lilian/libs')
-sys.path.append('./CDRH3lib')
-sys.path.append('~/sync_project/WWW/CDRH3loop')
 import pandas as pd
 import numpy as np
 # *************************************************************************
