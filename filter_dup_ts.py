@@ -20,9 +20,7 @@ residues is the same for a pdb, it'll average the angle to produce one angle per
 
 import pandas as pd
 import sys
-sys.path.append('/serv/www/html_lilian/libs')
-sys.path.append('./CDRH3lib')
-sys.path.append('~/sync_project/WWW/CDRH3loop')
+
 
 
 # *************************************************************************
