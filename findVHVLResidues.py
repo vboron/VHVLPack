@@ -229,4 +229,4 @@ init_table = prep_table(pdb_lines)
 VHVLtable = vh_vl_relevant_residues(init_table)
 
 # index= FALSE removes indexing column from the dataframe
-VHVLtable.to_csv('VHVL_res.csv', index=False)
+VHVLtable.to_csv('{}.csv'.format(sys.argv[2]), index=False)
