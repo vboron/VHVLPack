@@ -20,10 +20,6 @@ and angles and normalizes the angle to be between -1 and 1
 import pandas as pd
 import sys
 
-sys.path.append('/serv/www/html_lilian/libs')
-sys.path.append('./CDRH3lib')
-sys.path.append('~/sync_project/WWW/CDRH3loop')
-
 
 # *************************************************************************
 def read_file():
@@ -34,19 +30,22 @@ def read_file():
     01.05.2021  Original   By: VAB
     """
 
-    # The column names contained in the .csv file
-    col1 = ['code', 'L38a', 'L38b', 'L38c', 'L38d', 'L40a', 'L40b', 'L40c', 'L40d', 'L41a', 'L41b',
-            'L41c', 'L41d', 'L44a', 'L44b', 'L44c', 'L44d',
-            'L46a', 'L46b', 'L46c', 'L46d', 'L87a', 'L87b', 'L87c', 'L87d',
-            'H33a', 'H33b', 'H33c', 'H33d', 'H42a', 'H42b', 'H42c', 'H42d',
-            'H45a', 'H45b', 'H45c', 'H45d', 'H60a', 'H60b', 'H60c', 'H60d',
-            'H62a', 'H62b', 'H62c', 'H62d', 'H91a', 'H91b', 'H91c', 'H91d',
-            'H105a', 'H105b', 'H105c', 'H105d', 'angle']
+    # The column names contained in the .csv file imported from a .dat file
+    col1 = []
+    for i in open(sys.argv[2]).readlines():
+        i = i.strip('\n')
+        col1.append(i)
 
     # Take the commandline input as the directory, otherwise look in current directory
     if sys.argv[1] != '':
         res_file = pd.read_csv(sys.argv[1], usecols=col1)
-    res_file = res_file[res_file['angle'].str.contains('Packing angle') == False]
+
+    # remove lines that don't contain angles
+    try:
+        res_file = res_file[res_file['angle'].str.contains('Packing angle') == False]
+    except:
+        print('No missing angles.')
+
     return res_file
 
 
@@ -82,4 +81,4 @@ def normalize(data):
 dataframe = read_file()
 
 results = normalize(dataframe)
-results.to_csv('norm_angles_4d.csv', index=False)
+results.to_csv('norm_{}.csv'.format(sys.argv[3]), index=False)
