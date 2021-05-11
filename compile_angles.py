@@ -165,4 +165,4 @@ all_pdb_names = extract_pdb_name(pdb_directory)
 calculate_angles = run_abpackingangle(all_pdb_files, all_pdb_names)
 
 produce_csv = convert_to_csv(calculate_angles)
-produce_csv.to_csv('VHVL_Packing_Angles.csv', index=False)
+produce_csv.to_csv('{}.csv'.format(sys.argv[2]), index=False)
