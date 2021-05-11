@@ -1,22 +1,17 @@
 set -x
 
-# echo "Launching CompileVHVLPackingAngles.py"
-python3 CompileVHVLPackingAngles.py xray_5A_pdbs
+python3 compile_angles.py xray_5A_pdbs VHVL_ang
 
-# echo "Launching findVHVLResidues.py"
-python3 findVHVLResidues.py xray_5A_pdbs
+python3 find_VHVLres.py xray_5A_pdbs VH_res
 
-# echo "Launching encodingbyTScale.py"
-python3 encode_4d.py VHVL_Packing_Residues.csv VHVL_Packing_Angles.csv
+python3 encode_4d.py VHVL_res.csv VHVL_ang.csv 4d.dat 4d_enc
 
-# echo "Launching filter_duplicates_4d.py"
-python3 filter_duplicates_4d.py VHVL_res_and_angles_4d.csv
+python3 filter_dup.py 4d_enc.csv 4d.dat no_dup_4d
 
-# echo "Launching csv2arff"
-csv2arff -ni input.dat angle no_duplicates_4dData.csv > 4d.arff
+csv2arff -ni in4d.dat angle no_dup_4d.csv > 4d.arff
 
-python3 norm_4d.py no_duplicates_4dData.csv
+python3 normalize.py no_dup_4d.csv 4d.dat 4d
 
-csv2arff -ni input.dat angle norm_angles_4d.csv > norm4d.arff
+csv2arff -ni in4d.dat angle norm_4d.csv > norm4d.arff
 
 
