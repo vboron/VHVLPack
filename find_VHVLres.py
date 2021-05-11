@@ -18,6 +18,9 @@ e.g.
     5DMG_2          L41       G
     5DMG_2          L44       P
 
+Commandline inputs: 1) directory path for where the .pdb files are stored
+                    2) name of outputted .csv file
+
 --------------------------------------------------------------------------
 """
 # *************************************************************************
@@ -73,8 +76,8 @@ def read_directory_for_pdb_files(directory):
 
     Input:  directory    --- Directory of PBD files that will be processed for VH-VL packing angles
     Return: files        --- All PDB files in the directory
-    e.g. ['/Users/veronicaboron/Desktop/git/VH_VL_Pack/some_pdbs/5DMG_2.pdb',
-     '/Users/veronicaboron/Desktop/git/VH_VL_Pack/some_pdbs/5DQ9_3.pdb']
+    e.g. ['/Users/v/Desktop/git/VH_VL_Pack/some_pdbs/5DMG_2.pdb',
+     '/Users/v/Desktop/git/VH_VL_Pack/some_pdbs/5DQ9_3.pdb']
 
     15.03.2021  Original   By: VAB
     """
