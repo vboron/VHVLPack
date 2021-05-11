@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-Program:    encodingbyTScale
-File:       encodingbyTScale.py
+Program:    encode_ts
+File:       encode_ts.py
 
 Version:    V1.0
 Date:       15.04.2021
@@ -20,9 +20,6 @@ e.g.
 
 # sys to take args from commandline, os for reading directory, pandas for making dataframes
 import sys
-sys.path.append('/serv/www/html_lilian/libs')
-sys.path.append('./CDRH3lib')
-sys.path.append('~/sync_project/WWW/CDRH3loop')
 import pandas as pd
 import numpy as np
 
@@ -207,14 +204,17 @@ def combine_by_pdb_code(table):
     # Split combined codes into separate fields with the position and parameter as the column name
     # ('trash' column created because the adjustment above that corrects data removal
     # ends up creating a blank column)
+
+    col2 = []
+    for i in open(sys.argv[3]).readlines():
+        i = i.strip('\n')
+        col2.append(i)
+
+    col2.remove('code', 'angle').append('trash')
+    print(col2)
+
     res_df = pd.DataFrame(enc_df.encoded_res.str.split(', ').tolist(),
-                      columns=['L38a', 'L38b', 'L38c', 'L38d', 'L38e', 'L40a', 'L40b', 'L40c', 'L40d', 'L40e',
-                               'L41a', 'L41b', 'L41c', 'L41d', 'L41e', 'L44a', 'L44b', 'L44c', 'L44d', 'L44e',
-                               'L46a', 'L46b', 'L46c', 'L46d', 'L46e', 'L87a', 'L87b', 'L87c', 'L87d', 'L87e',
-                               'H33a', 'H33b', 'H33c', 'H33d', 'H33e', 'H42a', 'H42b', 'H42c', 'H42d', 'H42e',
-                               'H45a', 'H45b', 'H45c', 'H45d', 'H45e', 'H60a', 'H60b', 'H60c', 'H60d', 'H60e',
-                               'H62a', 'H62b', 'H62c', 'H62d', 'H62e', 'H91a', 'H91b', 'H91c', 'H91d', 'H91e',
-                               'H105a', 'H105b', 'H105c', 'H105d', 'H105e', 'trash'])
+                      columns=col2)
 
     # Remove the blank column
     res_df = res_df.iloc[:, :-1]
@@ -222,11 +222,11 @@ def combine_by_pdb_code(table):
     # Add column containing pdb codes to the table of encoded residues
     encoded_df = pd.concat([pdb_code_df, res_df], axis=1)
 
-    col2 = ['code', 'angle']
+    col3 = ['code', 'angle']
 
     # Take the second input from the commandline (which will be the table of pdb codes and their packing angles)
     if sys.argv[2] != '':
-        angle_file = pd.read_csv(sys.argv[2], usecols=col2)
+        angle_file = pd.read_csv(sys.argv[2], usecols=col3)
 
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file
