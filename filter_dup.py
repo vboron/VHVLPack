@@ -10,8 +10,11 @@ Function:   Combine duplicate pdb files and average angles.
 Description:
 ============
 The program will take take the output .csv file that contains encoded sequence and angles and if the sequence of
-residues is the same for a pdb, it'll average the angle to produce one angle per sequence.
+residues are the same for a pdb, it'll average the angle to produce one angle per sequence.
 
+Commandline input: 1) encoded .csv file
+                   2) .dat file with column names
+                   3) outtput name for no_dup_{}.csv
 --------------------------------------------------------------------------
 """
 
