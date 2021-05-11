@@ -253,4 +253,4 @@ parameters = encode(res_seq)
 #print(parameters)
 
 results = combine_by_pdb_code(parameters)
-results.to_csv('VHVLres_and_angles_t.csv', index=False)
+results.to_csv('{}.csv'.format(sys.argv[4]), index=False)
