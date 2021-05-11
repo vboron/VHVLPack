@@ -40,8 +40,11 @@ def read():
     if sys.argv[1] != '':
         res_file = pd.read_csv(sys.argv[1], usecols=col1)
 
-    # Removes all rows that are missing angles
-    res_file = res_file[res_file['angle'].str.contains('Packing angle') == False]
+    # remove lines that don't contain angles
+    try:
+        res_file = res_file[res_file['angle'].str.contains('Packing angle') == False]
+    except:
+        print('No missing angles.')
 
     return res_file
 
