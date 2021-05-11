@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-Program:    CompileVHVLPackingAngles
-File:       CompileVHVLPackingAngles.py
+Program:    compile_angles
+File:       compile_angles.py
 
 Version:    V1.1
 Date:       15.03.2021
