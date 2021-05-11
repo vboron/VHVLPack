@@ -18,6 +18,12 @@ code	L38a	L38b	L38c	L38d	L40a	...     angle
 12E8_2	0	       5	   4	-0.69	   0            -48.5
 15C8_1	0	       5	   4	-0.69	   0            -42.3
 1A0Q_1	0.5	       6	   4	-0.4	   0            -45.6
+
+Commandline inputs: 1) .csv file containing the identities of residues at the VHVL positions
+                    2) file containing the packing angles for each .pdb
+                    3) the .dat file that contains all of the names for the encoded columns e.g. code, L38a, L38b, ...,
+                    H105e, angle
+                    4) name of outputted .csv file
 ------------------------------------------------
 """
 # *************************************************************************
@@ -25,9 +31,6 @@ code	L38a	L38b	L38c	L38d	L40a	...     angle
 
 # sys to take args from commandline, os for reading directory, pandas for making dataframes
 import sys
-sys.path.append('/serv/www/html_lilian/libs')
-sys.path.append('./CDRH3lib')
-sys.path.append('~/sync_project/WWW/CDRH3loop')
 import pandas as pd
 import numpy as np
 
@@ -45,7 +48,7 @@ def read_csv():
     # The column names contained in the .csv file
     col1 = ['code', 'L/H position', 'residue']
 
-    # Take the commandline input as the directory, otherwise look in current directory
+    # Take the commandline input as the .csv file with L/H residue positions
     if sys.argv[1] != '':
         res_file = pd.read_csv(sys.argv[1], usecols=col1)
 
