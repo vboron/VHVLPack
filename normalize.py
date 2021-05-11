@@ -12,6 +12,10 @@ Description:
 Program takes the .csv files containing encoded residues (in 4d physical parameters)
 and angles and normalizes the angle to be between -1 and 1
 
+Commandline inputs: 1) .csv file with angles and encoded residues
+                    2) .dat file with column headers
+                    3) name of .csv file that will be outputted
+
 ------------------------------------------------
 """
 # *************************************************************************
