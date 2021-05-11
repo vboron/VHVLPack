@@ -16,6 +16,8 @@ e.g.
       pdb       angle
    6NOV_2  -44.016817
 
+Commandline inputs: 1) directory which contains .pdb files for processing
+                    2) name of outputted .csv file
 --------------------------------------------------------------------------
 """
 # *************************************************************************
