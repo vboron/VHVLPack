@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
-Program:    normalize_angles
-File:       normalize_angles.py
+Program:    normalize
+File:       normalize.py
 
 Version:    V1.0
 Date:       01.05.2021
