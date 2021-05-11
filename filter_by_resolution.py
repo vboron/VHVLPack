@@ -9,9 +9,11 @@ Function:   Find PDB files with a resolution of up to 'd'Å and then move them i
 
 Description:
 ============
-The program will take PDB files and take the ones that have a resolution up to a desired Å
+The program will look at PDB files and take the ones that have a resolution up to a desired Å
 and move them to a new directory.
 
+Commandline inputs: 1) directory of pdb files with full path
+                    2) maximum desired resolution in Å
 --------------------------------------------------------------------------
 """
 
