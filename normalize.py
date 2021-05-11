@@ -9,7 +9,7 @@ Function:   Normalize all angles to be between -1 and 1
 
 Description:
 ============
-Program takes the .csv files containing encoded residues (in 4d physical parameters)
+Program takes the .csv files containing encoded residues
 and angles and normalizes the angle to be between -1 and 1
 
 Commandline inputs: 1) .csv file with angles and encoded residues
