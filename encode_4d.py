@@ -213,14 +213,16 @@ def combine_by_pdb_code(table):
     # Split combined codes into separate fields with the position and parameter as the column name
     # ('trash' column created because the adjustment above that corrects data removal
     # ends up creating a blank column)
+    col2 = []
+    for i in open(sys.argv[3]).readlines():
+        i = i.strip('\n')
+        col2.append(i)
+
+    col2.remove('code', 'angle').append('trash')
+    print(col2)
+
     res_df = pd.DataFrame(enc_df.encoded_res.str.split(', ').tolist(),
-                      columns=['L38a', 'L38b', 'L38c', 'L38d', 'L40a', 'L40b', 'L40c', 'L40d',
-                               'L41a', 'L41b', 'L41c', 'L41d', 'L44a', 'L44b', 'L44c', 'L44d',
-                               'L46a', 'L46b', 'L46c', 'L46d', 'L87a', 'L87b', 'L87c', 'L87d',
-                               'H33a', 'H33b', 'H33c', 'H33d', 'H42a', 'H42b', 'H42c', 'H42d',
-                               'H45a', 'H45b', 'H45c', 'H45d', 'H60a', 'H60b', 'H60c', 'H60d',
-                               'H62a', 'H62b', 'H62c', 'H62d', 'H91a', 'H91b', 'H91c', 'H91d',
-                               'H105a', 'H105b', 'H105c', 'H105d', 'trash'])
+                          columns=col2)
 
     # Remove the blank column
     res_df = res_df.iloc[:, :-1]
@@ -228,11 +230,11 @@ def combine_by_pdb_code(table):
     # Add column containing pdb codes to the table of encoded residues
     encoded_df = pd.concat([pdb_code_df, res_df], axis=1)
 
-    col2 = ['code', 'angle']
+    col3 = ['code', 'angle']
 
     # Take the second input from the commandline (which will be the table of pdb codes and their packing angles)
     if sys.argv[2] != '':
-        angle_file = pd.read_csv(sys.argv[2], usecols=col2)
+        angle_file = pd.read_csv(sys.argv[2], usecols=col3)
 
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file
@@ -261,4 +263,4 @@ parameters = encode(res_seq)
 # print(parameters.groupby(['code']))
 
 results = combine_by_pdb_code(parameters)
-results.to_csv('VHVL_res_and_angles_4d.csv', index=False)
+results.to_csv('{}.csv'.format(sys.argv[4]), index=False)
