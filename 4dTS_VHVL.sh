@@ -2,7 +2,7 @@ set -x
 
 python3 compile_angles.py xray_5A_pdbs VHVL_ang
 
-python3 find_VHVLres.py xray_5A_pdbs VH_res
+python3 find_VHVLres.py xray_5A_pdbs VHVL_res
 
 python3 encode_4dts.py VHVL_res.csv VHVL_ang.csv 4dts.dat 4dts_enc
 
