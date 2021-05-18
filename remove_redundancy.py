@@ -12,6 +12,8 @@ Description:
 Program uses the encoded residues and angles in order to group all PDB files that are identical matches and returns
 a table with the first column being a list of all of the PDB codes, followed by the encoded residues and the angle.
 
+Commandline inputs: 1) .csv files of encoded residues with no duplicates
+                    2) .dat file with column headers
 ------------------------------------------------
 """
 # *************************************************************************
@@ -38,7 +40,7 @@ def remove_duplicates():
         i = i.strip('\n')
         col1.append(i)
 
-    # Take the commandline input as the directory, otherwise look in current directory
+    # Take the commandline input as encoded res file with angles, no duplicates
     if sys.argv[1] != '':
         res_file = pd.read_csv(sys.argv[1], usecols=col1)
 
@@ -72,4 +74,4 @@ def remove_duplicates():
 results = remove_duplicates()
 
 # export dataframe as a .csv file and don't include the line indices
-results.to_csv('no_red_ts.csv', index=False)
+results.to_csv('no_red_{}.csv'.format(sys.argv[3]), index=False)

@@ -150,7 +150,10 @@ def convert_to_csv(angles):
 
     # make table that will contain the pdb and the angle in a csv format
     atable = pd.DataFrame(data=table, columns=c)
-
+    try:
+        atable = atable[atable['angle'].str.contains('Packing angle') == False]
+    except:
+        print('No missing angles.')
     return atable
 
 

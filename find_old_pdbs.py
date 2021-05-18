@@ -54,7 +54,6 @@ def find_files(od, nd):
             for pdb in os.listdir(nd):
                 if item in str(pdb):
                     shutil.copy(os.path.join(sys.argv[2], '{}'.format(pdb)), path)
-
     return
 
 

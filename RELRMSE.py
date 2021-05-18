@@ -25,9 +25,6 @@ import numpy as np
 
 
 # *************************************************************************
-def open_csv():
-
-# *************************************************************************
 def calc_relemse(df):
     """Read the .csv for angles and take the RMSE from the commandline to calculate the relative RMSE.
     Equation used: RELRMSE = (RMSE*(n**(1/2)))/((sum (angle**2))**(1/2))
@@ -38,7 +35,7 @@ def calc_relemse(df):
     """
 
     # Take the rmse from the second commandline input and convert it into a float
-    rmse = float(sys.argv[2])
+    rmse = float(sys.argv[3])
 
     # Count the number of angles in the dataframe
     n = df['angle'].count()
@@ -71,11 +68,14 @@ def calc_relemse(df):
 # Main Program
 # *************************************************************************
 # The column names contained in the .csv file
-col1 = ['code', 'angle']
+col = []
+for i in open(sys.argv[2]).readlines():
+    i = i.strip('\n')
+    col.append(i)
 
 # Read the .csv files from the commandline and convert it into a dataframe
 if sys.argv[1] != '':
-    data = pd.read_csv(sys.argv[1], usecols=col1)
+    data = pd.read_csv(sys.argv[1], usecols=col)
 
 result = calc_relemse(data)
 print(result)

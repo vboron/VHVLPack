@@ -3,7 +3,7 @@ export WEKA=${HOME}/weka-3-8-3/
 export CLASSPATH="$WEKA/weka.jar"
 
 # Training option selection
-BASEPATH=$(pwd)
+BASEPATH=/home/veronica
 INPUTS=${BASEPATH}/in_ts.dat
 DATA=${BASEPATH}/xval_files
 CLASSIFIER=weka.classifiers.functions.MultilayerPerceptron
