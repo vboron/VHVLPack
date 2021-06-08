@@ -14,6 +14,7 @@ into test and train sets (where test sets contain a 10% of the data and the trai
 
 Commandline input: 1) encoded and redundancy reduced.csv file
                    2) .dat file with column names
+                   3) name of directory where split files will go
 --------------------------------------------------------------------------
 """
 # *************************************************************************
@@ -68,11 +69,11 @@ def make_group(df, size):
     17.05.2021  Original   By: VAB
     """
     try:
-        os.mkdir('xval_files')
+        os.mkdir(sys.argv[3])
     except:
         print('Directory not created.')
     cwd = os.getcwd()
-    path = '{}/xval_files/'.format(cwd)
+    path = '{}/{}/'.format(cwd, sys.argv[3])
     i = 1
     for row in df:
         if i <= 10:
