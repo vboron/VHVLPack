@@ -45,7 +45,7 @@ def single_pdb_code():
     if sys.argv[1] != '':
         res_file = pd.read_csv(sys.argv[1], usecols=col1)
 
-    res_file['code'] = res_file['code'].iloc[:5]
+    res_file['code'] = res_file['code'].str[:4]
 
     return res_file
 
