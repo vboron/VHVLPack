@@ -14,6 +14,7 @@ a table with the first column being a list of all of the PDB codes, followed by 
 
 Commandline inputs: 1) .csv files of encoded residues with no duplicates
                     2) .dat file with column headers
+                    3) no_red_{} name of file
 ------------------------------------------------
 """
 # *************************************************************************
