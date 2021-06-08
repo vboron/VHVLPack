@@ -14,7 +14,6 @@ into test and train sets (where test sets contain a 10% of the data and the trai
 
 Commandline input: 1) encoded and redundancy reduced.csv file
                    2) .dat file with column names
-                   3) outtput name for no_dup_{}.csv
 --------------------------------------------------------------------------
 """
 # *************************************************************************
