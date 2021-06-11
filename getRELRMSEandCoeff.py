@@ -13,8 +13,8 @@ This program find and averages the RELRMSE and Correlation coefficients across t
 for cross-validation.
 
 Commandline inputs: 1) directory
-                    2) .dat file with column headers
-                    3) final_no_red_{}.csv name of file
+                    2) .csv file with encoded residues
+                    3) .dat file with column headers
 ------------------------------------------------
 """
 # *************************************************************************
@@ -44,12 +44,12 @@ def get_directory():
 
 # *************************************************************************
 def find_data(direct):
-    """Return a list of all files that are PDB files in the called directory
+    """Look through test.log files and calculate the average correlation coefficient and RELRMSE
 
     Input:  direct       --- read directory
 
 
-    15.03.2021  Original   By: VAB
+    09.06.2021  Original   By: VAB
     """
 
     # Creates an empty list, then iterates over all files in the directory called from the
@@ -86,6 +86,7 @@ def find_data(direct):
     print('average correlation coefficient:', sum(coeff)/num_files)
     print('average RMSE:', sum(RMSE)/num_files)
 
+    # Call the python script that calculates RELRMSE from RMSE
     try:
         RELRMSE=subprocess.check_output(['python3', 'RELRMSE.py', sys.argv[2], sys.argv[3], str(sum(RMSE)/num_files)])
         print('RELRMSE:', RELRMSE.strip())
