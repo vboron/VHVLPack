@@ -63,7 +63,6 @@ def make_files(df):
     for row in df.iterrows():
         row_df = df.iloc[i:(i+1)]
         name = row_df['code'].values[0]
-        row_df['angle'] = row_df['angle'].replace(row_df['angle'].values, '?')
         row_df.to_csv('{}{}_{}.csv'.format(path, name, i), index=False)
         i += 1
     return

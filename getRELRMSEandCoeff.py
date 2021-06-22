@@ -61,27 +61,29 @@ def find_data(direct):
     for file in os.listdir(direct):
         if file.endswith('test.log'):
             files.append('{}/{}'.format(direct, file))
-            num_files = len(files)
+
+    num_files = len(files)
 
     for log_file in files:
-        with open(log_file) as text_file:
+        if 'test.log' in log_file:
+            with open(log_file) as text_file:
 
-            # Splits each file into lines by splitting at a newline character
-            for line in text_file.read().split('\n'):
+                # Splits each file into lines by splitting at a newline character
+                for line in text_file.read().split('\n'):
 
-                # Search for lines that contain 'Correlation coefficient' and add to list
-                if str(line).strip().startswith('Correlation coefficient'):
-                    line = line.replace(' ', '')
-                    line = line.split('ent')
-                    cc = float(line[1])
-                    coeff.append(cc)
+                    # Search for lines that contain 'Correlation coefficient' and add to list
+                    if str(line).strip().startswith('Correlation coefficient'):
+                        line = line.replace(' ', '')
+                        line = line.split('ent')
+                        cc = float(line[1])
+                        coeff.append(cc)
 
-                # Search for lines that contain 'Root mean squared error' and add to list
-                if str(line).strip().startswith('Root mean squared error'):
-                    line = line.replace(' ', '')
-                    line = line.split('error')
-                    rmse_value = float(line[1])
-                    RMSE.append(rmse_value)
+                    # Search for lines that contain 'Root mean squared error' and add to list
+                    if str(line).strip().startswith('Root mean squared error'):
+                        line = line.replace(' ', '')
+                        line = line.split('error')
+                        rmse_value = float(line[1])
+                        RMSE.append(rmse_value)
 
     print('average correlation coefficient:', sum(coeff)/num_files)
     print('average RMSE:', sum(RMSE)/num_files)

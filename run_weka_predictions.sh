@@ -28,7 +28,8 @@ for file in ${CSVFILES}; do
     done
 
 for file in ${ARFFFILES}; do
-    java $CLASSIFIER -v -T $file -p 0 -l VHVL.model >${DATA}/$file_test.log  
+    name=$(echo "$file" | cut -f 1 -d '.')
+    java $CLASSIFIER -v -T $file -p 0 -l VHVL.model > $name.log
 done
 
 
