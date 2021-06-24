@@ -221,7 +221,9 @@ def combine_by_pdb_code(table):
         i = i.strip('\n')
         col2.append(i)
 
-    col2.remove('code', 'angle').append('trash')
+    col2.remove('code')
+    col2.append('trash')
+    col2.remove('angle')
     print(col2)
 
     res_df = pd.DataFrame(enc_df.encoded_res.str.split(', ').tolist(),
