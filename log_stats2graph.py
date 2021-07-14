@@ -54,8 +54,9 @@ def stats_to_df():
                     pred = float(line_list[2])
                     angle = float(line_list[1])
                     error = float(line_list[3])
-                    this_data = [code, angle, pred, error]
-                    all_data.append(this_data)
+                    if not -48 < int(pred) < -42:
+                        this_data = [code, angle, pred, error]
+                        all_data.append(this_data)
 
 
     df = pd.DataFrame(data=all_data, columns=col)
