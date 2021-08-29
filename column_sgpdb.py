@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """
 Program:    column_sgpdb
 File:       column_sgpdb.py
@@ -9,8 +9,7 @@ Function:   Keep one pdb code in column
 
 Description:
 ============
-Program uses .csv file that has removed redundancy (all identical angle/sequence rows were combined) and only keeps
-one of the PDB names to accommodate csv2arff program.
+Program uses .csv file and alters the column to clean up the pdb name
 
 Commandline inputs: 1) .csv files of encoded residues with no duplicates
                     2) .dat file with column headers
@@ -57,4 +56,4 @@ def single_pdb_code():
 results = single_pdb_code()
 
 # export dataframe as a .csv file and don't include the line indices
-results.to_csv('final_no_red_{}.csv'.format(sys.argv[3]), index=False)
+results.to_csv('final_{}.csv'.format(sys.argv[3]), index=False)

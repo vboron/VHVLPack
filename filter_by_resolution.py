@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """
 Program:    filter_by_resolution
 File:       filter_by_resolution.py

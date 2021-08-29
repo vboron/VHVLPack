@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """
 Program:    compile_angles
 File:       compile_angles.py
