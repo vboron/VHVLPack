@@ -13,7 +13,8 @@ Program takes a .csv file containing the pdb code as 'code' and the non-normaliz
 RMSE calculated by program as the second input.
 ------------------------------------------------
 Commandline inputs: 1) file containing the angles for the PDB files
-                    2) the RMSE
+                    2) column names .dat
+                    3) the RMSE
 """
 
 
