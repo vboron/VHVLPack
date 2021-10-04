@@ -10,14 +10,14 @@
     The program takes 2 commandline inputs: directory of pdb files with full path, maximum desired resolution in Å. 
     The output is a directory that only contains .pdb files obtained by x-ray crys and higher than 5Å resolution.
 
-`filter_by_resolution.py /path/to/directory/ 5` 
+`./filter_by_resolution.py /path/to/directory/ 5` 
 
 3. The files in this directory are then run through a program which calculates the VH-VL packing angle 
     ([abpackingangle](https://github.com/ACRMGroup/abpackingangle)). The PDB code and calculated angle are then outputted 
     as a .csv file by the .py program. 
     Inputs: directory of PDBs, name of .csv file to be produced. 
 
-`compile_angles.py xray_5A_pdbs VHVL_ang`
+`./compile_angles.py xray_5A_pdbs VHVL_ang`
 
 4. Once we have the actual packing angles calculated, we will extract information that will be used to train our 
 neural network. A genetic anlorythm was used (as described: Abhinandan, K R, and Andrew C R Martin. 
@@ -27,7 +27,7 @@ significant in packing angle determination. This program extracts the identities
 a .csv along with their PDB code. 
 Inputs: directory of .pdb files, name of .csv output.
 
-`find_VHVLres.py xray_5A_pdbs VHVL_res`
+`./find_VHVLres.py xray_5A_pdbs VHVL_res`
 
 5. We create the inputs for the machine learning by encoding amino acids. In our pipeline we decided to use T-Scale, 
 (Tian, F.; Zhou, P.; Li, Z. T-scale as a novel vector of topological descriptors for amino acids and its application 
@@ -36,13 +36,13 @@ vectors.
 Inputs: the .csv files containing the amino acid identities, the calculated angles, a .dat file that
 contains the column names that will be used to create the output, and a name for the output.
 
-`encode_ts.py VHVL_res.csv VHVL_ang.csv ts.dat ts_enc`
+`./encode_ts.py VHVL_res.csv VHVL_ang.csv ts.dat ts_enc`
 
 6. We will process the .csv file of these encoded residues. The program will average angles if the PDB code and the 
 amnio acid identities are identical, to remove repeats that come from the same PDB. 
 Inputs: encoded .csv file, .dat file containing column names, output name.
 
-`filter_dup.py ts_enc.csv ts.dat ts`
+`./filter_dup.py ts_enc.csv ts.dat ts`
 
 7. Convert the .csv file into an .arff file that Weka (machine learning framework) uses. 
 ([csv2arff](https://github.com/AndrewCRMartin/bioscripts/blob/master/csv2arff.pl))
@@ -53,11 +53,11 @@ Input: column names (excluding output, i.e. angle), specify output (i.e. angle),
 8. Split the .csv file with no duplicates individual files, where each line (PDB) becomes a separate file. 
 (This is to prepare files for testing.)
 
-`lines2files.py no_dup_ts.csv ts.dat /where/these/files/will/go`
+`./lines2files.py no_dup_ts.csv ts.dat /where/these/files/will/go`
 
 9. All the newly made individual files will now be converted into arff files.
 
-`direct_csv2arff.py directory_where_files_are in_ts.dat`
+`./direct_csv2arff.py directory_where_files_are in_ts.dat`
 
 **OR**
 
