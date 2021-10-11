@@ -64,7 +64,7 @@ Input: column names (excluding output, i.e. angle), specify output (i.e. angle),
 7, 8, 9 & 10. All these steps can be done in a shell script, and then calls Weka, which is installed in-path. The
 number of hidden layers can be adjusted in this script and multiple models can be produced.
 
-```
+```bash
 export WEKA=/usr/local/apps/weka-3-8-3
 export CLASSPATH=$WEKA/weka.jar
 
@@ -119,7 +119,7 @@ This data is then plotted to show predicted vs. actual values, with the outliers
 RELRMSEs/lines of best fit being included for both the full dataset and the outliers. 
 (We automate plotting data for all hidden layers we tested by using a shell script).
 
-```
+```bash
 set -x
 
 for ((i=30;i<=40;i++)); do
