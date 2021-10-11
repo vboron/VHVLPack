@@ -1,0 +1,13 @@
+xray_*/
+xval_*/
+alphafold/
+original_*/
+LH_Combined_Chothia/
+full_decimals/
+new_data_in_af2data/
+SNNS/
+single_csv/
+
+*.csv
+*.arff
+*.swp
