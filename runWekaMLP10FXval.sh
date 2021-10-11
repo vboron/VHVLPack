@@ -1,22 +1,21 @@
 FOLDS=10
-export WEKA=${HOME}/weka-3-8-3/
-export CLASSPATH="$WEKA/weka.jar"
+export WEKA=/usr/local/apps/weka-3-8-3
+export CLASSPATH=$WEKA/weka.jar
 
 # Training option selection
-BASEPATH=/home/veronica
-INPUTS=${BASEPATH}/in_ts.dat
+BASEPATH=$(pwd)
 DATA=${BASEPATH}/xval_files
 CLASSIFIER=weka.classifiers.functions.MultilayerPerceptron
 
 for ((i=1;i<=FOLDS;i++)); do
-   csv2arff -v -norm -ni -skip $INPUTS dataset $DATA/train${i}.csv > VHVL_${i}_train.arff
-   csv2arff -v -norm -ni -skip $INPUTS dataset $DATA/test${i}.csv  > VHVL_${i}_test.arff
        echo "*** Training on set $i ***"
        # train
-       java $CLASSIFIER -attribute-importance -x 10 -t VHVL_${i}_train.arff -d VHVL_${i}_MP.model
+       java $CLASSIFIER -v -x 10 -t ${DATA}/VHVL_${i}_train.arff -d ${DATA}/VHVL_${i}_MP.model > ${DATA}/VHVL_${i}_MP_train.log
        # test
-       java $CLASSIFIER -T VHVL_${i}_test.arff -l VHVL_${i}_MP.model >VHVL_${i}.out   
+       java $CLASSIFIER -v -T ${DATA}/VHVL_${i}_test.arff -l ${DATA}/VHVL_${i}_MP.model >${DATA}/VHVL_${i}_MP_test.log  
 done
+
+r = `grep Correlation *test.log | awk '{print $3}'`
 
 # To apply the predictor to one or more examples where you wish to
 # make an actual prediction you create a .arff file containing the

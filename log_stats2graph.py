@@ -108,8 +108,8 @@ def stats_to_df():
     df_n.to_csv('normal_{}.csv'.format(sys.argv[2]), index=False)
 
     # Call the RELRMSE.py script which converts the RMSE into Relative RMSE
-    RELRMSE = subprocess.check_output(['python3', 'RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]), 'graph.dat', RMSE])
-    RELRMSE_o = subprocess.check_output(['python3', 'RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]),
+    RELRMSE = subprocess.check_output(['./RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]), 'graph.dat', RMSE])
+    RELRMSE_o = subprocess.check_output(['./RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]),
                                          'graph.dat', RMSE_o])
 
     return df_o, RELRMSE_o, df_n, df_a, RELRMSE
@@ -197,13 +197,13 @@ def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a):
     plt.text(s='-48 < Normal Values < -42', x=-61, y=-38, fontsize=8, color=c2)
 
     # Adds graph title
-    plt.suptitle('ML prediction of VHVL packing angle of outliers (HL = {})'.format(sys.argv[2]), fontsize=14)
+    plt.suptitle('ML prediction of VHVL packing angle (HL = {})'.format(sys.argv[2]), fontsize=14)
 
     plt.tight_layout()
 
     # Exports the figure as a .png file
-    plt.savefig('HL{}.png'.format(sys.argv[2]), format='png')
-    # plt.show()
+    plt.savefig('HL{}.tiff'.format(sys.argv[2]), format='tiff')
+    plt.show()
 
     return
 

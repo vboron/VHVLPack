@@ -14,6 +14,7 @@ and move them to a new directory.
 
 Commandline inputs: 1) directory of pdb files with full path
                     2) maximum desired resolution in Å
+		    3) name for the directory where the files will be
 --------------------------------------------------------------------------
 """
 
@@ -58,18 +59,20 @@ def read_directory_for_pdb_files(pdb_direct):
     # commandline. Adds all these .pdb files to the list.
     files = []
     xray_files = []
+    path = os.getcwd()
 
     for file in os.listdir(pdb_direct):
         if file.endswith(".pdb") or file.endswith(".ent"):
-            files.append('{}/{}'.format(pdb_direct, file))
+            files.append(os.path.join(path, sys.argv[1], file))
 
     for structure_file in files:
         with open(structure_file) as text_file:
 
             # Search for lines that contain 'REMARK 950 RESOLUTION' and add to reso_lines list
             for line in text_file.read().split('\n'):
-                if str(line).strip().startswith('REMARK 950 METHOD     X-ray'):
+                if str(line).startswith('REMARK 950 METHOD     X-RAY'):
                     xray_files.append(structure_file)
+
     return xray_files
 
 
@@ -124,7 +127,7 @@ def sort_reso(dictionary):
 
     # find current directory and make a new file in it
     cwd = os.getcwd()
-    new_directory = 'xray_{}A_pdbs'.format(max_reso)
+    new_directory = sys.argv[3]
     path = os.path.join(cwd, new_directory)
     try:
         os.mkdir(path)
