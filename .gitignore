@@ -11,3 +11,5 @@ single_csv/
 *.csv
 *.arff
 *.swp
+*.model
+*.log

@@ -64,6 +64,9 @@ def make_files(df):
         row_df = df.iloc[i:(i+1)]
         name = row_df['code'].values[0]
         row_df.to_csv('{}{}_{}.csv'.format(path, name, i), index=False)
+        #if i % 25 == 0:
+        #    print("{}/{}".format(i, len(df.iterrows())))
+        print(i)
         i += 1
     return
 

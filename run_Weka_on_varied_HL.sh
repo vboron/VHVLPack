@@ -1,4 +1,4 @@
-#set -x 
+# set -x 
 
 export WEKA=/usr/local/apps/weka-3-8-3
 export CLASSPATH=$WEKA/weka.jar
@@ -6,20 +6,20 @@ export CLASSPATH=$WEKA/weka.jar
 # Training option selection
 BASEPATH=$(pwd)
 DATA=${BASEPATH}/xray_5A_files_unique_to_af2data
-CSVFILES=${DATA}/'*.csv'
-ARFFFILES=${DATA}/'*.arff'
+CSVFILES=${DATA}'/'*.csv
+ARFFFILES=${DATA}'/'*.arff
 INPUTS=${BASEPATH}/in_ts.dat
 CLASSIFIER=weka.classifiers.functions.MultilayerPerceptron
 LAYERS=30
 
 # split lines into separate .csv files
-# ./lines2files.py no_dup_ts_af2.csv ts.dat xray_5A_pdbs
+# ./lines2files.py no_dup_ts_af2.csv ts.dat xray_5A_files_unique_to_af2data
 
 echo '*** Converting training set to arff ***'
 # csv2arff for train file
 csv2arff -v -ni $INPUTS angle ${BASEPATH}/no_dup_ts_5k.csv > af2_train_5Kfiles.arff
 
-for file in ${DATA}/'*csv'; do
+for file in ${CSVFILES}; do
 	echo '*** Converting test file' $file 'to .arff ***'
 	name=$(echo "$file" | cut -f 1 -d '.')
 	csv2arff -v -ni $INPUTS angle $file > $name.arff
