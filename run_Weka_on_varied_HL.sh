@@ -13,7 +13,7 @@ CLASSIFIER=weka.classifiers.functions.MultilayerPerceptron
 LAYERS=30
 
 # split lines into separate .csv files
-# ./lines2files.py no_dup_ts_af2.csv ts.dat xray_5A_files_unique_to_af2data
+./lines2files.py no_dup_ts_af2.csv ts.dat xray_5A_files_unique_to_af2data
 
 echo '*** Converting training set to arff ***'
 # csv2arff for train file
