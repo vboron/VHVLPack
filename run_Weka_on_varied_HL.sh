@@ -5,7 +5,7 @@ export CLASSPATH=$WEKA/weka.jar
 
 # Training option selection
 BASEPATH=$(pwd)
-DATA=${BASEPATH}/xray_5A_files_unique_to_af2data
+DATA=${BASEPATH}/clean_af2_new_files
 CSVFILES=${DATA}'/'*.csv
 ARFFFILES=${DATA}'/'*.arff
 INPUTS=${BASEPATH}/in_ts.dat
@@ -13,7 +13,7 @@ CLASSIFIER=weka.classifiers.functions.MultilayerPerceptron
 LAYERS=30
 
 # split lines into separate .csv files
-./lines2files.py no_dup_ts_af2.csv ts.dat xray_5A_files_unique_to_af2data
+./lines2files.py no_dup_ts_af2.csv ts.dat clean_af2_new_files
 
 echo '*** Converting training set to arff ***'
 # csv2arff for train file

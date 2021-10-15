@@ -29,23 +29,7 @@ import shutil
 
 
 # *************************************************************************
-def get_pdbdirectory():
-    """Read the directory name from the commandline argument
-
-    Return: pdb_direct      --- Directory of PBD files that will be processed
-
-    15.03.2021  Original   By: VAB
-    """
-
-    # Take the commandline input as the directory, otherwise look in current directory
-    if sys.argv[1] != '':
-        pdb_direct = sys.argv[1]
-
-    return pdb_direct
-
-
-# *************************************************************************
-def read_directory_for_pdb_files(pdb_direct):
+def find_xray_files():
     """Return a list of all files that are PDB files in the called directory
 
     Input:  pdb_direct   --- Directory of PBD files that will be processed
@@ -60,24 +44,25 @@ def read_directory_for_pdb_files(pdb_direct):
     files = []
     xray_files = []
     path = os.getcwd()
+    pdb_direct = sys.argv[1]
 
     for file in os.listdir(pdb_direct):
         if file.endswith(".pdb") or file.endswith(".ent"):
             files.append(os.path.join(path, sys.argv[1], file))
 
     for structure_file in files:
-        with open(structure_file) as text_file:
+        with open(structure_file, 'r') as text_file:
 
             # Search for lines that contain 'REMARK 950 RESOLUTION' and add to reso_lines list
-            for line in text_file.read().split('\n'):
-                if str(line).startswith('REMARK 950 METHOD     X-RAY'):
+            for line in text_file:
+                if str(line).startswith(' REMARK 950 METHOD     X-RAY'):
                     xray_files.append(structure_file)
 
     return xray_files
 
 
 # *************************************************************************
-def read_pdbfiles_as_lines(files):
+def read_pdbfiles_as_lines(xfiles):
     """Read PDB files as lines, then make a dictionary of the PDB code and the Å resolution
 
     Input:  files       --- Paths to all PDB files present in the directory
@@ -90,7 +75,7 @@ def read_pdbfiles_as_lines(files):
 
     pdb_dict = {}
 
-    for structure_file in files:
+    for structure_file in xfiles:
         reso_lines = []
         with open(structure_file) as text_file:
 
@@ -151,10 +136,8 @@ def sort_reso(dictionary):
 # *** Main program                                                      ***
 # *************************************************************************
 
-pdb_directory = get_pdbdirectory()
+x_ray_files = find_xray_files()
 
-all_pdb_files = read_directory_for_pdb_files(pdb_directory)
-
-pdb_lines = read_pdbfiles_as_lines(all_pdb_files)
+pdb_lines = read_pdbfiles_as_lines(x_ray_files)
 
 results = sort_reso(pdb_lines)

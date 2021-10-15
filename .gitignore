@@ -13,3 +13,4 @@ single_csv/
 *.swp
 *.model
 *.log
+*.pdb
