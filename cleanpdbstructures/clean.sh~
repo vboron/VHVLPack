@@ -1,8 +1,0 @@
-for file in *.pdb
-do
-    status=`checkpdb $file`
-    if [ $status == "BAD" ]
-    then
-        echo "$file is bad"
-    fi
-done
