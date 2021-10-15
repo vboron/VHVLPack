@@ -7,7 +7,7 @@ full_decimals/
 new_data_in_af2data/
 SNNS/
 single_csv/
-
+cleanpdbstructures
 *.csv
 *.arff
 *.swp
