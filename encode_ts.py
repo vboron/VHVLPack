@@ -186,7 +186,6 @@ def combine_by_pdb_code(table):
         d = row[5]
         e = row[6]
 
-
         # the last comma and space had to be added to avoid deletion of of the first vector of each added residue
         res_encoded = '{}, {}, {}, {}, {}, '.format(a, b, c, d, e)
         res = [code, res_encoded]

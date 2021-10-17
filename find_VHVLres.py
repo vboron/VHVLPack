@@ -167,7 +167,7 @@ def prep_table(dictionary):
     table = []
 
     # Assign column names for residue table
-    c = ['code', 'chain', "residue", 'number', 'L/H position']
+    c = ['code', 'chain', 'residue', 'number', 'L/H position']
 
     # Locate specific residue information
     for key, value in dictionary.items():
@@ -208,7 +208,12 @@ def vh_vl_relevant_residues(vtable):
     """
 
     # Look for rows that contain the specified residue locations
-    vtable = vtable[vtable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
+
+    # Incorrect, the following line also (erroneously) matched e.g. H1050
+    # vtable = vtable[vtable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
+
+    good_positions = ['L38', 'L40', 'L41', 'L44', 'L46', 'L87', 'H33', 'H42', 'H45', 'H60', 'H62', 'H91', 'H105']
+    vtable = vtable[vtable['L/H position'].isin(good_positions)]
 
     # Create a table of the residue data for the specific locations
     out_table = vtable.loc[:, ('code', 'L/H position', 'residue')]
