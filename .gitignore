@@ -8,6 +8,8 @@ new_data_in_af2data/
 SNNS/
 single_csv/
 cleanpdbstructures
+clean_unique_af2
+clean_LHChothia
 *.csv
 *.arff
 *.swp
