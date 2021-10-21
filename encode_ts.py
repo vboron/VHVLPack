@@ -13,6 +13,11 @@ Program uses the residue identities for VH/VL relevant residues and encodes them
 then appends the packing angle to produce a data table:
 e.g.
 
+
+Commandline inputs: 1) .csv file containing the residue identities for each position
+                    2) .csv with the calculated angle for each pdb
+                    3) .dat file containing the names for the encoding columns
+                    4) name for the final .csv file with encoded sequences
 ------------------------------------------------
 """
 # *************************************************************************
