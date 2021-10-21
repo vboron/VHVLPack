@@ -57,21 +57,21 @@ def stats_to_df():
     df_all.to_csv('all_{}.csv'.format(sys.argv[2]), index=False)
 
     # Calculate the Root Mean Square Error
-    sum_sqerror = float(df_a['sqerror'].sum())
-    average_error = sum_sqerror / int(df_a['code'].size)
+    sum_sqerror = float(df_all['sqerror'].sum())
+    average_error = sum_sqerror / int(df_all['code'].size)
     RMSE = str(math.sqrt(average_error))
     print('All RMSE:', RMSE)
 
-    df_norm = df_all[-48 <= df_all['pred'] <= -42]
-    df_n.to_csv('normal_{}.csv'.format(sys.argv[2]), index=False)
+    df_norm = df_all[df_all['pred'].between(-48, -42)]
+    df_norm.to_csv('normal_{}.csv'.format(sys.argv[2]), index=False)
 
-    df_outlier1 = df_all[df[all] < -48]
-    df_outlier2 = df_all[df[all] > -42]
+    df_outlier1 = df_all[df_all['pred'] < -48]
+    df_outlier2 = df_all[df_all['pred'] > -42]
     df_outliers = pd.concat([df_outlier1, df_outlier2], ignore_index=True)
     df_outliers.to_csv('outlier_{}.csv'.format(sys.argv[2]), index=False)
 
-    sum_sqerror_o = float(df_o['sqerror'].sum())
-    average_error_o = sum_sqerror_o/int(df_o['code'].size)
+    sum_sqerror_o = float(df_outliers['sqerror'].sum())
+    average_error_o = sum_sqerror_o/int(df_outliers['code'].size)
     RMSE_o = str(math.sqrt(average_error_o))
     print('Outlier RMSE:', RMSE_o)
 
@@ -112,25 +112,25 @@ def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a):
 
     # Angle values are converted into float format
     file_o['angle'] = file_o['angle'].apply(lambda x: float(x))
-    file_o['predicted'] = file_o['predicted'].apply(lambda y: float(y))
+    file_o['pred'] = file_o['pred'].apply(lambda y: float(y))
 
     # Angle values are designated axis names
     x1 = file_o['angle']
-    y1 = file_o['predicted']
+    y1 = file_o['pred']
 
     # Line of best fit is calculated
     m1, b1 = np.polyfit(x1, y1, 1)
     plt.plot(x1, m1 * x1 + b1, color=c3, linestyle='dashed', linewidth=1)
 
     file_n['angle'] = file_n['angle'].apply(lambda x: float(x))
-    file_n['predicted'] = file_n['predicted'].apply(lambda y: float(y))
+    file_n['pred'] = file_n['pred'].apply(lambda y: float(y))
     x2 = file_n['angle']
-    y2 = file_n['predicted']
+    y2 = file_n['pred']
 
     file_a['angle'] = file_a['angle'].apply(lambda x: float(x))
-    file_a['predicted'] = file_a['predicted'].apply(lambda y: float(y))
+    file_a['pred'] = file_a['pred'].apply(lambda y: float(y))
     x3 = file_a['angle']
-    y3 = file_a['predicted']
+    y3 = file_a['pred']
 
     m3, b3 = np.polyfit(x3, y3, 1)
     plt.plot(x3, m3 * x3 + b3, color=c4, linestyle='dashed', linewidth=1)
