@@ -49,8 +49,8 @@ def stats_to_df():
         col.append(i)
 
     # Open file where the snns results and actual values are
-    file  = pd.read(sys.argv[1], usecols=col)
-    
+    file  = pd.read_csv(sys.argv[1], usecols=col)
+
     # Make .csv files for all of the data, splitting it into files that have all the data, only outliers, and only the
     # data withing the 'norm'
     df_all = pd.read_csv(file, columns=col)
