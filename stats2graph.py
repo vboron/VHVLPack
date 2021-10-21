@@ -42,18 +42,18 @@ def stats_to_df():
 
         14.07.2021  Original   By: VAB
     """
+    # Open file where the snns results and actual values are
+    file  = sys.argv[1]
+
     # Specify column names
     col = []
     for i in open(sys.argv[3]).readlines():
         i = i.strip('\n')
         col.append(i)
 
-    # Open file where the snns results and actual values are
-    file  = pd.read_csv(sys.argv[1], usecols=col)
-
     # Make .csv files for all of the data, splitting it into files that have all the data, only outliers, and only the
     # data withing the 'norm'
-    df_all = pd.read_csv(file, columns=col)
+    df_all = pd.read_csv(file, usecols=col)
     df_all.to_csv('all_{}.csv'.format(sys.argv[2]), index=False)
 
     # Calculate the Root Mean Square Error
