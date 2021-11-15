@@ -17,3 +17,6 @@ clean_LHChothia/
 *.log
 *.pdb
 *.tiff
+*.txt
+test*
+*test
