@@ -14,7 +14,7 @@ residues are the same and so is the angle (rounded to 2dp), it'll combined the t
 
 Commandline input: 1) encoded .csv file
                    2) .dat file with column names
-                   3) outtput name for no_dup_{}.csv
+                   3) outtput name for NR2_{}.csv
 --------------------------------------------------------------------------
 """
 
@@ -76,4 +76,4 @@ def nr():
 
 results = nr()
 
-results.to_csv('NR3_{}.csv'.format(sys.argv[3]), index=False)
+results.to_csv('NR2_{}.csv'.format(sys.argv[3]), index=False)

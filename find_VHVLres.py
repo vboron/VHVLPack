@@ -31,42 +31,25 @@ import os
 import sys
 import pandas as pd
 
-
 # *************************************************************************
-def get_files():
-    """Return a list of all files that are PDB files in the called directory with full filepath
+def read_pdbfiles_as_lines():
+    """Read PDB files as lines, then make a dictionary of the PDB code and all the lines that start with 'ATOM'
 
-    Input:  directory    --- Directory of PBD files that will be processed for VH-VL packing angles
-    Return: files        --- All PDB files in the directory
-    e.g. ['/Users/v/Desktop/git/VH_VL_Pack/some_pdbs/5DMG_2.pdb',
-     '/Users/v/Desktop/git/VH_VL_Pack/some_pdbs/5DQ9_3.pdb']
+    Return: pdb_dict    --- Dictionary of PDB names with all of the lines containing atom details
+    e.g.
+    {'5DMG_2': ['ATOM   4615  N   GLN L   2     -34.713  12.044 -12.438  1.00 44.10         N  ',...'], '5DQ9_3':...'}
 
-    15.03.2021  Original   By: VAB
+    10.03.2021  Original   By: VAB
     """
-
     # Creates an empty list, then iterates over all files in the directory called from the
     # commandline. Adds all these .pdb  and .ent files to the list.
     files = []
-    pdb_names = []
+
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
 
             # Prepends the directory path to the front of the file name to create full filepath
             files.append('{}/{}'.format(directory, file))
-    return files
-
-
-# *************************************************************************
-def read_pdbfiles_as_lines(files):
-    """Read PDB files as lines, then make a dictionary of the PDB code and all the lines that start with 'ATOM'
-
-    Input:  files       --- Paths to all PDB files present in the directory
-    Return: pdb_dict    --- Dictionary of PDB names with all of the lines containing atom details
-    e.g.
-{'5DMG_2': ['ATOM   4615  N   GLN L   2     -34.713  12.044 -12.438  1.00 44.10         N  ',...'], '5DQ9_3':...'}
-
-    10.03.2021  Original   By: VAB
-    """
 
     pdb_dict = {}
 
@@ -188,9 +171,8 @@ def vh_vl_relevant_residues(vtable):
 # *************************************************************************
 
 directory = sys.argv[1]
-pdb_files = get_files()
 
-pdb_lines = read_pdbfiles_as_lines(pdb_files)
+pdb_lines = read_pdbfiles_as_lines()
 
 init_table = prep_table(pdb_lines)
 

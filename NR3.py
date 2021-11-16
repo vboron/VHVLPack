@@ -14,7 +14,7 @@ residues are the same, it'll average the angle to produce one angle per sequence
 
 Commandline input: 1) encoded .csv file
                    2) .dat file with column names
-                   3) outtput name for no_dup_{}.csv
+                   3) outtput name for NR3_{}.csv
 --------------------------------------------------------------------------
 """
 
