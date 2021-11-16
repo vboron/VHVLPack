@@ -33,45 +33,7 @@ import pandas as pd
 
 
 # *************************************************************************
-def get_pdbdirectory():
-    """Read the directory name from the commandline argument
-
-    Return: pdb_direct      --- Directory of PBD files that will be processed for VH-VL packing angles
-
-    15.03.2021  Original   By: VAB
-    """
-
-    # Take the commandline input as the directory, otherwise look in current directory
-    if sys.argv[1] != '':
-        pdb_direct = sys.argv[1]
-    else:
-        pdb_direct = '.'
-    return pdb_direct
-
-
-# *************************************************************************
-def extract_pdb_name(directory):
-    """Return a list of headers of PDB files in the called directory
-
-    Input:  directory    --- Directory of PBD files that will be processed for VH-VL packing angles
-    Return: pdb_names    --- Names of all PDB files in the directory
-    e.g. ['5DMG_2', '5DQ9_3']
-
-    18.03.2021  Original   By: VAB
-    """
-
-    # Iterates over all files in directory, checks if they are pdb files and returns the
-    # name without the extension into a list.
-    pdb_names = []
-    for pdb in os.listdir(directory):
-        if pdb.endswith(".pdb") or pdb.endswith(".ent"):
-            pdb_name = os.path.splitext(pdb)[0]
-            pdb_names.append(pdb_name)
-    return pdb_names
-
-
-# *************************************************************************
-def read_directory_for_pdb_files(directory):
+def get_files():
     """Return a list of all files that are PDB files in the called directory with full filepath
 
     Input:  directory    --- Directory of PBD files that will be processed for VH-VL packing angles
@@ -85,6 +47,7 @@ def read_directory_for_pdb_files(directory):
     # Creates an empty list, then iterates over all files in the directory called from the
     # commandline. Adds all these .pdb  and .ent files to the list.
     files = []
+    pdb_names = []
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
 
@@ -112,7 +75,7 @@ def read_pdbfiles_as_lines(files):
         with open(structure_file, "r") as text_file:
 
             # Remove the path and the extension from the name of the PDB file
-            structure_file = structure_file.replace('{}/'.format(pdb_directory), '')
+            structure_file = structure_file.replace('{}/'.format(directory), '')
             structure_file = structure_file[:-4]
 
             # Search for lines that contain 'ATOM' and add to atom_lines list
@@ -224,11 +187,8 @@ def vh_vl_relevant_residues(vtable):
 # *** Main program                                                      ***
 # *************************************************************************
 
-pdb_directory = get_pdbdirectory()
-
-generate_pdb_names = extract_pdb_name(pdb_directory)
-
-pdb_files = read_directory_for_pdb_files(pdb_directory)
+directory = sys.argv[1]
+pdb_files = get_files()
 
 pdb_lines = read_pdbfiles_as_lines(pdb_files)
 
