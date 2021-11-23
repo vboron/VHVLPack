@@ -52,19 +52,25 @@ def nr():
     # angles will be averaged
     aggregation_func = {'code': 'first', 'angle': 'mean'}
 
-    resfile['ang2dp']=resfile['angle'].round(decimals=3)
-    print(resfile)
-    # remove 'angle' and 'code' from columns header list, since program is not grouping by these
+    # make a column of rounded values for angle 
+    res_file['ang2dp']=res_file['angle'].round(decimals=2)
+  
+    # remove 'angle' and 'code' from columns header list, since program is not grouping by these, but add the rounded
+    # angle column
     col1.remove('angle')
     col1.remove('code')
-    col1.add('ang2dp')
+    col1.append('ang2dp')
 
+    # group by values now in col1 (residue identities and rounded angle to 2dp)
     seq_df = res_file.groupby(col1).aggregate(aggregation_func)
+
+    # grouping produces a "sup" column that is over the columns that were grouped by. This resets all column names
+    # to the same level
     seq_df = seq_df.reset_index()
-
+ 
+    # to get back our original column order
     cols=seq_df.columns.tolist()
-
-    cols = [cols[-2]]+ cols[:-2] + cols[-1:]
+    cols = [cols[-2]]+ cols[:-3] + cols[-1:]
     seq_df=seq_df[cols]
 
     return seq_df
