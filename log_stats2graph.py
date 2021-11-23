@@ -2,23 +2,27 @@
 """
 Program:    log_stats2graph
 File:       log_stats2graph.py
-Version:    V1.0
-Date:       06.14.2021
-Function:   Scatter graph of predicted vs. actual packing angles
+Version:    V2.0
+Date:       11.23.2021
+Function:   Produce scatter graph of predicted vs. actual packing angles and a file with the statistics for the run.
 Description:
 ============
-Program extracts lines of statistics from .log files produced using MLP through Weka framework and converts them into
+Program extracts lines of statistics from .log files produced using MLP through Weka framework and converts them into a
 dataframe that is then plotted. Outliers and normal values are plotted separetly, best fit lines and RELRMSE determined
-for outliers and the full dataset.
+for outliers and the full dataset. The program also calculates and then outputs (as a .csv) all relevant statistical
+data for the run (mean error, RMSE, RELRMSE, pearson's coefficient, and the best fit lines).
+
 Commandline input: 1) Directory where the .log files are
                    2) Number of Hidden layers
+                   3) Name for statistics .csv
 ------------------------------------------------
 """
+
 import os
 import sys
-import re
 import pandas as pd
 import numpy as np
+import re
 import math
 import subprocess
 import matplotlib.pyplot as plt
@@ -28,11 +32,14 @@ import matplotlib.pyplot as plt
 def stats_to_df():
     """ Read the directory and extract .log files. For each log file, extract the predicted and the actual angle, then
         calculate the RMSE. Call RELRMSE.py to calculate the RELRMSE from the RMSE. Export as a .csv file.
+
         Return: df_o      -- Dataframe containing predicted and actual angles for outliers
                 RELRMSE_o -- RELRMSE for outliers
                 df_n      -- Dataframe containing predicted and actual angles for normal range values
                 df_a      -- Dataframe containing predicted and actual angles for all values
                 RELRMSE   -- RELRMSE for whole dataset
+                stats_df  -- Dataframe containing the statistical information from the run 
+                
         14.07.2021  Original   By: VAB
     """
     # Take the directory where the .log files are from commandline
@@ -59,9 +66,9 @@ def stats_to_df():
                     line = re.sub(' +', ' ', line)
                     line = line.strip()
                     line_list = line.split(' ')
-                    name = log_file.split('/')
-                    name2 = name[1]
-                    code = name2[:-4]
+                    name = log_file.split('_')
+                    name = name[2].split('/')
+                    code = name[1]
                     pred = float(line_list[2])
                     angle = float(line_list[1])
                     error = float(line_list[3])
@@ -83,18 +90,18 @@ def stats_to_df():
 
     # Calculate the Root Mean Square Error
     df_a['sqerror'] = np.square(df_a['error'])
-    sum_sqerror = float(df_a['sqerror'].sum())
+    sum_sqerror = df_a['sqerror'].sum()
     average_error = sum_sqerror / int(df_a['code'].size)
-    RMSE = str(math.sqrt(average_error))
+    RMSE = math.sqrt(average_error)
     print('All RMSE:', RMSE)
 
     df_o = pd.DataFrame(data=out_data, columns=col)
     df_o.to_csv('outlier_{}.csv'.format(sys.argv[2]), index=False)
 
     df_o['sqerror'] = np.square(df_o['error'])
-    sum_sqerror_o = float(df_o['sqerror'].sum())
+    sum_sqerror_o = df_o['sqerror'].sum()
     average_error_o = sum_sqerror_o/int(df_o['code'].size)
-    RMSE_o = str(math.sqrt(average_error_o))
+    RMSE_o = math.sqrt(average_error_o)
     print('Outlier RMSE:', RMSE_o)
 
     df_n = pd.DataFrame(data=normal_data, columns=col)
@@ -105,23 +112,41 @@ def stats_to_df():
     # getResult = lambda rmse: subprocess.check_output(['./RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]), 'graph.dat', rmse ])
     # RELRMSE   = getResult(RMSE)
     # RELRMSE_o = getResult(RMSE_o)
-    RELRMSE   = subprocess.check_output(['./RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]), 'graph.dat', RMSE  ])
-    RELRMSE_o = subprocess.check_output(['./RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]), 'graph.dat', RMSE_o])
+    RELRMSE   = float(subprocess.check_output(['./RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]), 'graph.dat', str(RMSE)  ]))
+    RELRMSE_o = float(subprocess.check_output(['./RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]), 'graph.dat', str(RMSE_o)]))
 
-    return df_o, RELRMSE_o, df_n, df_a, RELRMSE
+    # gather all of the relevant run statistics into a single table
+    # .corr() returns the correlation between two columns 
+    pearson_a = df_a['angle'].corr(df_a['predicted'])
+    pearson_o = df_o['angle'].corr(df_o['predicted'])
+
+    mean_abs_err_a = df_a['error'].mean()
+    mean_abs_err_o = df_o['error'].mean()
+
+    stat_data = [pearson_a, pearson_o, mean_abs_err_a, mean_abs_err_o, RMSE, RMSE_o, RELRMSE, 
+    RELRMSE_o]
+    stat_col = ['pearson_a', 'pearson_o', 'mean_abs_err_a', 'mean_abs_err_o', 'RMSE', 'RMSE_o', 'RELRMSE_a', 
+    'RELRMSE_o']
+
+    stats_df = pd.DataFrame(data=[stat_data], columns=stat_col)
+
+    return df_o, RELRMSE_o, df_n, df_a, RELRMSE, stats_df
 
 
 # *************************************************************************
-def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a):
+def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a, stat_df):
     """ Create a scatter plot where outliers and normal range values are different colors. There is also a best fit
         line for outliers and for the whole dataset, as well as a y=x line for comparisons. Axis titles and max/mins
         are set. Text displays the legend, equation of best fit lines, and the RELRMSE for the whole set and the
         outliers. Graphs are exported as a .png.
+
         Inputs: file_o    -- Dataframe containing predicted and actual angles for outliers
                 RELRMSE_o -- RELRMSE for outliers
                 file_n    -- Dataframe containing predicted and actual angles for normal range values
                 file_a    -- Dataframe containing predicted and actual angles for all values
                 RELRMSE   -- RELRMSE for whole dataset
+                stat_df  -- Dataframe containing the statistical information from the run
+
         14.07.2021  Original   By: VAB
     """
     # Color of outlier points
@@ -195,6 +220,21 @@ def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a):
 
     plt.tight_layout()
 
+    # add best fit data to dataframe and export the dataframe
+    # add best fit lines to statistics dataframe
+    best_ft_a = 'y={:.3f}x+{:.3f}'.format(m3, b3)
+    best_ft_o = 'y={:.3f}x+{:.3f}'.format(m1, b1)
+
+    stat_df['best_ft_a'] = best_ft_a
+    stat_df['bf_slope_a'] = m3
+    stat_df['bf_int_a'] = b3
+    
+    stat_df['best_ft_o'] = best_ft_o
+    stat_df['bf_int_o'] = b1
+    stat_df['bf_slope_o'] = m1
+
+    stat_df.to_csv('run_stats_{}_HL{}.csv'.format(sys.argv[3], sys.argv[2]), index=False)
+
     # Exports the figure as a .png file
     plt.savefig('HL{}.tiff'.format(sys.argv[2]), format='tiff')
     plt.show()
@@ -204,6 +244,6 @@ def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a):
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
-frame_o, data_o, frame_n, frame_a, data_a = stats_to_df()
+frame_o, data_o, frame_n, frame_a, data_a, run_data = stats_to_df()
 
-plot = plot_scatter(frame_o, data_o, frame_n, frame_a, data_a)
+plot = plot_scatter(frame_o, data_o, frame_n, frame_a, data_a, run_data)
