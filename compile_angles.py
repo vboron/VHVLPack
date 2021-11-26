@@ -26,71 +26,12 @@ Commandline inputs: 1) directory which contains .pdb files for processing
 # sys to take args from commandline, os for reading directory, subprocess for running external program, pandas
 # for making dataframes
 import os
-import subprocess
 import sys
 import pandas as pd
-
-
-# *************************************************************************
-def get_pdbdirectory():
-    """Read the directory name from the commandline argument
-
-    Return: pdb_direct      --- Directory of PBD files that will be processed for VH-VL packing angles
-
-    15.03.2021  Original   By: VAB
-    """
-
-    # Take the commandline input as the directory, otherwise look in current directory
-    if sys.argv[1] != '':
-        pdb_direct = sys.argv[1]
-    else:
-        pdb_direct = '.'
-    return pdb_direct
-
+import subprocess
 
 # *************************************************************************
-def read_directory_for_pdb_files(pdb_direct):
-    """Return a list of all files that are PDB files in the called directory
-
-    Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
-    Return: files        --- All PDB files in the directory
-
-
-    15.03.2021  Original   By: VAB
-    """
-
-    # Creates an empty list, then iterates over all files in the directory called from the
-    # commandline. Adds all these .pdb files to the list.
-    files = []
-    for file in os.listdir(pdb_direct):
-        if file.endswith(".pdb") or file.endswith(".ent"):
-            files.append('{}/{}'.format(pdb_direct, file))
-    return files
-
-
-# *************************************************************************
-def extract_pdb_name(pdb_direct):
-    """Print a list of headers of PDB files in the called directory
-
-    Input:  pdb_direct   --- Directory of PBD files that will be processed for VH-VL packing angles
-    Return: pdb_name     --- Names of all PDB files in the directory
-
-
-    18.03.2021  Original   By: VAB
-    """
-
-    # Iternates over all files in directory, checks if they are pdb files and returns the
-    # name without the extension into a list.
-    pdb_names = []
-    for pdb in os.listdir(pdb_direct):
-        if pdb.endswith(".pdb") or pdb.endswith(".ent"):
-            pdb_name = os.path.splitext(pdb)[0]
-            pdb_names.append(pdb_name)
-    return pdb_names
-
-
-# *************************************************************************
-def run_abpackingangle(pdb_files, generate_pdb_names):
+def buid_table_of_angles():
     """Run 'abpackingangle' on all files in directory by using the header and .pdb outputs produced and output the
     pdb name followed by the VH-VL packing angle
     e.g.
@@ -107,67 +48,50 @@ def run_abpackingangle(pdb_files, generate_pdb_names):
 
         19.03.2021  Original   By: VAB
         """
+    directory = sys.argv[1]
     angle_results = []
+    pdb_files = []
 
+    for file in os.listdir(directory):
+        if file.endswith(".pdb") or file.endswith(".ent"):
+            code = file[:-4]
+            pdb_files.append((code, os.path.join(directory, file)))
+    
+    file_data = []
     # Takes the two lists made in files and combines them into lists of tuples that have
     # the name linked to the file.
-    for pdb_file, pdb_code in zip(pdb_files, generate_pdb_names):
+    for pdb_code, pdb_file in pdb_files:
 
         # Uses the subprocess module to call abpackingangle and inputs the headers/.pdb lists
         # into the program as arguments
         try:
-            angle_result = subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])
+            angle = (subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
 
         # bypasses any files that raise an error and the abpackingangle cannot run
         except subprocess.CalledProcessError:
             continue
         # Converts the output of the subprocess into normal string
-        angle_results.append(str(angle_result, 'utf-8'))
-    return angle_results
+        angle = angle.split()
+        angle = float(angle[1])
+        print(angle)
+        data = [code, angle]
+        file_data.append(data)
 
+    col = ['code', 'angle']
+    df_ang = pd.DataFrame(data=file_data, columns=col)
 
-# *************************************************************************
-def convert_to_csv(angles):
-    """Break the lines resulting from the abpackingangle function and convert them into a csv table
-
-        Input:  angles    --- lines containing the pdb name and the packing angle separated by ':'
-        Return: atable    --- dataframe containing all of the pdb codes and their packing angles
-            e.g.      pdb       angle
-                   6NOV_2  -44.016817
-
-        07.04.2021  Original   By: VAB
-        """
-
-    c = ['code', 'angle']
-    table = []
-
-    for line in angles:
-        # lines are split into objects in the line by the ':' and assigned variable names
-        pdb_name = (line.split(':')[0]).strip()
-        angle = (line.split(':')[1]).strip()
-        angle_info = [pdb_name, angle]
-        table.append(angle_info)
-
-    # make table that will contain the pdb and the angle in a csv format
-    atable = pd.DataFrame(data=table, columns=c)
     try:
-        atable = atable[atable['angle'].str.contains('Packing angle') == False]
+        df_ang = df_ang[df_ang['angle'].str.contains('Packing angle') == False]
     except:
         print('No missing angles.')
-    return atable
+
+    return df_ang
 
 
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
 
-pdb_directory = get_pdbdirectory()
+result = buid_table_of_angles()
 
-all_pdb_files = read_directory_for_pdb_files(pdb_directory)
-
-all_pdb_names = extract_pdb_name(pdb_directory)
-
-calculate_angles = run_abpackingangle(all_pdb_files, all_pdb_names)
-
-produce_csv = convert_to_csv(calculate_angles)
-produce_csv.to_csv('{}.csv'.format(sys.argv[2]), index=False)
+result.to_csv('{}.csv'.format(sys.argv[2]), index=False)
