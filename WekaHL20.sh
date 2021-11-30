@@ -1,5 +1,6 @@
 # set -x 
 
+# this is a template that will be modified by a Python script
 export WEKA=/usr/local/apps/weka-3-8-3
 export CLASSPATH=$WEKA/weka.jar
 
