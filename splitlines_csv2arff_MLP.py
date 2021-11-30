@@ -36,9 +36,12 @@ def make_separate_files():
     """
 
     df_of_all_data = pd.read_csv(sys.argv[3], usecols=col)
-    train_arff = '{}.arff'.format(sys.argv[5])
-    subprocess.run(['csv2arff', '-v', '-ni', sys.argv[4], 'angle', sys.argv[3], '> {}'.format(train_arff)], 
-    stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    arff_name = '{}.arff'.format(sys.argv[5])
+    arff_path = os.path.join(directory, arff_name)
+    with open(arff_path, 'w') as train_arff:
+        args = ['csv2arff', '-v', '-ni', sys.argv[4], 'angle', sys.argv[3]]
+        print(f'Running command: {" ".join(args)}')
+        subprocess.run(args, stdout=train_arff, stderr=subprocess.DEVNULL)
 
     cwd = os.getcwd()
     new_dir = 'testing_data'
@@ -46,8 +49,8 @@ def make_separate_files():
     try:
         os.mkdir(path)
     except:
-        'Directory already exists'
-    
+        print(f'Directory {path} already exists')
+
     csv_files = []
     i = 0
     for row in df_of_all_data.iterrows():
@@ -58,7 +61,7 @@ def make_separate_files():
         row_df.to_csv(csv_file, index=False)
         i += 1
 
-    return csv_files, train_arff
+    return csv_files, arff_path
 
 # *************************************************************************
 def run_weka(files, train_file):
@@ -67,24 +70,24 @@ def run_weka(files, train_file):
     for file in files:
         arff_file = '{}.arff'.format(file[:-4])
         arff_files.append(arff_file)
-        try:
-            subprocess.run(['csv2arff', '-v', '-ni', sys.argv[4], 'angle', file, '> {}'.format(arff_file)], 
-            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        except:
-            print('Error: file cannot be converted unto arff. Check line 60')
-            raise
+        with open(arff_file, 'w') as arff_out:
+            try:
+                args = ['csv2arff', '-v', '-ni', sys.argv[4], 'angle', file]
+                subprocess.run(args, stdout=arff_out, stderr=subprocess.DEVNULL)
+            except:
+                print('Error: file cannot be converted unto arff. Check line 60')
 
     # edit lines in Weka script:
     # DATA=${BASEPATH}/
     # TRAIN=
     # INPUTS=
-    name_for_scipt = 'MLP_for_{}.sh'.format(sys.argv[5])
-    name_for_scipt = os.path.join(directory, name_for_scipt)
+    name_for_script = 'MLP_for_{}.sh'.format(sys.argv[5])
+    name_for_script = os.path.join(directory, name_for_script)
     print(f'Opening {sys.argv[6]}')
     with open(sys.argv[6], 'r+') as weka_script:
         lines = [line.rstrip('\n') for line in weka_script]
-        print(f'Writing to {name_for_scipt}')
-        with open(name_for_scipt, 'w') as script:
+        print(f'Writing to {name_for_script}')
+        with open(name_for_script, 'w') as script:
             for index, line in enumerate(lines):
                 if line.startswith('DATA'):
                     lines[index] += directory
@@ -94,13 +97,15 @@ def run_weka(files, train_file):
                     lines[index] += sys.argv[4]
                 elif line.startswith('DATASET'):
                     lines[index] += sys.argv[5]
+                elif line.startswith('MODEL'):
+                    lines[index] += sys.argv[5]
 
             lines = '\n'.join(lines)
             script.write(lines)
-    os.chmod(name_for_scipt, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC | stat.S_IRGRP | stat.S_IXGRP | stat.S_IWGRP)
-    subprocess.run(['bash', name_for_scipt], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-
-    return
+    os.chmod(name_for_script, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC | stat.S_IRGRP | stat.S_IXGRP | stat.S_IWGRP)
+    args = ['bash', name_for_script]
+    print(f'Running {" ".join(args)}')
+    subprocess.run(args)
    
 # *************************************************************************
 # Main
