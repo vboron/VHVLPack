@@ -12,7 +12,8 @@ Description:
 Program looks for .pdb files in directory and extracts the chain, position, and residue identity. It the uses that to 
 construct a .seq file.
 
-Commandline input: 1) directory of pdb files
+Commandline input:  1) directory of pdb files   
+                    2) name for directory of .seq files
 
 ------------------------------------------------
 """
@@ -24,18 +25,21 @@ import os
 
 # *************************************************************************
 def conv_pdb2seq():
-    
+
+    src_dir = sys.argv[1]
+    dst_dir = os.path.join(src_dir, sys.argv[2])
+    os.mkdir(dst_dir)
     #takes a name of directiry from the commandline and looks through it
-    for file in os.listdir(sys.argv[1]):
+    for file in os.listdir(src_dir):
 
         # looks for files ending in .pdb
         if str(file).endswith('.pdb'):
 
             # constructs the path to each file
-            path = os.path.join(sys.argv[1], file)
+            path = os.path.join(src_dir, file)
 
             # constructs a path for each file once it is in the .seq format
-            path_for_seq = os.path.join(sys.argv[2], '{}.{}'.format(file[:-4], 'seq'))
+            path_for_seq = os.path.join(dst_dir, (file[:-4] + '.seq'))
 
             with open(path, 'r') as f:
 
