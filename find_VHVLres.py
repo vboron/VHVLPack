@@ -171,6 +171,7 @@ def vh_vl_relevant_residues(vtable):
 # *************************************************************************
 
 directory = sys.argv[1]
+csv_path = os.path.join(directory, (sys.argv[2] + '.csv'))
 
 pdb_lines = read_pdbfiles_as_lines()
 
@@ -179,4 +180,4 @@ init_table = prep_table(pdb_lines)
 VHVLtable = vh_vl_relevant_residues(init_table)
 
 # index= FALSE removes indexing column from the dataframe
-VHVLtable.to_csv('{}.csv'.format(sys.argv[2]), index=False)
+VHVLtable.to_csv(csv_path, index=False)

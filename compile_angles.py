@@ -48,7 +48,7 @@ def buid_table_of_angles():
 
         19.03.2021  Original   By: VAB
         """
-    directory = sys.argv[1]
+    
     angle_results = []
     pdb_files = []
 
@@ -91,7 +91,9 @@ def buid_table_of_angles():
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
+directory = sys.argv[1]
+csv_path = os.path.join(directory, (sys.argv[2] + '.csv'))
 
 result = buid_table_of_angles()
 
-result.to_csv('{}.csv'.format(sys.argv[2]), index=False)
+result.to_csv(csv_path, index=False)
