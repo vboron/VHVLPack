@@ -1,100 +1,127 @@
 #!/usr/bin/env python3
 """
-Program:    stats2graph
-File:       stats2graph.py
-
-Version:    V1.0
-Date:       10.20.2021
-Function:   Scatter graph of predicted vs. actual packing angles for snns data
-
+Program:    log_stats2graph
+File:       log_stats2graph.py
+Version:    V2.0
+Date:       11.23.2021
+Function:   Produce scatter graph of predicted vs. actual packing angles and a file with the statistics for the run.
 Description:
 ============
-Program extracts lines of statistics from .csv file produced using our snns (papa or newpapa) and converts them into
-dataframe that is then plotted. Outliers and normal values are plotted separetly, best fit lines and RELRMSE determined
-for outliers and the full dataset.
+The program calculates and then outputs (as a .csv) all relevant statistical data for the run (mean error, RMSE, 
+RELRMSE, pearson's coefficient, and the best fit lines).
 
-Commandline input: 1) .csv file with actual and predicted angles
-                   2) name that will be added into the created .csv files
-                   3) .dat with column names 
-                   4) method used to get data
-
-
+Commandline input: 1) .dat with columns
+                   2) .csv file for all data
+                   3) dataset name
+                   4) directory where data will be saved
 ------------------------------------------------
 """
-# *************************************************************************
-# Import libraries
+
 import os
 import sys
-import re
 import pandas as pd
 import numpy as np
+import re
 import math
 import subprocess
 import matplotlib.pyplot as plt
 
 
 # *************************************************************************
-def stats_to_df():
-    """ Read the directory and extract .log files. For each log file, extract the predicted and the actual angle, then
-        calculate the RMSE. Call RELRMSE.py to calculate the RELRMSE from the RMSE. Export as a .csv file.
+def find_normal_and_outliers():
+    """ Function looks at data frame with prediction values and separates the data into two dataframes based
+        on whether the predicted angles are withing a normal range or not.
+        e.g. code,angle,predicted,error
+             4YHI,-48.288,-44.388,3.9
+             1QYG,-45.585,-44.701,0.884
 
-        Return:
-
-        14.07.2021  Original   By: VAB
+        Return: df_n  -- Dataframe containing angles in normal range
+                df_o  -- Dataframe containing angles out of normal range
+                
+        11.24.2021  Original   By: VAB
     """
-    # Open file where the snns results and actual values are
-    file  = sys.argv[1]
 
-    # Specify column names
-    col = []
-    for i in open(sys.argv[3]).readlines():
-        i = i.strip('\n')
-        col.append(i)
+    # define the boundaries for the range of angles that are not outliers
+    min_norm = -48
+    max_norm = -42
 
-    # Make .csv files for all of the data, splitting it into files that have all the data, only outliers, and only the
-    # data withing the 'norm'
-    df_all = pd.read_csv(file, usecols=col)
-    df_all.to_csv('all_{}.csv'.format(sys.argv[2]), index=False)
+    # extract data where the predicted angle is within the normal range into a new dataframe
+    df_n = df_a[df_a['predicted'].between(min_norm, max_norm)]
+
+    # extract data where predicted angles are outside of the normal range and add into a new dataframe
+    df_o1 = df_a[df_a['predicted'] >= max_norm]
+    df_o2 = df_a[df_a['predicted'] <= min_norm]
+    df_o = pd.concat([df_o1, df_o2])
+    
+    # reset the indexes (as the original ones will be kept) and export as .csv files
+    
+    df_n = df_n.reset_index()
+    path_n = os.path.join(cwd, directory, (f'normal_{sys.argv[3]}.csv'))
+    df_n.to_csv(path_n, index=False)
+
+    df_o = df_o.reset_index()
+    path_o = os.path.join(cwd, directory, (f'outlier_{sys.argv[3]}.csv'))
+    df_o.to_csv(path_o, index=False)
+
+    return df_n, df_o
+
+# *************************************************************************
+def find_stats(df_o):
+    """ Function calculates and compiles relevant statistical data related to the (ML) run that the data is from.
+
+        Input:  df_o        -- Dataframe containing angles out of normal range
+        Return: stats_df    -- Dataframe with statistics for the model performance
+                
+        11.24.2021  Original   By: VAB
+    """
+
+    # create a deep copy to prevent modification of the global variable
+    df_a_temp = df_a.copy()
 
     # Calculate the Root Mean Square Error
-    sum_sqerror = float(df_all['sqerror'].sum())
-    average_error = sum_sqerror / int(df_all['code'].size)
-    RMSE = str(math.sqrt(average_error))
-    print('All RMSE:', RMSE)
+    df_a_temp['sqerror'] = np.square( df_a_temp['error'])
+    sum_sqerror =  df_a_temp['sqerror'].sum()
+    average_error = sum_sqerror / int( df_a_temp['code'].size)
+    RMSE = math.sqrt(average_error)
 
-    df_norm = df_all[df_all['pred'].between(-48, -42)]
-    df_norm.to_csv('normal_{}.csv'.format(sys.argv[2]), index=False)
+    df_o['sqerror'] = np.square(df_o['error'])
+    sum_sqerror_o = df_o['sqerror'].sum()
+    average_error_o = sum_sqerror_o/int(df_o['code'].size)
+    RMSE_o = math.sqrt(average_error_o)
 
-    df_outlier1 = df_all[df_all['pred'] < -48]
-    df_outlier2 = df_all[df_all['pred'] > -42]
-    df_outliers = pd.concat([df_outlier1, df_outlier2], ignore_index=True)
-    df_outliers.to_csv('outlier_{}.csv'.format(sys.argv[2]), index=False)
-
-    sum_sqerror_o = float(df_outliers['sqerror'].sum())
-    average_error_o = sum_sqerror_o/int(df_outliers['code'].size)
-    RMSE_o = str(math.sqrt(average_error_o))
-    print('Outlier RMSE:', RMSE_o)
 
     # Call the RELRMSE.py script which converts the RMSE into Relative RMSE
-    RELRMSE = subprocess.check_output(['./RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]), sys.argv[3], RMSE])
-    RELRMSE_o = subprocess.check_output(['./RELRMSE.py', 'all_{}.csv'.format(sys.argv[2]),
-                                         sys.argv[3], RMSE_o])
+    getResult = lambda rmse: subprocess.check_output(['./RELRMSE.py', '{}'.format(sys.argv[2]), 'graph.dat', rmse])
+    RELRMSE   = getResult(str(RMSE))
+    RELRMSE_o = getResult(str(RMSE_o))
 
-    return df_outliers, RELRMSE_o, df_norm, df_all, RELRMSE
+    # gather all of the relevant run statistics into a single table
+    # .corr() returns the correlation between two columns 
+    pearson_a =  df_a_temp['angle'].corr( df_a_temp['predicted'])
+    pearson_o = df_o['angle'].corr(df_o['predicted'])
+
+    mean_abs_err_a =  df_a_temp['error'].mean()
+    mean_abs_err_o = df_o['error'].mean()
+ 
+    stat_data = [pearson_a, pearson_o, mean_abs_err_a, mean_abs_err_o, RMSE, RMSE_o, RELRMSE, RELRMSE_o]
+    stat_col = ['pearson_a', 'pearson_o', 'mean_abs_err_a', 'mean_abs_err_o', 'RMSE', 'RMSE_o', 'RELRMSE_a', 
+    'RELRMSE_o']
+
+    stats_df = pd.DataFrame(data=[stat_data], columns=stat_col)
+
+    return stats_df
 
 
 # *************************************************************************
-def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a):
+def plot_scatter(file_o, file_n, stat_df, file_a):
     """ Create a scatter plot where outliers and normal range values are different colors. There is also a best fit
         line for outliers and for the whole dataset, as well as a y=x line for comparisons. Axis titles and max/mins
         are set. Text displays the legend, equation of best fit lines, and the RELRMSE for the whole set and the
         outliers. Graphs are exported as a .png.
 
         Inputs: file_o    -- Dataframe containing predicted and actual angles for outliers
-                RELRMSE_o -- RELRMSE for outliers
                 file_n    -- Dataframe containing predicted and actual angles for normal range values
-                file_a    -- Dataframe containing predicted and actual angles for all values
-                RELRMSE   -- RELRMSE for whole dataset
+                stat_df  -- Dataframe containing the statistical information from the run
 
         14.07.2021  Original   By: VAB
     """
@@ -110,27 +137,19 @@ def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a):
     # Color of best fit line for full set
     c4 = 'teal'
 
-    # Angle values are converted into float format
-    file_o['angle'] = file_o['angle'].apply(lambda x: float(x))
-    file_o['pred'] = file_o['pred'].apply(lambda y: float(y))
-
     # Angle values are designated axis names
     x1 = file_o['angle']
-    y1 = file_o['pred']
+    y1 = file_o['predicted']
 
     # Line of best fit is calculated
     m1, b1 = np.polyfit(x1, y1, 1)
     plt.plot(x1, m1 * x1 + b1, color=c3, linestyle='dashed', linewidth=1)
 
-    file_n['angle'] = file_n['angle'].apply(lambda x: float(x))
-    file_n['pred'] = file_n['pred'].apply(lambda y: float(y))
     x2 = file_n['angle']
-    y2 = file_n['pred']
+    y2 = file_n['predicted']
 
-    file_a['angle'] = file_a['angle'].apply(lambda x: float(x))
-    file_a['pred'] = file_a['pred'].apply(lambda y: float(y))
     x3 = file_a['angle']
-    y3 = file_a['pred']
+    y3 = file_a['predicted']
 
     m3, b3 = np.polyfit(x3, y3, 1)
     plt.plot(x3, m3 * x3 + b3, color=c4, linestyle='dashed', linewidth=1)
@@ -156,21 +175,38 @@ def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a):
     plt.text(s='Line: y=x', x=-61, y=-32, fontsize=8)
 
     plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m3, b3), x=-61, y=-33, fontsize=8, color=c4)
-    plt.text(s='RELRMSE (all): {:.3}'.format(float(RELRMSE_a)), x=-61, y=-34, fontsize=8)
+    plt.text(s='RELRMSE (all): {:.3}'.format(float(stat_df['RELRMSE_a'])), x=-61, y=-34, fontsize=8)
 
     plt.text(s='Outliers', x=-61, y=-35, fontsize=8, color=c1)
     plt.text(s='Best fit (outliers): y={:.3f}x+{:.3f}'.format(m1, b1), x=-61, y=-36, fontsize=8, color=c3)
-    plt.text(s='RELRMSE (outliers): {:.3}'.format(float(RELRMSE_o)), x=-61, y=-37, fontsize=8)
+    plt.text(s='RELRMSE (outliers): {:.3}'.format(float(stat_df['RELRMSE_o'])), x=-61, y=-37, fontsize=8)
 
     plt.text(s='-48 < Normal Values < -42', x=-61, y=-38, fontsize=8, color=c2)
 
     # Adds graph title
-    plt.suptitle('Predictions vs. actual packing angles ({})'.format(sys.argv[4]), fontsize=14)
+    plt.suptitle('ML prediction of VHVL packing angle (set {})'.format(sys.argv[3]), fontsize=14)
 
     plt.tight_layout()
 
+    # add best fit data to dataframe and export the dataframe
+    # add best fit lines to statistics dataframe
+    best_ft_a = 'y={:.3f}x+{:.3f}'.format(m3, b3)
+    best_ft_o = 'y={:.3f}x+{:.3f}'.format(m1, b1)
+
+    stat_df['best_ft_a'] = best_ft_a
+    stat_df['bf_slope_a'] = m3
+    stat_df['bf_int_a'] = b3
+    
+    stat_df['best_ft_o'] = best_ft_o
+    stat_df['bf_int_o'] = b1
+    stat_df['bf_slope_o'] = m1
+
+    path_stats = os.path.join(cwd, directory, (f'{sys.argv[3]}_run_stats.csv'))
+    stat_df.to_csv(path_stats, index=False)
+
     # Exports the figure as a .png file
-    plt.savefig('{}.tiff'.format(sys.argv[2]), format='tiff')
+    path_fig = os.path.join(cwd, directory, f'{sys.argv[3]}.tiff')
+    plt.savefig(path_fig, format='tiff')
     plt.show()
 
     return
@@ -178,6 +214,16 @@ def plot_scatter(file_o, RELRMSE_o, file_n, file_a, RELRMSE_a):
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
-frame_o, data_o, frame_n, frame_a, data_a = stats_to_df()
+col = []
+for i in open(sys.argv[1]).readlines():
+    i = i.strip('\n')
+    col.append(i)
+cwd = os.getcwd()
+directory = sys.argv[4]
+df_a = pd.read_csv(sys.argv[2], usecols=col)
 
-plot = plot_scatter(frame_o, data_o, frame_n, frame_a, data_a)
+norm_df, out_df = find_normal_and_outliers()
+
+statistics_df = find_stats(out_df)
+
+plot = plot_scatter(out_df, norm_df, statistics_df, df_a.copy())

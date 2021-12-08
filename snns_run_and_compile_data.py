@@ -26,13 +26,6 @@ import subprocess
 # *************************************************************************
 def build_snns_dataframe():
 
-    directory = sys.argv[1]
-
-    col = []
-    for i in open(sys.argv[2]).readlines():
-        i = i.strip('\n')
-        col.append(i)
-
     seq_files = []
     for file in os.listdir(directory):
         if file.endswith('.seq'):
@@ -50,19 +43,24 @@ def build_snns_dataframe():
 
     df_pred = pd.DataFrame(data=file_data, columns=p_col)
 
-    df_snns = pd.merge(df_ang, df_pred, how="right", on=["code"], sort=True)
+    df_snns = pd.merge(df_ang, df_pred, how="right", on='code', sort=False)
     df_snns = df_snns.dropna()
     df_snns.reset_index
 
     df_snns['error'] = df_snns['predicted'] - df_snns['angle']
-    print(df_snns)
     
-
-    return
+    return df_snns
 
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
+directory = sys.argv[1]
+
+col = []
+for i in open(sys.argv[2]).readlines():
+    i = i.strip('\n')
+    col.append(i)
+path = os.path.join(directory, (sys.argv[4] + '.csv'))
 
 result = build_snns_dataframe()
-result.to_csv('{}.csv'.format(sys.argv[4]), index=False)
+result.to_csv(path, index=False)
