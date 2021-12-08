@@ -73,8 +73,8 @@ def buid_table_of_angles():
         # Converts the output of the subprocess into normal string
         angle = angle.split()
         angle = float(angle[1])
-        print(angle)
-        data = [code, angle]
+ 
+        data = [pdb_code, angle]
         file_data.append(data)
 
     col = ['code', 'angle']
@@ -84,7 +84,6 @@ def buid_table_of_angles():
         df_ang = df_ang[df_ang['angle'].str.contains('Packing angle') == False]
     except:
         print('No missing angles.')
-
     return df_ang
 
 
