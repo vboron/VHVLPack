@@ -27,46 +27,26 @@ import pandas as pd
 
 
 # *************************************************************************
-def get_pdbdirectory():
-    """Read the directory name from the commandline argument
+def run_csv2arff():
 
-    Return: pdb_direct      --- Directory of PBD files that will be processed for VH-VL packing angles
-
-    15.03.2021  Original   By: VAB
-    """
-
-    # Take the commandline input as the directory, otherwise look in current directory
-    if sys.argv[1] != '':
-        pdb_direct = sys.argv[1]
-    else:
-        pdb_direct = '.'
-    return pdb_direct
-
-
-# *************************************************************************
-def run_csv2arff(directory):
+    directory = sys.argv[1]
     cwd = os.getcwd()
-    path = '{}/{}'.format(cwd, sys.argv[1])
-    print(path)
+    path = os.path.join(cwd, directory)
     for file in os.listdir(directory):
-
-        # Uses the subprocess module to call abpackingangle and inputs the headers/.pdb lists
-        # into the program as arguments
-        try:
-            arff_file = subprocess.check_output(['csv2arff', '-ni', sys.argv[2], 'angle', file, '>',
-                                                 '{}/{}.arff'.format(path, file[:-4])])
-            
-            print('{} converted.'.format(file))
-        except subprocess.CalledProcessError:
-            print('{} cannot be converted.'.format(file))
-            continue
+        f_path = os.path.join(path, file)
+        print(f_path)
+        arff_path = os.path.join(path, (file[:-4] + '.arff'))
+        with open(arff_path, 'w') as arff_out:
+            try:
+                args = ['csv2arff', '-ni', sys.argv[2], 'angle', f_path]
+                subprocess.run(args, stdout=arff_out, stderr=subprocess.DEVNULL)
+            except subprocess.CalledProcessError:
+                print(f'{file} cannot be converted.')
 
 
 # *************************************************************************
 # Main
 # *************************************************************************
 
-pdb_directory = get_pdbdirectory()
-
-result = run_csv2arff(pdb_directory)
+result = run_csv2arff()
 
