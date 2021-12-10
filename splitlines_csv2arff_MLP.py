@@ -12,7 +12,7 @@ dataframe.
 
 Commandline input: 1) Directory
                    2) .dat file for columns
-                   3) Name for output .csv
+                   3) .csv file with data
                    4) .dat file with csv2arff inputs
                    5) Name of dataset
 ------------------------------------------------
@@ -68,11 +68,11 @@ def run_weka(files, train_file):
 
     arff_files = []
     for file in files:
-        arff_file = '{}.arff'.format(file[:-4])
+        arff_file = f'{file[:-4]}.arff'
         arff_files.append(arff_file)
         with open(arff_file, 'w') as arff_out:
             try:
-                args = ['csv2arff', '-v', '-ni', sys.argv[4], 'angle', file]
+                args = ['csv2arff', '-ni', sys.argv[4], 'angle', file]
                 subprocess.run(args, stdout=arff_out, stderr=subprocess.DEVNULL)
             except:
                 print('Error: file cannot be converted unto arff. Check line 60')

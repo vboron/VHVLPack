@@ -57,16 +57,14 @@ def make_files(df):
     except:
         print('Directory not created.')
     cwd = os.getcwd()
-    path = '{}/{}/'.format(cwd, sys.argv[3])
+    path = os.path.join(cwd, sys.argv[3])
 
     i = 0
     for row in df.iterrows():
         row_df = df.iloc[i:(i+1)]
         name = row_df['code'].values[0]
-        row_df.to_csv('{}{}_{}.csv'.format(path, name, i), index=False)
-        #if i % 25 == 0:
-        #    print("{}/{}".format(i, len(df.iterrows())))
-        print(i)
+        f_path = os.path.join(path, (name + '.csv'))
+        row_df.to_csv(f_path, index=False)
         i += 1
     return
 
