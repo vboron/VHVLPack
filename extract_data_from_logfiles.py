@@ -32,7 +32,7 @@ def stats_to_df():
 
     # Take the directory where the .log files are from commandline
     direct = sys.argv[1]
-
+    cwd = os.getcwd()
     # Specify column names for .csv file that will be made from the log files
     col = []
     for i in open(sys.argv[2]).readlines():
@@ -55,9 +55,9 @@ def stats_to_df():
                     line = re.sub(' +', ' ', line)
                     line = line.strip()
                     line_list = line.split(' ')
-                    name = log_file.split('_')
-                    name = name[2].split('/')
-                    code = name[1]
+                    name = log_file.split('/')
+                    name = name[-1]
+                    code = name[:6]
                     pred = float(line_list[2])
                     angle = float(line_list[1])
                     error = float(line_list[3])
@@ -68,7 +68,8 @@ def stats_to_df():
     # Make .csv files for all of the data, splitting it into files that have all the data, only outliers, and only the
     # data withing the 'norm'
     df_a = pd.DataFrame(data=all_data, columns=col)
-    df_a.to_csv('all_{}.csv'.format(sys.argv[3]), index=False)
+    path = os.path.join(cwd, direct,f'all_{sys.argv[3]}.csv')
+    df_a.to_csv(path, index=False)
 
 # *************************************************************************
 # *** Main program                                                      ***

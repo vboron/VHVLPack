@@ -12,9 +12,10 @@ dataframe.
 
 Commandline input: 1) Directory
                    2) .dat file for columns
-                   3) .csv file with data
-                   4) .dat file with csv2arff inputs
-                   5) Name of dataset
+                   3) .csv for training
+                   4) .csv file with data to be split for testing
+                   5) .dat file with csv2arff inputs
+                   6) Name of dataset
 ------------------------------------------------
 """
 import os
@@ -35,11 +36,10 @@ def make_separate_files():
     15.06.2021  Modified   By: VAB
     """
 
-    df_of_all_data = pd.read_csv(sys.argv[3], usecols=col)
-    arff_name = '{}.arff'.format(sys.argv[5])
+    arff_name = f'{sys.argv[6]}.arff'
     arff_path = os.path.join(directory, arff_name)
     with open(arff_path, 'w') as train_arff:
-        args = ['csv2arff', '-v', '-ni', sys.argv[4], 'angle', sys.argv[3]]
+        args = ['csv2arff', '-v', '-ni', sys.argv[5], 'angle', sys.argv[3]]
         print(f'Running command: {" ".join(args)}')
         subprocess.run(args, stdout=train_arff, stderr=subprocess.DEVNULL)
 
@@ -52,11 +52,12 @@ def make_separate_files():
         print(f'Directory {path} already exists')
 
     csv_files = []
+    df_of_all_data = pd.read_csv(sys.argv[4], usecols=col)
     i = 0
     for row in df_of_all_data.iterrows():
         row_df = df_of_all_data.iloc[i:(i+1)]
         name = row_df['code'].values[0]
-        csv_file = '{}.csv'.format(os.path.join(path, name))
+        csv_file = os.path.join(path, (name + '.csv'))
         csv_files.append(csv_file)
         row_df.to_csv(csv_file, index=False)
         i += 1
@@ -72,7 +73,7 @@ def run_weka(files, train_file):
         arff_files.append(arff_file)
         with open(arff_file, 'w') as arff_out:
             try:
-                args = ['csv2arff', '-ni', sys.argv[4], 'angle', file]
+                args = ['csv2arff', '-ni', sys.argv[5], 'angle', file]
                 subprocess.run(args, stdout=arff_out, stderr=subprocess.DEVNULL)
             except:
                 print('Error: file cannot be converted unto arff. Check line 60')
@@ -81,7 +82,7 @@ def run_weka(files, train_file):
     # DATA=${BASEPATH}/
     # TRAIN=
     # INPUTS=
-    name_for_script = 'MLP_for_{}.sh'.format(sys.argv[5])
+    name_for_script = 'MLP_for_{}.sh'.format(sys.argv[6])
     name_for_script = os.path.join(directory, name_for_script)
     print(f'Opening {sys.argv[6]}')
     with open(sys.argv[6], 'r+') as weka_script:
@@ -94,11 +95,11 @@ def run_weka(files, train_file):
                 elif line.startswith('TRAIN'):
                     lines[index] += train_file
                 elif line.startswith('INPUTS'):
-                    lines[index] += sys.argv[4]
+                    lines[index] += sys.argv[5]
                 elif line.startswith('DATASET'):
-                    lines[index] += sys.argv[5]
+                    lines[index] += sys.argv[6]
                 elif line.startswith('MODEL'):
-                    lines[index] += sys.argv[5]
+                    lines[index] += sys.argv[6]
 
             lines = '\n'.join(lines)
             script.write(lines)

@@ -84,25 +84,33 @@ def find_stats(df_o):
     average_error = sum_sqerror / int( df_a_temp['code'].size)
     RMSE = math.sqrt(average_error)
 
-    df_o['sqerror'] = np.square(df_o['error'])
-    sum_sqerror_o = df_o['sqerror'].sum()
-    average_error_o = sum_sqerror_o/int(df_o['code'].size)
-    RMSE_o = math.sqrt(average_error_o)
-
-
     # Call the RELRMSE.py script which converts the RMSE into Relative RMSE
-    getResult = lambda rmse: subprocess.check_output(['./RELRMSE.py', '{}'.format(sys.argv[2]), 'graph.dat', rmse])
-    RELRMSE   = getResult(str(RMSE))
-    RELRMSE_o = getResult(str(RMSE_o))
+    getResult = lambda rmse: subprocess.check_output(['./RELRMSE.py', f'{sys.argv[2]}', 'graph.dat', rmse])
+    RELRMSE   = getResult(str(RMSE)).decode('ascii')
 
     # gather all of the relevant run statistics into a single table
     # .corr() returns the correlation between two columns 
     pearson_a =  df_a_temp['angle'].corr( df_a_temp['predicted'])
-    pearson_o = df_o['angle'].corr(df_o['predicted'])
 
     mean_abs_err_a =  df_a_temp['error'].mean()
-    mean_abs_err_o = df_o['error'].mean()
- 
+
+    # everything is done for outliers, if they exist
+    num_outliers = int(df_o['code'].size)
+    if num_outliers != 0:
+        df_o['sqerror'] = np.square(df_o['error'])
+        sum_sqerror_o = df_o['sqerror'].sum()
+        average_error_o = sum_sqerror_o/num_outliers
+        RMSE_o = math.sqrt(average_error_o)
+        RELRMSE_o = getResult(str(RMSE_o)).decode('ascii')
+        pearson_o = df_o['angle'].corr(df_o['predicted'])
+        mean_abs_err_o = df_o['error'].mean()
+    else:
+        average_error_o = None
+        RMSE_o = None
+        RELRMSE_o = None
+        pearson_o = None
+        mean_abs_err_o = None
+
     stat_data = [pearson_a, pearson_o, mean_abs_err_a, mean_abs_err_o, RMSE, RMSE_o, RELRMSE, RELRMSE_o]
     stat_col = ['pearson_a', 'pearson_o', 'mean_abs_err_a', 'mean_abs_err_o', 'RMSE', 'RMSE_o', 'RELRMSE_a', 
     'RELRMSE_o']
@@ -137,14 +145,6 @@ def plot_scatter(file_o, file_n, stat_df, file_a):
     # Color of best fit line for full set
     c4 = 'teal'
 
-    # Angle values are designated axis names
-    x1 = file_o['angle']
-    y1 = file_o['predicted']
-
-    # Line of best fit is calculated
-    m1, b1 = np.polyfit(x1, y1, 1)
-    plt.plot(x1, m1 * x1 + b1, color=c3, linestyle='dashed', linewidth=1)
-
     x2 = file_n['angle']
     y2 = file_n['predicted']
 
@@ -153,12 +153,9 @@ def plot_scatter(file_o, file_n, stat_df, file_a):
 
     m3, b3 = np.polyfit(x3, y3, 1)
     plt.plot(x3, m3 * x3 + b3, color=c4, linestyle='dashed', linewidth=1)
-
-    # Plot a y=x line in black
-    plt.plot(x1, x1 + 0, '-k')
+    
 
     # Plot the outliers and normal values as scatter plots
-    plt.scatter(x1, y1, s=2, color=c1)
     plt.scatter(x2, y2, s=2, color=c2)
 
     axes = plt.gca()
@@ -166,6 +163,14 @@ def plot_scatter(file_o, file_n, stat_df, file_a):
     # Sets the maximum and minimum values for the axes
     axes.set_xlim([-62, -30])
     axes.set_ylim([-60, -30])
+
+    axes.axline((0, 0), (1, 1), color='k')  
+    # y_counter = -60
+    # while y_counter < -30:
+    #     x_counter = y_counter
+    #     # Plot a y=x line in black
+    #     plt.plot(x_counter, y_counter, 'k')
+    #     y_counter + 1
 
     # Sets the axes labels
     plt.xlabel('Calculated Angle')
@@ -176,10 +181,7 @@ def plot_scatter(file_o, file_n, stat_df, file_a):
 
     plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m3, b3), x=-61, y=-33, fontsize=8, color=c4)
     plt.text(s='RELRMSE (all): {:.3}'.format(float(stat_df['RELRMSE_a'])), x=-61, y=-34, fontsize=8)
-
-    plt.text(s='Outliers', x=-61, y=-35, fontsize=8, color=c1)
-    plt.text(s='Best fit (outliers): y={:.3f}x+{:.3f}'.format(m1, b1), x=-61, y=-36, fontsize=8, color=c3)
-    plt.text(s='RELRMSE (outliers): {:.3}'.format(float(stat_df['RELRMSE_o'])), x=-61, y=-37, fontsize=8)
+    
 
     plt.text(s='-48 < Normal Values < -42', x=-61, y=-38, fontsize=8, color=c2)
 
@@ -191,15 +193,28 @@ def plot_scatter(file_o, file_n, stat_df, file_a):
     # add best fit data to dataframe and export the dataframe
     # add best fit lines to statistics dataframe
     best_ft_a = 'y={:.3f}x+{:.3f}'.format(m3, b3)
-    best_ft_o = 'y={:.3f}x+{:.3f}'.format(m1, b1)
 
     stat_df['best_ft_a'] = best_ft_a
     stat_df['bf_slope_a'] = m3
     stat_df['bf_int_a'] = b3
     
-    stat_df['best_ft_o'] = best_ft_o
-    stat_df['bf_int_o'] = b1
-    stat_df['bf_slope_o'] = m1
+    num_outliers = int(file_o['code'].size)
+    if num_outliers != 0:
+        # Angle values are designated axis names
+        x1 = file_o['angle']
+        y1 = file_o['predicted']
+
+        # Line of best fit is calculated
+        m1, b1 = np.polyfit(x1, y1, 1)
+        plt.plot(x1, m1 * x1 + b1, color=c3, linestyle='dashed', linewidth=1)
+        plt.scatter(x1, y1, s=2, color=c1)
+        plt.text(s='RELRMSE (outliers): {:.3}'.format(float(stat_df['RELRMSE_o'])), x=-61, y=-37, fontsize=8)
+        plt.text(s='Best fit (outliers): y={:.3f}x+{:.3f}'.format(m1, b1), x=-61, y=-36, fontsize=8, color=c3)
+        plt.text(s='Outliers', x=-61, y=-35, fontsize=8, color=c1)
+        best_ft_o = 'y={:.3f}x+{:.3f}'.format(m1, b1)
+        stat_df['best_ft_o'] = best_ft_o
+        stat_df['bf_int_o'] = b1
+        stat_df['bf_slope_o'] = m1
 
     path_stats = os.path.join(cwd, directory, (f'{sys.argv[3]}_run_stats.csv'))
     stat_df.to_csv(path_stats, index=False)
