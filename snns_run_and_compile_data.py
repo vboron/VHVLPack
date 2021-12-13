@@ -14,6 +14,7 @@ Commandline input: 1) Directory where the .seq files are
                    2) .dat file for columns
                    3) File containing angles
                    4) Data tag
+                   5) Which papa version is being called
 ------------------------------------------------
 """
 import os
@@ -37,7 +38,7 @@ def build_snns_dataframe():
     p_col = ['code', 'predicted']
     file_data = []
     for code, seq_file in seq_files:
-        pred = float(subprocess.check_output(['papa', '-q', seq_file]))
+        pred = float(subprocess.check_output([sys.argv[5], '-q', seq_file]))
         data = [code, pred]
         file_data.append(data)
 
