@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 """
-Program:    compile_angles
-File:       compile_angles.py
-
 Version:    V1.1
 Date:       15.03.2021
 Function:   Calculate packing angles between VH and VL domains for all PDB files available and output csv.
@@ -29,6 +26,7 @@ import os
 import sys
 import pandas as pd
 import subprocess
+import argparse
 
 # *************************************************************************
 def buid_table_of_angles():
@@ -52,10 +50,10 @@ def buid_table_of_angles():
     angle_results = []
     pdb_files = []
 
-    for file in os.listdir(directory):
+    for file in os.listdir(args.directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
             code = file[:-4]
-            pdb_files.append((code, os.path.join(directory, file)))
+            pdb_files.append((code, os.path.join(args.directory, file)))
     
     file_data = []
     # Takes the two lists made in files and combines them into lists of tuples that have
@@ -87,11 +85,12 @@ def buid_table_of_angles():
     return df_ang
 
 
-# *************************************************************************
-# *** Main program                                                      ***
-# *************************************************************************
-directory = sys.argv[1]
-csv_path = os.path.join(directory, (sys.argv[2] + '.csv'))
+parser = argparse.ArgumentParser(description='Program for compiling angles')
+parser.add_argument('--directory', help='Directory of pdb files', required=True)
+parser.add_argument('--csv-file', help='Name of the csv file', required=True)
+args = parser.parse_args()
+
+csv_path = os.path.join(args.directory, (args.csv_file + '.csv'))
 
 result = buid_table_of_angles()
 

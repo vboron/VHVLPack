@@ -46,7 +46,7 @@ def build_snns_dataframe():
 
     df_snns = pd.merge(df_ang, df_pred, how="right", on='code', sort=False)
     df_snns = df_snns.dropna()
-    df_snns.reset_index
+    df_snns.reset_index()
 
     df_snns['error'] = df_snns['predicted'] - df_snns['angle']
     
