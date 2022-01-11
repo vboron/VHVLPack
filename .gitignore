@@ -4,6 +4,10 @@ alphafold/
 original_*/
 LH_Combined_Chothia/
 full_decimals/
+PrePAPA/
+PostPAPA/
+PreAF2/
+PostAF2/
 new_data_in_af2data/
 SNNS/
 single_csv/
@@ -22,3 +26,4 @@ PreAF2/
 *.txt
 test*
 *test
+*.pyc

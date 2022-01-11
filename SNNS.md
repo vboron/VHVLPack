@@ -23,4 +23,4 @@ running the model.
 `./install.sh $HOME/name_for_new_papa`
 
 6. This new version can now be run as:
-`~name_for_new_papa/papa`
+`~/name_for_new_papa/papa`
