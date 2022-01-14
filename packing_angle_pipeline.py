@@ -1,7 +1,6 @@
 from enum import Enum, auto
-import subprocess
 import argparse
-import NR
+import utils
 
 class Dataset(Enum):
     PrePAPA = auto()
@@ -28,13 +27,18 @@ class CorrectionFactor(Enum):
 
 def preprocessing(ds: Dataset):
     run_compile_angles(ds)
+    run_find_VHVLres(ds)
+    run_encode_4d(ds)
     # TODO more things
 
 def run_compile_angles(ds: Dataset):
-    cmd = ['./compile_angles.py', '--directory', ds.name, '--csv-file', f'{ds.name}_ang']
-    print(f"Running {cmd}")
-    if not args.dry_run:
-        subprocess.run(cmd)
+    utils.run_cmd(['./compile_angles.py', '--directory', ds.name, '--csv-fil', f'{ds.name}_ang'], args.dry_run)
+
+def run_find_VHVLres(ds: Dataset):
+    utils.run_cmd(['./find_VHVLres.py', ds.name, f'{ds.name}_res'], args.dry_run)
+
+def run_encode_4d(ds: Dataset):
+    utils.run_cmd([f'{ds.name}_res', f'{ds.name}_ang', '4d.dat', f'{ds.name}_4d', f'{ds.name}'])
 
 def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
     unique_name = f"{ds.name}_{nr.name}_{meth.name}_{cf.name}"
