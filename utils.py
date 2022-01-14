@@ -1,3 +1,5 @@
+import subprocess
+
 def one_letter_code(pdb, res):
 
     """
@@ -17,3 +19,8 @@ def one_letter_code(pdb, res):
 
     one_letter = dic[res]
     return one_letter
+
+def run_cmd(cmd_list, is_dry_run: bool):
+    print(f"Running {cmd_list}")
+    if not is_dry_run:
+        subprocess.run(cmd_list)
