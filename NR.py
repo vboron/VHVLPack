@@ -10,7 +10,7 @@ def make_seq_pdb_dict(in_directory):
 
     Return: pdb_dict    --- Dictionary of PDB names with all of the lines containing atom details
     e.g.
-    
+
     16.12.2021  Original   By: VAB
     """
 
@@ -20,7 +20,7 @@ def make_seq_pdb_dict(in_directory):
     # look through files in the directory
     for file in os.listdir(in_directory):
 
-        # make sure that the file is a 
+        # make sure that the file is a
         if file.endswith(".pdb") or file.endswith(".ent"):
 
             # create the full file path so the file can be found
@@ -32,7 +32,7 @@ def make_seq_pdb_dict(in_directory):
                 # create empty string where the sequence will be added
                 sequence=''
 
-                # Search for lines that contain the alpha carbon atoms of the amino acid 
+                # Search for lines that contain the alpha carbon atoms of the amino acid
                 for line in text_file.readlines():
                     if 'ATOM' in str(line) and 'CA' in str(line):
 
@@ -45,7 +45,7 @@ def make_seq_pdb_dict(in_directory):
 
                         # we add the residue into the string to create the full one-letter sequence
                         sequence = sequence + residue
-                
+
                 # we create a dictionary entry, where the sequence is the key and the pdb file the value. This allows
                 # us to find only one file per sequence.
                 seq_dict[sequence] = file
@@ -53,24 +53,25 @@ def make_seq_pdb_dict(in_directory):
     return seq_dict
 
 # *************************************************************************
-def directory_of_unique_files(seq_dict, in_directory, out_directory):
+def filter_df(column_names, csv_file, seq_dict):
 
-    # new dictionary is made using the second commanline input as the name
-    try:
-        os.mkdir(out_directory)
-    except:
-        print('Directory already exists.')
+    col = []
+    with open(column_names) as f:
+        for i in f.readlines():
+            i = i.strip('\n')
+            col.append(i)
 
-    # we take the pdb file that is in the dictionary and copy it to the new directory we just created (src=source, 
-    # dst=destination)
-    for key, value in seq_dict.items():
-        src = os.path.join(in_directory, value)
-        dst = os.path.join(out_directory, value)
-        shutil.copyfile(src, dst)
+    df = pd.read_csv(csv_file, usecols=col)
+    pdbcode_list = list(seq_dict.values())
 
-def NR1(in_directory, out_directory):
+    nr1_df = df[df['code'].isin(pdbcode_list)]
+
+    return nr1_df
+
+def NR1(in_directory, encoded_4d_cols_file, dataset, encoded_csv):
     dictionary = make_seq_pdb_dict(in_directory)
-    directory_of_unique_files(dictionary, in_directory, out_directory)
+    nr1_dataframe = filter_df(encoded_4d_cols_file, encoded_csv, dictionary)
+    nr1_dataframe.to_csv(f'{dataset}.csv', index=False)
 
 def NR2(csv_file, column_file, out_file):
     """Read the .csv file containing encoded residues and angles and combine lines that have the same PDB code and
@@ -94,13 +95,13 @@ def NR2(csv_file, column_file, out_file):
     # angle needs to be converted to a float to be averaged
     res_file['angle'] = res_file['angle'].astype(float)
 
-    # aggregation function specifies that when the rows are grouped, the first value of code will be kept and the 
+    # aggregation function specifies that when the rows are grouped, the first value of code will be kept and the
     # angles will be averaged
     aggregation_func = {'code': 'first', 'angle': 'mean'}
 
-    # make a column of rounded values for angle 
+    # make a column of rounded values for angle
     res_file['ang2dp']=res_file['angle'].round(decimals=2)
-  
+
     # remove 'angle' and 'code' from columns header list, since program is not grouping by these, but add the rounded
     # angle column
     col1.remove('angle')
@@ -113,7 +114,7 @@ def NR2(csv_file, column_file, out_file):
     # grouping produces a "sup" column that is over the columns that were grouped by. This resets all column names
     # to the same level
     seq_df = seq_df.reset_index()
- 
+
     # to get back our original column order
     cols=seq_df.columns.tolist()
     cols = [cols[-2]]+ cols[:-3] + cols[-1:]
@@ -142,7 +143,7 @@ def NR3(in_csv, column_file, out_file):
     # angle needs to be converted to a float to be averaged
     res_file['angle'] = res_file['angle'].astype(float)
 
-    # aggregation function specifies that when the rows are grouped, the first value of code will be kept and the 
+    # aggregation function specifies that when the rows are grouped, the first value of code will be kept and the
     # angles will be averaged
     aggregation_func = {'code': 'first', 'angle': 'mean'}
 

@@ -1,6 +1,7 @@
 from enum import Enum, auto
 import subprocess
 import argparse
+import NR
 
 class Dataset(Enum):
     PrePAPA = auto()
@@ -38,13 +39,14 @@ def run_compile_angles(ds: Dataset):
 def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
     unique_name = f"{ds.name}_{nr.name}_{meth.name}_{cf.name}"
     # print(f"Processing {unique_name} case")
-
+    # NR.NR1(costam, costam, args.encoded_4d_cols_file)
     if cf == CorrectionFactor.Yes:
         # zrob ponownie costam
         pass
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
+parser.add_argument('--encoded-4d-cols-file', required=True)
 args = parser.parse_args()
 
 for ds in Dataset:
