@@ -11,7 +11,7 @@ class Dataset(Enum):
     Everything = auto()
 
 class NonRedundantization(Enum):
-    No = auto()
+    NR0 = auto()
     NR1 = auto()
     NR2 = auto()
     NR3 = auto()
@@ -61,12 +61,25 @@ def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     install_path = os.path.join('SNNS', 'papa', 'training', 'install.sh')
     utils.run_cmd([f'./{install_path}', f'$HOME/{ds.name}_{nr.name}_{meth.name}'])
     utils.run_cmd(['./snns_run_and_compile_data.py', os.path.join(ds.name, 'seq_files'), '4d.dat', 
-    f'{ds.name}_ang.csv', f'{ds.name}', f'~/{ds.name}_{nr.name}_{meth.name}/papa'])
+    f'{ds.name}_ang.csv', f'{ds.name}', f'~/{ds.name}_{nr.name}_{'RetrainedPAPA'}/papa'])
 
 def run_snns(ds: Dataset):
     utils.run_cmd(['./pdb2seq.py', ds.name])
+    if ds.name == 'OrigPAPA':
+        run_papa()
+    elif ds.name == 'RetrainedPAPA':
+        run_newpapa()
     # distinguish between making a new papa and running the old papa
 
+def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
+    utils.run_cmd(['./splitlines_csv2arff_MLP.py', ds.name, '4d.dat', f'{ds.name}_{nr.name}_4d.csv',
+    -----test-on-the-opposite---, 'in4d.dat', ds.name])
+    utils.run_cmd(['./extract_data_from_logfiles.py', os.path.join(ds.name, 'testing_data'), 'graph.dat',
+    f'{ds.name}_{nr.name}'])
+
+def MLPxval(ds: Dataset, nr: NonRedundantization):
+     
+def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
