@@ -9,11 +9,10 @@ Function:   Convert .pdb files to .seq files
 
 Description:
 ============
-Program looks for .pdb files in directory and extracts the chain, position, and residue identity. It the uses that to 
+Program looks for .pdb files in directory and extracts the chain, position, and residue identity. It the uses that to
 construct a .seq file.
 
-Commandline input:  1) directory of pdb files   
-                    2) name for directory of .seq files
+Commandline input:  1) directory of pdb files
 
 ------------------------------------------------
 """
@@ -27,7 +26,7 @@ import os
 def conv_pdb2seq():
 
     src_dir = sys.argv[1]
-    dst_dir = os.path.join(src_dir, sys.argv[2])
+    dst_dir = os.path.join(src_dir, 'seq_files')
     os.mkdir(dst_dir)
     #takes a name of directiry from the commandline and looks through it
     for file in os.listdir(src_dir):
@@ -60,4 +59,4 @@ def conv_pdb2seq():
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
-result = conv_pdb2seq()
+conv_pdb2seq()
