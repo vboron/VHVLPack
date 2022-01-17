@@ -12,7 +12,7 @@ dataframe.
 
 Commandline input: 1) Directory where the .log files are
                    2) .dat file for columns
-                   3) Name for output .csv
+                   3) Dataset name
 ------------------------------------------------
 """
 import os
@@ -75,4 +75,4 @@ def stats_to_df():
 # *** Main program                                                      ***
 # *************************************************************************
 
-result = stats_to_df()
+stats_to_df()
