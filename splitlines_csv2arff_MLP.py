@@ -107,7 +107,7 @@ def run_weka(files, train_file):
     args = ['bash', name_for_script]
     print(f'Running {" ".join(args)}')
     subprocess.run(args)
-   
+
 # *************************************************************************
 # Main
 # *************************************************************************
@@ -118,5 +118,5 @@ col = [ l.strip('\n') for l in open(sys.argv[2]).readlines() ]
 
 list_of_csv_files, training_file = make_separate_files()
 
-perform_MLP = run_weka(list_of_csv_files, training_file)
+run_weka(list_of_csv_files, training_file)
 
