@@ -1,11 +1,9 @@
 # *************************************************************************
-# Import libraries
-from dbm import _Database
 from enum import Enum, auto
 import os
 import argparse
 import utils
-import NR
+import nonred
 import shutil
 import stat
 
@@ -54,11 +52,11 @@ def run_encode_4d(ds: Dataset):
 # *************************************************************************
 def run_nr(ds: Dataset, nr: NonRedundantization):
     if nr == NonRedundantization.NR1:
-        NR.NR1(ds.name, '4d.dat', f'{ds.name}_{nr.name}', f'{ds.name}_4d.csv')
+        nonred.NR1(ds.name, '4d.dat', f'{ds.name}_{nr.name}', f'{ds.name}_4d.csv')
     elif nr == NonRedundantization.NR2:
-        NR.NR2(f'{ds.name}_4d', '4d.dat', f'{ds.name}_{nr.name}')
+        nonred.NR2(f'{ds.name}_4d', '4d.dat', f'{ds.name}_{nr.name}')
     elif nr == NonRedundantization.NR3:
-        NR.NR3(f'{ds.name}_4d', '4d.dat', f'{ds.name}_{nr.name}')
+        nonred.NR3(f'{ds.name}_4d', '4d.dat', f'{ds.name}_{nr.name}')
     else:
         src_path = os.path.join(ds.name, f'{ds.name}_4d.csv')
         dst_path = os.path.join(ds.name, f'{ds.name}_{nr.name}.csv')
@@ -127,7 +125,7 @@ def MLPxval(ds: Dataset, nr: NonRedundantization):
 def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
     unique_name = f"{ds.name}_{nr.name}_{meth.name}_{cf.name}"
     # print(f"Processing {unique_name} case")
-    # NR.NR1(costam, costam, args.encoded_4d_cols_file)
+    # nonred.NR1(costam, costam, args.encoded_4d_cols_file)
     if cf == CorrectionFactor.Yes:
         # zrob ponownie costam
         pass

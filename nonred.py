@@ -1,6 +1,5 @@
 import os
 import sys
-import shutil
 import pandas as pd
 from utils import one_letter_code
 
