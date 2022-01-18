@@ -51,16 +51,19 @@ def run_encode_4d(ds: Dataset):
 
 # *************************************************************************
 def run_nr(ds: Dataset, nr: NonRedundantization):
-    if nr == NonRedundantization.NR1:
-        nonred.NR1(ds.name, '4d.dat', f'{ds.name}_{nr.name}', f'{ds.name}_4d.csv')
-    elif nr == NonRedundantization.NR2:
-        nonred.NR2(f'{ds.name}_4d', '4d.dat', f'{ds.name}_{nr.name}')
-    elif nr == NonRedundantization.NR3:
-        nonred.NR3(f'{ds.name}_4d', '4d.dat', f'{ds.name}_{nr.name}')
-    else:
+    encoded_csv_path = os.path.join(ds.name, f'{ds.name}_4d.csv')
+    new_file = f'{ds.name}_{nr.name}'
+    if nr == NonRedundantization.NR0:
         src_path = os.path.join(ds.name, f'{ds.name}_4d.csv')
-        dst_path = os.path.join(ds.name, f'{ds.name}_{nr.name}.csv')
+        dst_path = os.path.join(ds.name, f'{new_file}.csv')
+        print(f'Copying {src_path} to {dst_path}...')
         shutil.copyfile(src_path, dst_path)
+    elif nr == NonRedundantization.NR1:
+        nonred.NR1(ds.name, '4d.dat', new_file, encoded_csv_path)
+    elif nr == NonRedundantization.NR2:
+        nonred.NR2(encoded_csv_path, '4d.dat', new_file)
+    elif nr == NonRedundantization.NR3:
+        nonred.NR3(encoded_csv_path, '4d.dat', new_file)
 
 
 # *************************************************************************
