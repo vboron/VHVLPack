@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 def one_letter_code(pdb, res):
@@ -20,7 +21,11 @@ def one_letter_code(pdb, res):
     one_letter = dic[res]
     return one_letter
 
-def run_cmd(cmd_list, is_dry_run: bool, stdout=None):
-    print(f"Running {cmd_list}")
+def run_cmd(cmd_list, is_dry_run: bool, stdout=None, env=None):
+    log_msg = f"Running {cmd_list}"
+    if env is not None:
+        log_msg += f'; env={env}'
+        env.update(os.environ.copy())
+    print(log_msg)
     if not is_dry_run:
-        subprocess.run(cmd_list, stdout=stdout)
+        subprocess.run(cmd_list, stdout=stdout, env=env)

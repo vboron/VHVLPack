@@ -49,7 +49,7 @@ def build_snns_dataframe():
     df_snns.reset_index()
 
     df_snns['error'] = df_snns['predicted'] - df_snns['angle']
-    
+
     return df_snns
 
 # *************************************************************************
