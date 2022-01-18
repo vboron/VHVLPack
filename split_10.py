@@ -12,7 +12,7 @@ Description:
 The program will take take the redundancy reduced .csv file that contains encoded sequence and angles, and split it
 into test and train sets (where test sets contain a 10% of the data and the train file the other 90%).
 
-Commandline input: 1) encoded .csv file
+Commandline input: 1) encoded and redundancy reduced .csv file
                    2) .dat file with column names
                    3) name of directory where split files will go
 --------------------------------------------------------------------------
