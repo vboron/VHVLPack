@@ -1,3 +1,6 @@
+# *************************************************************************
+# Import libraries
+from dbm import _Database
 from enum import Enum, auto
 import os
 import argparse
@@ -6,6 +9,7 @@ import NR
 import shutil
 
 
+# *************************************************************************
 class Dataset(Enum):
     PrePAPA = auto()
     PostPAPA = auto()
@@ -29,6 +33,8 @@ class CorrectionFactor(Enum):
     Yes = auto()
     No = auto()
 
+
+# *************************************************************************
 def preprocessing(ds: Dataset):
     run_compile_angles(ds)
     run_find_VHVLres(ds)
@@ -43,6 +49,8 @@ def run_find_VHVLres(ds: Dataset):
 def run_encode_4d(ds: Dataset):
     utils.run_cmd([f'{ds.name}_res.csv', f'{ds.name}_ang.csv', '4d.dat', f'{ds.name}_4d', f'{ds.name}'], args.dry_run)
 
+
+# *************************************************************************
 def run_nr(ds: Dataset, nr: NonRedundantization):
     if nr == NonRedundantization.NR1:
         NR.NR1(ds.name, '4d.dat', f'{ds.name}_{nr.name}', f'{ds.name}_4d.csv')
@@ -55,14 +63,8 @@ def run_nr(ds: Dataset, nr: NonRedundantization):
         dst_path = os.path.join(ds.name, f'{ds.name}_{nr.name}.csv')
         shutil.copyfile(src_path, dst_path)
 
-def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
-    unique_name = f"{ds.name}_{nr.name}_{meth.name}_{cf.name}"
-    # print(f"Processing {unique_name} case")
-    # NR.NR1(costam, costam, args.encoded_4d_cols_file)
-    if cf == CorrectionFactor.Yes:
-        # zrob ponownie costam
-        pass
 
+# *************************************************************************
 def run_papa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./snns_run_and_compile_data.py', os.path.join(ds.name, 'seq_files'), '4d.dat',
                    f'{ds.name}_ang.csv', f'{ds.name}', 'papa'], args.dry_run)
@@ -105,6 +107,15 @@ def MLPxval(ds: Dataset, nr: NonRedundantization):
     # TODO
     pass
 
+def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
+    unique_name = f"{ds.name}_{nr.name}_{meth.name}_{cf.name}"
+    # print(f"Processing {unique_name} case")
+    # NR.NR1(costam, costam, args.encoded_4d_cols_file)
+    if cf == CorrectionFactor.Yes:
+        # zrob ponownie costam
+        pass
+
+
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     # TODO
     pass
@@ -117,8 +128,7 @@ args = parser.parse_args()
 for ds in Dataset:
     preprocessing(ds)
     for nr in NonRedundantization:
-        # TODO do/run nonredudenentatzejszon(nr)
-        pass
+        run_nr(ds, nr)
     for meth in MLMethod:
         for cf in CorrectionFactor:
             process(ds, nr, meth, cf)
