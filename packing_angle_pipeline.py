@@ -2,6 +2,9 @@ from enum import Enum, auto
 import os
 import argparse
 import utils
+import NR
+import shutil
+
 
 class Dataset(Enum):
     PrePAPA = auto()
@@ -32,13 +35,25 @@ def preprocessing(ds: Dataset):
     run_encode_4d(ds)
 
 def run_compile_angles(ds: Dataset):
-    utils.run_cmd(['./compile_angles.py', '--directory', ds.name, '--csv-fil', f'{ds.name}_ang'], args.dry_run)
+    utils.run_cmd(['./compile_angles.py', '--directory', ds.name, '--csv-file', f'{ds.name}_ang'], args.dry_run)
 
 def run_find_VHVLres(ds: Dataset):
     utils.run_cmd(['./find_VHVLres.py', ds.name, f'{ds.name}_res'], args.dry_run)
 
 def run_encode_4d(ds: Dataset):
-    utils.run_cmd([f'{ds.name}_res.csv', f'{ds.name}_ang.csv', '4d.dat', f'{ds.name}_4d', f'{ds.name}'])
+    utils.run_cmd([f'{ds.name}_res.csv', f'{ds.name}_ang.csv', '4d.dat', f'{ds.name}_4d', f'{ds.name}'], args.dry_run)
+
+def run_nr(ds: Dataset, nr: NonRedundantization):
+    if nr == NonRedundantization.NR1:
+        NR.NR1(ds.name, '4d.dat', f'{ds.name}_{nr.name}', f'{ds.name}_4d.csv')
+    elif nr == NonRedundantization.NR2:
+        NR.NR2(f'{ds.name}_4d', '4d.dat', f'{ds.name}_{nr.name}')
+    elif nr == NonRedundantization.NR3:
+        NR.NR3(f'{ds.name}_4d', '4d.dat', f'{ds.name}_{nr.name}')
+    else:
+        src_path = os.path.join(ds.name, f'{ds.name}_4d.csv')
+        dst_path = os.path.join(ds.name, f'{ds.name}_{nr.name}.csv')
+        shutil.copyfile(src_path, dst_path)
 
 def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
     unique_name = f"{ds.name}_{nr.name}_{meth.name}_{cf.name}"
@@ -49,37 +64,50 @@ def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: Correction
         pass
 
 def run_papa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    utils.run_cmd(['./snns_run_and_compile_data.py', os.path.join(ds.name, 'seq_files'), '4d.dat', 
-    f'{ds.name}_ang.csv', f'{ds.name}', 'papa'])
+    utils.run_cmd(['./snns_run_and_compile_data.py', os.path.join(ds.name, 'seq_files'), '4d.dat',
+                   f'{ds.name}_ang.csv', f'{ds.name}', 'papa'], args.dry_run)
 
 def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    utils.run_cmd(['csv2arff', '-norm', '-ni', 'in4d.dat', 'angle', f'{ds.name}_{nr.name}_4d.csv', 
-    f'> {ds.name}_{nr.name}_{meth.name}.arff'])
+    with open(f'{ds.name}_{nr.name}_{meth.name}.arff', 'w') as f:
+        utils.run_cmd(['csv2arff', '-norm', '-ni', 'in4d.dat', 'angle', f'{ds.name}_{nr.name}_4d.csv'],
+                      args.dry_run, stdout=f)
     pat_path = os.path.join('SNNS', 'papa', 'training', 'final.pat')
-    utils.run_cmd(['arff2snns', f'{ds.name}_{nr.name}_{meth.name}.arff', f'> {pat_path}'])
-    utils.run_cmd(['batchman', '-f', f'> {pat_path}'])
-    install_path = os.path.join('SNNS', 'papa', 'training', 'install.sh')
-    utils.run_cmd([f'./{install_path}', f'$HOME/{ds.name}_{nr.name}_{meth.name}'])
-    utils.run_cmd(['./snns_run_and_compile_data.py', os.path.join(ds.name, 'seq_files'), '4d.dat', 
-    f'{ds.name}_ang.csv', f'{ds.name}', f'~/{ds.name}_{nr.name}_{'RetrainedPAPA'}/papa'])
+    with open(pat_path) as f:
+        utils.run_cmd(['arff2snns', f'{ds.name}_{nr.name}_{meth.name}.arff'], args.dry_run, stdout=f)
 
-def run_snns(ds: Dataset):
+    utils.run_cmd(['batchman', '-f', 'final_training.cmd'], args.dry_run)
+
+    install_path = os.path.join('SNNS', 'papa', 'training', 'install.sh')
+    home_dir = os.environ['HOME']
+    utils.run_cmd([f'./{install_path}', f'{home_dir}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
+
+    utils.run_cmd(['./snns_run_and_compile_data.py', os.path.join(ds.name, 'seq_files'), '4d.dat',
+                   f'{ds.name}_ang.csv', f'{ds.name}', f'~/{ds.name}_{nr.name}_RetrainedPAPA/papa'],
+                  args.dry_run)
+
+def run_snns(ds: Dataset, meth: MLMethod):
     utils.run_cmd(['./pdb2seq.py', ds.name])
-    if ds.name == 'OrigPAPA':
-        run_papa()
-    elif ds.name == 'RetrainedPAPA':
-        run_newpapa()
     # distinguish between making a new papa and running the old papa
+    if meth == MLMethod.OrigPAPA:
+        run_papa()
+    elif meth == MLMethod.RetrainedPAPA:
+        run_newpapa()
 
 def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
+    # TODO Should we train/test on new/old data?
     utils.run_cmd(['./splitlines_csv2arff_MLP.py', ds.name, '4d.dat', f'{ds.name}_{nr.name}_4d.csv',
-    -----test-on-the-opposite---, 'in4d.dat', ds.name])
+                   f'{ds.name}_{nr.name}_4d.csv', 'in4d.dat', ds.name], args.dry_run)
     utils.run_cmd(['./extract_data_from_logfiles.py', os.path.join(ds.name, 'testing_data'), 'graph.dat',
-    f'{ds.name}_{nr.name}'])
+                   f'{ds.name}_{nr.name}'], args.dry_run)
 
+# multilayer perceptron cross validation
 def MLPxval(ds: Dataset, nr: NonRedundantization):
-     
+    # TODO
+    pass
+
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
+    # TODO
+    pass
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
@@ -89,6 +117,8 @@ args = parser.parse_args()
 for ds in Dataset:
     preprocessing(ds)
     for nr in NonRedundantization:
-        for meth in MLMethod:
-            for cf in CorrectionFactor:
-                process(ds, nr, meth, cf)
+        # TODO do/run nonredudenentatzejszon(nr)
+        pass
+    for meth in MLMethod:
+        for cf in CorrectionFactor:
+            process(ds, nr, meth, cf)

@@ -21,9 +21,6 @@ Commandline input: 1) Directory
 import os
 import sys
 import pandas as pd
-import numpy as np
-import re
-import math
 import stat
 import subprocess
 
