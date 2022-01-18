@@ -7,6 +7,7 @@ import argparse
 import utils
 import NR
 import shutil
+import stat
 
 
 # *************************************************************************
@@ -103,9 +104,24 @@ def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
                    f'{ds.name}_{nr.name}'], args.dry_run)
 
 # multilayer perceptron cross validation
+def build_MLPxval_script(ds: Dataset, nr: NonRedundantization):
+    temp = open('temp', 'wb')
+    with open('runWekaMLP10FXval.sh', 'r') as f:
+        for line in f:
+            if line.startswith('DATA'):
+                line = line.strip() + f'{ds.name}\n'
+            temp.write(line)
+    temp.close()
+    name_for_script = f'Xval_{ds.name}_{nr.name}.sh'
+    shutil.move('temp', os.path.join(ds.dataset, name_for_script))
+    os.chmod(name_for_script, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC | stat.S_IRGRP | stat.S_IXGRP | stat.S_IWGRP)
+    args = ['bash', name_for_script]
+    print(f'Running {" ".join(args)}')
+    utils.run_cmd([f'./{name_for_script}'], args.dry_run)
+
 def MLPxval(ds: Dataset, nr: NonRedundantization):
     utils.run_cmd(['./split_10.py', f'{ds.name}_{nr.name}_4d.csv', '4d.dat', f'{ds.name}_{nr.name}_xval'], args.dry_run)
-    #  add part which edits xval file
+    #  create all of the outputs
     pass
 
 def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
