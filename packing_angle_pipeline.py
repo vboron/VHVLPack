@@ -104,7 +104,8 @@ def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 
 # multilayer perceptron cross validation
 def MLPxval(ds: Dataset, nr: NonRedundantization):
-    # TODO
+    utils.run_cmd(['./split_10.py', f'{ds.name}_{nr.name}_4d.csv', '4d.dat', f'{ds.name}_{nr.name}_xval'], args.dry_run)
+    #  add part which edits xval file
     pass
 
 def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
