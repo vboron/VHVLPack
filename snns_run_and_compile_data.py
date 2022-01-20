@@ -1,20 +1,11 @@
 #!/usr/bin/env python3
 """
-Program:    extract_data_from_logfiles
-File:       extract_data_from_logfiles.py
-Version:    V2.0
-Date:       11.23.2021
 Function:   Compile the data from .log produced when dataset is run through machine learning model.
 Description:
 ============
 Program extracts lines of statistics from .log files produced using MLP through Weka framework and converts them into a
 dataframe.
 
-Commandline input: 1) Directory where the .seq files are
-                   3) File containing angles
-                   4) Data tag
-                   5) Which papa version is being called
-                   6) Name for output file
 ------------------------------------------------
 """
 import argparse
