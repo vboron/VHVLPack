@@ -107,8 +107,9 @@ def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
                    f'{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 # multilayer perceptron cross validation
-def MLPxval(ds: Dataset, nr: NonRedundantization):
-    utils.run_cmd(['./split_10.py', f'{ds.name}_{nr.name}_4d.csv', '4d.dat', f'{ds.name}_{nr.name}_xval'], args.dry_run)
+def MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
+    utils.run_cmd(['./split_10.py', '--input_csv', f'{ds.name}_{nr.name}_4d.csv', '--columns', '4d.dat',
+                   '--directory', ds.name], args.dry_run)
 
     classifier='weka.classifiers.functions.MultilayerPerceptron'
     env = {'WEKA': '/usr/local/apps/weka-3-8-3'}
