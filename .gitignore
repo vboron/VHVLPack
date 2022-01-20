@@ -16,6 +16,11 @@ clean_unique_af2/
 clean_LHChothia/
 PostAF2/
 PreAF2/
+A/
+B/
+C/
+D/
+E/
 *.csv
 *.arff
 *.swp
