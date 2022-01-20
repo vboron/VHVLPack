@@ -102,8 +102,9 @@ def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--directory', ds.name, '--columns_4d', '4d.dat', '--training_csv',
                    f'{ds.name}_{nr.name}_4d.csv', '--testing_csv', f'{ds.name}_{nr.name}_4d.csv', '--input_cols',
                    'in4d.dat', ds.name], args.dry_run)
-    utils.run_cmd(['./extract_data_from_logfiles.py', os.path.join(ds.name, 'testing_data'), 'graph.dat',
-                   f'{ds.name}_{nr.name}_WekaMLP'], args.dry_run)
+    utils.run_cmd(['./extract_data_from_logfiles.py', '--directory', os.path.join(ds.name, 'testing_data'),
+                   '--columns_postprocessing', 'post_processing.dat', '--output_name',
+                   f'{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 # multilayer perceptron cross validation
 def MLPxval(ds: Dataset, nr: NonRedundantization):
@@ -120,7 +121,7 @@ def MLPxval(ds: Dataset, nr: NonRedundantization):
             utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
         # test
         with open(f'{ds.name}/{i}_test.log') as f:
-            cmd = ['java', classifier, '-v', '-T', f'{ds.name}/{nr.name}_test_{i}.arff', '-l',
+            cmd = ['java', classifier, '-v', '-T', '-o', f'{ds.name}/{nr.name}_test_{i}.arff', '-l',
                    f'{ds.name}/fold_{i}.model']
             utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
 
