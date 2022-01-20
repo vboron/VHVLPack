@@ -51,7 +51,7 @@ def make_seq_pdb_dict(dir_of_pdbs):
 
     return seq_dict
 
-# *************************************************************************
+
 def filter_df(column_names, csv_file, seq_dict):
 
     col = []
@@ -67,11 +67,13 @@ def filter_df(column_names, csv_file, seq_dict):
 
     return nr1_df
 
-def NR1(dir_dataset_pdbs, encoded_4d_cols_file, out_file, encoded_csv):
+
+def NR1(dir_dataset_pdbs, cols_4d, out_file, encoded_csv):
     dictionary = make_seq_pdb_dict(dir_dataset_pdbs)
-    nr1_dataframe = filter_df(encoded_4d_cols_file, encoded_csv, dictionary)
+    nr1_dataframe = filter_df(cols_4d, encoded_csv, dictionary)
     nr1_dataframe.to_csv(f'{out_file}.csv', index=False)
 
+# *************************************************************************
 def NR2(encoded_csv_file, column_file, out_file):
     """Read the .csv file containing encoded residues and angles and combine lines that have the same PDB code and
     the same encoded sequence into one line, averaging the angle
@@ -120,6 +122,7 @@ def NR2(encoded_csv_file, column_file, out_file):
 
     seq_df.to_csv('{}.csv'.format(out_file), index=False)
 
+# *************************************************************************
 def NR3(encoded_csv_file, column_file, out_file):
     """Read the .csv file containing encoded residues and angles and combine lines that have the same PDB code and
     the same encoded sequence into one line, averaging the angle
