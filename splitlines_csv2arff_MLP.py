@@ -23,6 +23,7 @@ import sys
 import pandas as pd
 import stat
 import subprocess
+import utils
 
 # *************************************************************************
 def make_separate_files():
@@ -64,46 +65,28 @@ def make_separate_files():
 # *************************************************************************
 def run_weka(files, train_file):
 
+    classifier='weka.classifiers.functions.MultilayerPerceptron'
+    env = {'WEKA': '/usr/local/apps/weka-3-8-3'}
+    env['CLASSPATH'] = f'{env["WEKA"]}/weka.jar'
+
+    with open(os.path.join(sys.argv[6], 'testing_data', f'{sys.argv[6]}_train.log'), 'w') as f:
+        cmd = ['java', classifier, '-v', '-x', 3, '-H', 20, '-t', train_file, '-d', f'{sys.argv[6]}.model']
+        utils.cmd_run(cmd, stdout=f, env=env)
+
     arff_files = []
     for file in files:
         arff_file = f'{file[:-4]}.arff'
         arff_files.append(arff_file)
-        with open(arff_file, 'w') as arff_out:
+        with open(arff_file, 'w') as f:
             try:
                 args = ['csv2arff', '-ni', sys.argv[5], 'angle', file]
-                subprocess.run(args, stdout=arff_out, stderr=subprocess.DEVNULL)
+                subprocess.run(args, stdout=f, stderr=subprocess.DEVNULL)
             except:
-                print('Error: file cannot be converted unto arff. Check line 60')
+                print('Error: file cannot be converted unto arff.')
 
-    # edit lines in Weka script:
-    # DATA=${BASEPATH}/
-    # TRAIN=
-    # INPUTS=
-    name_for_script = 'MLP_for_{}.sh'.format(sys.argv[6])
-    name_for_script = os.path.join(directory, name_for_script)
-    print(f'Opening {sys.argv[6]}')
-    with open(sys.argv[6], 'r+') as weka_script:
-        lines = [line.rstrip('\n') for line in weka_script]
-        print(f'Writing to {name_for_script}')
-        with open(name_for_script, 'w') as script:
-            for index, line in enumerate(lines):
-                if line.startswith('DATA'):
-                    lines[index] += directory
-                elif line.startswith('TRAIN'):
-                    lines[index] += train_file
-                elif line.startswith('INPUTS'):
-                    lines[index] += sys.argv[5]
-                elif line.startswith('DATASET'):
-                    lines[index] += sys.argv[6]
-                elif line.startswith('MODEL'):
-                    lines[index] += sys.argv[6]
-
-            lines = '\n'.join(lines)
-            script.write(lines)
-    os.chmod(name_for_script, stat.S_IREAD | stat.S_IWRITE | stat.S_IEXEC | stat.S_IRGRP | stat.S_IXGRP | stat.S_IWGRP)
-    args = ['bash', name_for_script]
-    print(f'Running {" ".join(args)}')
-    subprocess.run(args)
+        with open(os.path.join(sys.argv[6], 'testing_data', f'{file[:-4]}_test.log'), 'w') as f:
+            cmd = ['java', classifier, '-v', '-T', arff_file, '-p', 0, '-l', f'{sys.argv[6]}.model']
+            utils.run_cmd(cmd, stdout=f, env=env)
 
 # *************************************************************************
 # Main
