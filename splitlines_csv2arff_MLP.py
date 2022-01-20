@@ -81,7 +81,7 @@ def run_weka(files, train_file, in_cols, dataset):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
     parser.add_argument('--directory', help='Directory of datset', required=True)
-    parser.add_argument('--columns_4d', help='Directory where .seq files are', required=True)
+    parser.add_argument('--columns_4d', help='columns for reading encoded file', required=True)
     parser.add_argument('--training_csv', help='.csv file used to train model for MLP', required=True)
     parser.add_argument('--testing_csv', help='.csv file which will be split for testing', required=True)
     parser.add_argument('--input_cols', help='Columns for .csv conversion', required=True)
