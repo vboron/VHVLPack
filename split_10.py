@@ -48,8 +48,8 @@ def make_group(directory, df, size, out_name):
     i = 1
     for row in df:
         if i <= 10:
-            n_test = f'{out_name}_test_{i}'
-            n_train = f'{out_name}_train_{i}'
+            n_test = f'{out_name}_{i}_test'
+            n_train = f'{out_name}_{i}_train'
 
             test_df = df.iloc[(size*(i-1)):(size*i)]
             train_df = df[~df.isin(test_df)].dropna()
