@@ -1,10 +1,5 @@
 #!/usr/bin/python3
 """
-Program:    encode_4d
-File:       encode_4d.py
-
-Version:    V1.0
-Date:       09.03.2021
 Function:   Encode VH/VL packing amino acids into 4d vectors for machine learning.
 
 Description:
@@ -19,26 +14,17 @@ code	L38a	L38b	L38c	L38d	L40a	...     angle
 15C8_1	0	       5	   4	-0.69	   0            -42.3
 1A0Q_1	0.5	       6	   4	-0.4	   0            -45.6
 
-Commandline inputs: 1) .csv file containing the identities of residues at the VHVL positions
-                    2) file containing the packing angles for each .pdb
-                    3) the .dat file that contains all of the names for the encoded columns e.g. code, L38a, L38b, ...,
-                    H105e, angle
-                    4) name of outputted .csv file
-                    5) directory where file will be outputted
 ------------------------------------------------
 """
 # *************************************************************************
-# Import libraries
-
-# sys to take args from commandline, os for reading directory, pandas for making dataframes
-import sys
+import argparse
 import pandas as pd
 import numpy as np
 import os
 
 
 # *************************************************************************
-def make_res_seq():
+def make_res_seq(res_csv):
     """Take all individual residue identities for a pdb file and combine them into a single sequence for
     each individual pdb
 
@@ -54,7 +40,7 @@ def make_res_seq():
 
     # read file with residues as a df
     col1 = ['code', 'L/H position', 'residue']
-    res_df = pd.read_csv(sys.argv[1], usecols=col1)
+    res_df = pd.read_csv(res_csv, usecols=col1)
 
     # Add all items under the 'residue' column into one field
     aggregation_func = {'residue': 'sum'}
@@ -153,7 +139,7 @@ def encode(table):
 
 
 # *************************************************************************
-def combine_by_pdb_code(table):
+def combine_by_pdb_code(table, ang_csv, col_names):
     """Take all individual residue identities for a pdb file and combine them into a single sequence for
     each individual pdb
 
@@ -203,7 +189,7 @@ def combine_by_pdb_code(table):
     # ('trash' column created because the adjustment above that corrects data removal
     # ends up creating a blank column)
     col2 = []
-    for i in open(sys.argv[3]).readlines():
+    for i in open(col_names).readlines():
         i = i.strip('\n')
         col2.append(i)
 
@@ -223,7 +209,7 @@ def combine_by_pdb_code(table):
     col3 = ['code', 'angle']
 
     # Take the second input from the commandline (which will be the table of pdb codes and their packing angles)
-    angle_file = pd.read_csv(sys.argv[2], usecols=col3)
+    angle_file = pd.read_csv(ang_csv, usecols=col3)
 
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file
@@ -240,14 +226,19 @@ def combine_by_pdb_code(table):
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
-directory = sys.argv[5]
+parser = argparse.ArgumentParser(description='Program for compiling angles')
+parser.add_argument('--residue_csv', help='.csv file containing the residue identities for VHVL packing', required=True)
+parser.add_argument('--angle_csv', help='.csv file containing VHVL packing angles', required=True)
+parser.add_argument('--columns', help='.dat file with 4d column names for residues', required=True)
+parser.add_argument('--directory', help='Directory of pdb files', required=True)
+parser.add_argument('--csv_output', help='Name of the csv file that will be the output', required=True)
+args = parser.parse_args()
 
-res_seq = make_res_seq()
-#print(res_seq)
+res_seq = make_res_seq(args.residue_csv)
 
 parameters = encode(res_seq)
-# print(parameters.groupby(['code']))
 
-results = combine_by_pdb_code(parameters)
-csv_path = os.path.join(directory, (sys.argv[4] + '.csv'))
+results = combine_by_pdb_code(parameters, args.angle_csv, args.columns)
+
+csv_path = os.path.join(args.directory, (args.csv_output + '.csv'))
 results.to_csv(csv_path, index=False)
