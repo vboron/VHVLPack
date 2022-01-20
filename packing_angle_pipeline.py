@@ -131,8 +131,8 @@ def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: Correction
 
 
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    if file == {ds.name}_{nr.name}
-    pass
+    if file == f'{ds.name}_{nr.name}':
+        pass
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
