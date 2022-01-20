@@ -117,12 +117,12 @@ def MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     for i in range (1, 11):
         # train
         with open(f'{ds.name}/{i}_train.log', 'w') as f:
-            cmd = ['java', classifier, '-v', '-x', 10, '-t', os.path.join(ds.name, f'{nr.name}_train_{i}.arff'),
+            cmd = ['java', classifier, '-v', '-x', 10, '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
                 '-d', f'{ds.name}/fold_{i}.model']
             utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
         # test
         with open(f'{ds.name}/{i}_test.log') as f:
-            cmd = ['java', classifier, '-v', '-o', '-T', os.path.join(ds.name, f'{nr.name}_test_{i}.arff'), '-l',
+            cmd = ['java', classifier, '-v', '-o', '-T', os.path.join(ds.name, f'{nr.name}_{i}_test.arff'), '-l',
                    f'{ds.name}/fold_{i}.model']
             utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
 
