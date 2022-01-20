@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 """
-Program:    findVHVLResidues
-File:       findVHVLResidues.py
-
-Version:    V1.0
-Date:       25.03.2021
 Function:   Find the residue identities corresponding to the numbering for VH-VL-packing relevant residues
 
 Description:
@@ -18,22 +13,16 @@ e.g.
     5DMG_2          L41       G
     5DMG_2          L44       P
 
-Commandline inputs: 1) directory path for where the .pdb files are stored
-                    2) name of outputted .csv file
-
 --------------------------------------------------------------------------
 """
 # *************************************************************************
-# Import libraries
-
-# sys to take args from commandline, os for reading directory, and pandas for building dataframes
 import os
-import sys
 import pandas as pd
 from utils import one_letter_code
+import argparse
 
 # *************************************************************************
-def read_pdbfiles_as_lines():
+def read_pdbfiles_as_lines(directory):
     """Read PDB files as lines, then make a dictionary of the PDB code and all the lines that start with 'ATOM'
 
     Return: pdb_dict    --- Dictionary of PDB names with all of the lines containing atom details
@@ -50,7 +39,7 @@ def read_pdbfiles_as_lines():
         if file.endswith(".pdb") or file.endswith(".ent"):
 
             # Prepends the directory path to the front of the file name to create full filepath
-            files.append('{}/{}'.format(directory, file))
+            files.append(os.path.join(directory, file))
 
     pdb_dict = {}
 
@@ -59,7 +48,7 @@ def read_pdbfiles_as_lines():
         with open(structure_file, "r") as text_file:
 
             # Remove the path and the extension from the name of the PDB file
-            structure_file = structure_file.replace('{}/'.format(directory), '')
+            structure_file = structure_file.replace(f'{directory}/', '')
             structure_file = structure_file[:-4]
 
             # Search for lines that contain 'ATOM' and add to atom_lines list
@@ -110,7 +99,7 @@ def prep_table(dictionary):
                 continue
 
             # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
-            lhposition = str("{}{}".format(chain, res_num))
+            lhposition = str(f'{chain}{res_num}')
             res_info = [pdb_code, chain, res_one, res_num, lhposition]
             table.append(res_info)
 
@@ -133,10 +122,6 @@ def vh_vl_relevant_residues(vtable):
     """
 
     # Look for rows that contain the specified residue locations
-
-    # Incorrect, the following line also (erroneously) matched e.g. H1050
-    # vtable = vtable[vtable['L/H position'].str.contains('L38|L40|L41|L44|L46|L87|H33|H42|H45|H60|H62|H91|H105')]
-
     good_positions = ['L38', 'L40', 'L41', 'L44', 'L46', 'L87', 'H33', 'H42', 'H45', 'H60', 'H62', 'H91', 'H105']
     vtable = vtable[vtable['L/H position'].isin(good_positions)]
 
@@ -148,11 +133,14 @@ def vh_vl_relevant_residues(vtable):
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
+parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
+parser.add_argument('--directory', help='Directory of pdb files', required=True)
+parser.add_argument('--csv_output', help='Name of the csv file that will be the output', required=True)
+args = parser.parse_args()
 
-directory = sys.argv[1]
-csv_path = os.path.join(directory, (sys.argv[2] + '.csv'))
+csv_path = os.path.join(args.directory, (args.csv_output + '.csv'))
 
-pdb_lines = read_pdbfiles_as_lines()
+pdb_lines = read_pdbfiles_as_lines(args.directory)
 
 init_table = prep_table(pdb_lines)
 
