@@ -67,8 +67,9 @@ def run_nr(ds: Dataset, nr: NonRedundantization):
 
 # *************************************************************************
 def run_papa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    utils.run_cmd(['./snns_run_and_compile_data.py', os.path.join(ds.name, 'seq_files'), '4d.dat',
-                   f'{ds.name}_ang.csv', f'{ds.name}', 'papa', f'{ds.name}_OrigPAPA'], args.dry_run)
+    utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', ds.name, '--seq_directory', os.path.join(ds.name,
+                   'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--which_papa', 'papa',
+                   f'{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     with open(f'{ds.name}_{nr.name}_{meth.name}.arff', 'w') as f:
@@ -84,8 +85,9 @@ def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     home_dir = os.environ['HOME']
     utils.run_cmd([f'./{install_path}', f'{home_dir}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
-    utils.run_cmd(['./snns_run_and_compile_data.py', os.path.join(ds.name, 'seq_files'), '4d.dat',
-                   f'{ds.name}_ang.csv', f'{ds.name}', f'~/{ds.name}_{nr.name}_RetrainedPAPA/papa', f'{ds.name}_RetrainedPAPA'],
+    utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', {ds.name}, '--seq_directory',
+                   os.path.join(ds.name, 'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--csv_output',
+                   f'{ds.name}_{nr.name}_{meth.name}', '--which_papa', f'~/{ds.name}_{nr.name}_{meth.name}/papa'],
                   args.dry_run)
 
 def run_snns(ds: Dataset, meth: MLMethod):
