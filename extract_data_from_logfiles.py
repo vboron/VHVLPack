@@ -1,41 +1,28 @@
 #!/usr/bin/env python3
 """
-Program:    extract_data_from_logfiles
-File:       extract_data_from_logfiles.py
-Version:    V2.0
-Date:       11.23.2021
 Function:   Compile the data from .log produced when dataset is run through machine learning model.
 Description:
 ============
 Program extracts lines of statistics from .log files produced using MLP through Weka framework and converts them into a
 dataframe.
-
-Commandline input: 1) Directory where the .log files are
-                   2) .dat file for columns
-                   3) Dataset name
 ------------------------------------------------
 """
 import os
-import sys
 import pandas as pd
-import numpy as np
 import re
-import math
+import argparse
 
 # *************************************************************************
-def stats_to_df():
-    """ Read the directory and extract .log files. For each log file, extract the predicted angle, actual angle and 
+def stats_to_df(direct, columns, csv_out):
+    """ Read the directory and extract .log files. For each log file, extract the predicted angle, actual angle and
         error, and put into dataframe. Export as a .csv file.
 
         11.23.2021  Original   By: VAB
     """
 
-    # Take the directory where the .log files are from commandline
-    direct = sys.argv[1]
-    cwd = os.getcwd()
     # Specify column names for .csv file that will be made from the log files
     col = []
-    for i in open(sys.argv[2]).readlines():
+    for i in open(columns).readlines():
         i = i.strip('\n')
         col.append(i)
 
@@ -61,18 +48,24 @@ def stats_to_df():
                     pred = float(line_list[2])
                     angle = float(line_list[1])
                     error = float(line_list[3])
-                    all = [code, angle, pred, error]
-                    all_data.append(all)
+                    _all_ = [code, angle, pred, error]
+                    all_data.append(_all_)
 
 
     # Make .csv files for all of the data, splitting it into files that have all the data, only outliers, and only the
     # data withing the 'norm'
     df_a = pd.DataFrame(data=all_data, columns=col)
-    path = os.path.join(cwd, direct,f'all_{sys.argv[3]}.csv')
+    path = os.path.join(direct, f'{csv_out}.csv')
     df_a.to_csv(path, index=False)
 
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
+    parser.add_argument('--directory', help='Directory where log files are', required=True)
+    parser.add_argument('--columns_postprocessing', help='Columns for postprocessing', required=True)
+    parser.add_argument('--output_name', help='name for .csv file for data ', required=True)
+    args = parser.parse_args()
 
-stats_to_df()
+    stats_to_df(args.directory, args.columns_postprocessing, args.output_names)
