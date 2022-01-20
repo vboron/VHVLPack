@@ -38,7 +38,7 @@ def calc_group_size(input_csv, columns):
 
 
 # *************************************************************************
-def make_group(directory, df, size):
+def make_group(directory, df, size, out_name):
     """Create test/train files with test files containing 10% segments of data and the train file the other 90%
     Input:  df        --- .csv file containing the encoded data read as a dataframe
             size        --- the number of data lines that will be
@@ -48,8 +48,8 @@ def make_group(directory, df, size):
     i = 1
     for row in df:
         if i <= 10:
-            n_test = f'test_{i}'
-            n_train = f'train_{i}'
+            n_test = f'{out_name}_test_{i}'
+            n_train = f'{out_name}_train_{i}'
 
             test_df = df.iloc[(size*(i-1)):(size*i)]
             train_df = df[~df.isin(test_df)].dropna()
@@ -67,8 +67,9 @@ if __name__ == '__main__':
     parser.add_argument('--input_csv', help='File with data to be split', required=True)
     parser.add_argument('--columns', help='Columns to read input file', required=True)
     parser.add_argument('--directory', help='Directory where files will go (dataset dir)', required=True)
+    parser.add_argument('--output_tag', help='dataset tag that will come before Test/train_n.csv', required=True)
     args = parser.parse_args()
 
     data, groups = calc_group_size(args.input_csv, args.columns)
 
-    files = make_group(args.directory, data, groups)
+    files = make_group(args.directory, data, groups, args.output_tag)
