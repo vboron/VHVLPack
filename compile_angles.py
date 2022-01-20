@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 """
-Version:    V1.1
-Date:       15.03.2021
 Function:   Calculate packing angles between VH and VL domains for all PDB files available and output csv.
 
 Description:
@@ -13,8 +11,6 @@ e.g.
       pdb       angle
    6NOV_2  -44.016817
 
-Commandline inputs: 1) directory which contains .pdb files for processing
-                    2) name of outputted .csv file
 --------------------------------------------------------------------------
 """
 # *************************************************************************
@@ -23,7 +19,6 @@ Commandline inputs: 1) directory which contains .pdb files for processing
 # sys to take args from commandline, os for reading directory, subprocess for running external program, pandas
 # for making dataframes
 import os
-import sys
 import pandas as pd
 import subprocess
 import argparse
@@ -46,15 +41,14 @@ def buid_table_of_angles():
 
         19.03.2021  Original   By: VAB
         """
-    
-    angle_results = []
+
     pdb_files = []
 
     for file in os.listdir(args.directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
             code = file[:-4]
             pdb_files.append((code, os.path.join(args.directory, file)))
-    
+
     file_data = []
     # Takes the two lists made in files and combines them into lists of tuples that have
     # the name linked to the file.
@@ -71,7 +65,7 @@ def buid_table_of_angles():
         # Converts the output of the subprocess into normal string
         angle = angle.split()
         angle = float(angle[1])
- 
+
         data = [pdb_code, angle]
         file_data.append(data)
 
@@ -87,10 +81,10 @@ def buid_table_of_angles():
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--directory', help='Directory of pdb files', required=True)
-parser.add_argument('--csv-file', help='Name of the csv file', required=True)
+parser.add_argument('--csv_output', help='Name of the csv file that will be the output', required=True)
 args = parser.parse_args()
 
-csv_path = os.path.join(args.directory, (args.csv_file + '.csv'))
+csv_path = os.path.join(args.directory, (args.csv_output + '.csv'))
 
 result = buid_table_of_angles()
 
