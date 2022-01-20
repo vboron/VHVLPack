@@ -1,5 +1,5 @@
+import argparse
 import os
-import sys
 import pandas as pd
 from utils import one_letter_code
 
@@ -88,8 +88,7 @@ def NR2(encoded_csv_file, column_file, out_file):
         col1.append(i)
 
     # Take the commandline input as the directory, otherwise look in current directory
-    if sys.argv[1] != '':
-        res_file = pd.read_csv(encoded_csv_file, usecols=col1)
+    res_file = pd.read_csv(encoded_csv_file, usecols=col1)
 
     # angle needs to be converted to a float to be averaged
     res_file['angle'] = res_file['angle'].astype(float)
