@@ -11,34 +11,32 @@ Program extracts lines of statistics from .log files produced using MLP through 
 dataframe.
 
 Commandline input: 1) Directory where the .seq files are
-                   2) .dat file for columns
                    3) File containing angles
                    4) Data tag
                    5) Which papa version is being called
+                   6) Name for output file
 ------------------------------------------------
 """
+import argparse
 import os
 import sys
 import pandas as pd
-import numpy as np
-import math
 import subprocess
 
 # *************************************************************************
-def build_snns_dataframe():
-
+def build_snns_dataframe(directory, seq_directory, angle_file, papa_version):
     seq_files = []
-    for file in os.listdir(directory):
+    for file in os.listdir(os.path.join(directory, seq_directory)):
         if file.endswith('.seq'):
             code = file[:-4]
-            seq_files.append((code, os.path.join(directory, file)))
+            seq_files.append((code, os.path.join(directory, seq_directory, file)))
 
-    df_ang = pd.read_csv(sys.argv[3], usecols=['code', 'angle'])
+    df_ang = pd.read_csv(angle_file, usecols=['code', 'angle'])
 
     p_col = ['code', 'predicted']
     file_data = []
     for code, seq_file in seq_files:
-        pred = float(subprocess.check_output([sys.argv[5], '-q', seq_file]))
+        pred = float(subprocess.check_output([papa_version, '-q', seq_file]))
         data = [code, pred]
         file_data.append(data)
 
@@ -55,13 +53,15 @@ def build_snns_dataframe():
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
-directory = sys.argv[1]
+parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
+parser.add_argument('--directory', help='Directory of datset', required=True)
+parser.add_argument('--seq_directory', help='Directory where .seq files are', required=True)
+parser.add_argument('--angle_csv', help='.csv file containing VHVL packing angles', required=True)
+parser.add_argument('--csv_output', help='Name of the csv file that will be the output', required=True)
+parser.add_argument('--which_papa', help='Specify the name of the papa version being used: "papa" for just PAPA and "~/name_for_new_papa/papa" for all other versions of papa', required=True)
+args = parser.parse_args()
 
-col = []
-for i in open(sys.argv[2]).readlines():
-    i = i.strip('\n')
-    col.append(i)
-path = os.path.join(directory, (sys.argv[4] + '.csv'))
+path = os.path.join(args.directory, args.seq_directory, (args.csv_output + '.csv'))
 
-result = build_snns_dataframe()
+result = build_snns_dataframe(args.directory, args.seq_directory, args.angle_csv, args.which_papa)
 result.to_csv(path, index=False)
