@@ -28,9 +28,8 @@ def make_separate_files(directory, cols_4d, train_csv, test_csv, in_cols):
         print(f'Running command: {" ".join(cmd)}')
         subprocess.run(cmd, stdout=train_arff, stderr=subprocess.DEVNULL)
 
-    cwd = os.getcwd()
     new_dir = 'testing_data'
-    path = os.path.join(cwd, directory, new_dir)
+    path = os.path.join(directory, new_dir)
     try:
         os.mkdir(path)
     except:
