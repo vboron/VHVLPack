@@ -5,13 +5,6 @@ Description:
 ============
 Program extracts lines of statistics from .log files produced using MLP through Weka framework and converts them into a
 dataframe.
-
-Commandline input: 1) Directory
-                   2) .dat file for columns
-                   3) .csv for training
-                   4) .csv file with data to be split for testing
-                   5) .dat file with csv2arff inputs
-                   6) Name of dataset
 ------------------------------------------------
 """
 import argparse
@@ -23,7 +16,6 @@ import utils
 # *************************************************************************
 def make_separate_files(directory, cols_4d, train_csv, test_csv, in_cols):
     """Create .csv files for each pdb
-    Input:  df        --- .csv file containing the encoded data read as a dataframe
 
     17.05.2021  Original   By: VAB
     15.06.2021  Modified   By: VAB
@@ -32,9 +24,9 @@ def make_separate_files(directory, cols_4d, train_csv, test_csv, in_cols):
     arff_name = f'{directory}.arff'
     arff_path = os.path.join(directory, arff_name)
     with open(arff_path, 'w') as train_arff:
-        args = ['csv2arff', '-v', '-ni', in_cols, 'angle', train_csv]
-        print(f'Running command: {" ".join(args)}')
-        subprocess.run(args, stdout=train_arff, stderr=subprocess.DEVNULL)
+        cmd = ['csv2arff', '-v', '-ni', in_cols, 'angle', train_csv]
+        print(f'Running command: {" ".join(cmd)}')
+        subprocess.run(cmd, stdout=train_arff, stderr=subprocess.DEVNULL)
 
     cwd = os.getcwd()
     new_dir = 'testing_data'
@@ -75,8 +67,8 @@ def run_weka(files, train_file, in_cols, dataset):
         arff_files.append(arff_file)
         with open(arff_file, 'w') as f:
             try:
-                args = ['csv2arff', '-ni', in_cols, 'angle', file]
-                subprocess.run(args, stdout=f, stderr=subprocess.DEVNULL)
+                cmd = ['csv2arff', '-ni', in_cols, 'angle', file]
+                subprocess.run(cmd, stdout=f, stderr=subprocess.DEVNULL)
             except:
                 print('Error: file cannot be converted unto arff.')
 
@@ -84,19 +76,18 @@ def run_weka(files, train_file, in_cols, dataset):
             cmd = ['java', classifier, '-v', '-T', arff_file, '-p', 0, '-l', f'{dataset}.model']
             utils.run_cmd(cmd, stdout=f, env=env)
 
+
 # *************************************************************************
-# Main
-# *************************************************************************
-parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
-parser.add_argument('--directory', help='Directory of datset', required=True)
-parser.add_argument('--columns_4d', help='Directory where .seq files are', required=True)
-parser.add_argument('--training_csv', help='.csv file used to train model for MLP', required=True)
-parser.add_argument('--testing_csv', help='.csv file which will be split for testing', required=True)
-parser.add_argument('--imput_cols', help='Columns for .csv conversion', required=True)
-args = parser.parse_args()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
+    parser.add_argument('--directory', help='Directory of datset', required=True)
+    parser.add_argument('--columns_4d', help='Directory where .seq files are', required=True)
+    parser.add_argument('--training_csv', help='.csv file used to train model for MLP', required=True)
+    parser.add_argument('--testing_csv', help='.csv file which will be split for testing', required=True)
+    parser.add_argument('--input_cols', help='Columns for .csv conversion', required=True)
+    args = parser.parse_args()
 
-list_of_csv_files, training_file = make_separate_files(args.directory, args.columns_4d, args.train_csv,
-                                   args.testing_csv, args.input_cols)
+    list_of_csv_files, training_file = make_separate_files(args.directory, args.columns_4d, args.train_csv,
+                                                           args.testing_csv, args.input_cols)
 
-run_weka(list_of_csv_files, training_file, args.input_cols, args.directory)
-
+    run_weka(list_of_csv_files, training_file, args.input_cols, args.directory)
