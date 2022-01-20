@@ -99,8 +99,9 @@ def run_snns(ds: Dataset, meth: MLMethod):
         run_newpapa()
 
 def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    utils.run_cmd(['./splitlines_csv2arff_MLP.py', ds.name, '4d.dat', f'{ds.name}_{nr.name}_4d.csv',
-                   f'{ds.name}_{nr.name}_4d.csv', 'in4d.dat', ds.name], args.dry_run)
+    utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--directory', ds.name, '--columns_4d', '4d.dat', '--training_csv',
+                   f'{ds.name}_{nr.name}_4d.csv', '--testing_csv', f'{ds.name}_{nr.name}_4d.csv', '--input_cols',
+                   'in4d.dat', ds.name], args.dry_run)
     utils.run_cmd(['./extract_data_from_logfiles.py', os.path.join(ds.name, 'testing_data'), 'graph.dat',
                    f'{ds.name}_{nr.name}_WekaMLP'], args.dry_run)
 
