@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 """
-Program:    log_stats2graph
-File:       log_stats2graph.py
-Version:    V2.0
-Date:       11.23.2021
 Function:   Produce scatter graph of predicted vs. actual packing angles and a file with the statistics for the run.
 Description:
 ============
-The program calculates and then outputs (as a .csv) all relevant statistical data for the run (mean error, RMSE, 
+The program calculates and then outputs (as a .csv) all relevant statistical data for the run (mean error, RMSE,
 RELRMSE, pearson's coefficient, and the best fit lines).
 
 Commandline input: 1) .dat with columns
@@ -37,7 +33,7 @@ def find_normal_and_outliers():
 
         Return: df_n  -- Dataframe containing angles in normal range
                 df_o  -- Dataframe containing angles out of normal range
-                
+
         11.24.2021  Original   By: VAB
     """
 
@@ -52,9 +48,9 @@ def find_normal_and_outliers():
     df_o1 = df_a[df_a['predicted'] >= max_norm]
     df_o2 = df_a[df_a['predicted'] <= min_norm]
     df_o = pd.concat([df_o1, df_o2])
-    
+
     # reset the indexes (as the original ones will be kept) and export as .csv files
-    
+
     df_n = df_n.reset_index()
     path_n = os.path.join(cwd, directory, (f'normal_{sys.argv[3]}.csv'))
     df_n.to_csv(path_n, index=False)
@@ -71,7 +67,7 @@ def find_stats(df_o):
 
         Input:  df_o        -- Dataframe containing angles out of normal range
         Return: stats_df    -- Dataframe with statistics for the model performance
-                
+
         11.24.2021  Original   By: VAB
     """
 
@@ -89,7 +85,7 @@ def find_stats(df_o):
     RELRMSE   = getResult(str(RMSE)).decode('ascii')
 
     # gather all of the relevant run statistics into a single table
-    # .corr() returns the correlation between two columns 
+    # .corr() returns the correlation between two columns
     pearson_a =  df_a_temp['angle'].corr( df_a_temp['predicted'])
 
     mean_abs_err_a =  df_a_temp['error'].mean()
@@ -112,7 +108,7 @@ def find_stats(df_o):
         mean_abs_err_o = None
 
     stat_data = [pearson_a, pearson_o, mean_abs_err_a, mean_abs_err_o, RMSE, RMSE_o, RELRMSE, RELRMSE_o]
-    stat_col = ['pearson_a', 'pearson_o', 'mean_abs_err_a', 'mean_abs_err_o', 'RMSE', 'RMSE_o', 'RELRMSE_a', 
+    stat_col = ['pearson_a', 'pearson_o', 'mean_abs_err_a', 'mean_abs_err_o', 'RMSE', 'RMSE_o', 'RELRMSE_a',
     'RELRMSE_o']
 
     stats_df = pd.DataFrame(data=[stat_data], columns=stat_col)
@@ -153,7 +149,7 @@ def plot_scatter(file_o, file_n, stat_df, file_a):
 
     m3, b3 = np.polyfit(x3, y3, 1)
     plt.plot(x3, m3 * x3 + b3, color=c4, linestyle='dashed', linewidth=1)
-    
+
 
     # Plot the outliers and normal values as scatter plots
     plt.scatter(x2, y2, s=2, color=c2)
@@ -164,7 +160,7 @@ def plot_scatter(file_o, file_n, stat_df, file_a):
     axes.set_xlim([-62, -30])
     axes.set_ylim([-60, -30])
 
-    axes.axline((0, 0), (1, 1), color='k')  
+    axes.axline((0, 0), (1, 1), color='k')
     # y_counter = -60
     # while y_counter < -30:
     #     x_counter = y_counter
@@ -181,7 +177,7 @@ def plot_scatter(file_o, file_n, stat_df, file_a):
 
     plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m3, b3), x=-61, y=-33, fontsize=8, color=c4)
     plt.text(s='RELRMSE (all): {:.3}'.format(float(stat_df['RELRMSE_a'])), x=-61, y=-34, fontsize=8)
-    
+
 
     plt.text(s='-48 < Normal Values < -42', x=-61, y=-38, fontsize=8, color=c2)
 
@@ -197,7 +193,7 @@ def plot_scatter(file_o, file_n, stat_df, file_a):
     stat_df['best_ft_a'] = best_ft_a
     stat_df['bf_slope_a'] = m3
     stat_df['bf_int_a'] = b3
-    
+
     num_outliers = int(file_o['code'].size)
     if num_outliers != 0:
         # Angle values are designated axis names
