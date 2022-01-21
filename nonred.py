@@ -1,4 +1,4 @@
-import argparse
+#!/usr/bin/python3
 import os
 import pandas as pd
 from utils import one_letter_code
