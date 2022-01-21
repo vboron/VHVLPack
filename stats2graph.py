@@ -17,7 +17,7 @@ import os
 import sys
 import pandas as pd
 import numpy as np
-import re
+import utils
 import math
 import subprocess
 import matplotlib.pyplot as plt
@@ -80,8 +80,8 @@ def find_stats(df_o):
     average_error = sum_sqerror / int( df_a_temp['code'].size)
     RMSE = math.sqrt(average_error)
 
-    # Call the RELRMSE.py script which converts the RMSE into Relative RMSE
-    getResult = lambda rmse: subprocess.check_output(['./RELRMSE.py', f'{sys.argv[2]}', 'graph.dat', rmse])
+    # Call the utils.calc_rmse script which converts the RMSE into Relative RMSE
+    getResult = lambda rmse: utils.calc_relemse(f'{sys.argv[2]}', 'post_processing.dat', rmse)
     RELRMSE   = getResult(str(RMSE)).decode('ascii')
 
     # gather all of the relevant run statistics into a single table
