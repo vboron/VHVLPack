@@ -52,7 +52,7 @@ parser.add_argument('--csv_output', help='Name of the csv file that will be the 
 parser.add_argument('--which_papa', help='Specify the name of the papa version being used: "papa" for just PAPA and "~/name_for_new_papa/papa" for all other versions of papa', required=True)
 args = parser.parse_args()
 
-path = os.path.join(args.directory, args.seq_directory, (args.csv_output + '.csv'))
+path = os.path.join(args.directory, (args.csv_output + '.csv'))
 
 result = build_snns_dataframe(args.directory, args.seq_directory, args.angle_csv, args.which_papa)
 result.to_csv(path, index=False)
