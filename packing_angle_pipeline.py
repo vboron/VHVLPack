@@ -116,15 +116,18 @@ def MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     env['CLASSPATH'] = f'{env["WEKA"]}/weka.jar'
     for i in range (1, 11):
         # train
-        with open(f'{ds.name}/{i}_train.log', 'w') as f:
+        with open(os.path.join(ds.name, f'{nr.name}_{i}_train.log'), 'w') as f:
             cmd = ['java', classifier, '-v', '-x', 10, '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
-                '-d', f'{ds.name}/fold_{i}.model']
+                '-d', os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
             utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
         # test
-        with open(f'{ds.name}/{i}_test.log') as f:
+        with open(os.path.join(ds.name, f'{nr.name}_{i}_test.log')) as f:
             cmd = ['java', classifier, '-v', '-o', '-T', os.path.join(ds.name, f'{nr.name}_{i}_test.arff'), '-l',
-                   f'{ds.name}/fold_{i}.model']
+                   os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
             utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
+
+    utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--xval_cols', 'xval_postprocessing.dat',
+                   '--out_csv', f'{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
     unique_name = f"{ds.name}_{nr.name}_{meth.name}_{cf.name}"
