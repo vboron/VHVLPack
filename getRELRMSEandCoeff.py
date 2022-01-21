@@ -1,11 +1,6 @@
 #!/usr/bin/python3
 """
-Program:    column_sgpdb
-File:       column_sgpdb.py
-
-Version:    V1.0
-Date:       08.06.2021
-Function:   Keep one pdb code in column
+Function:
 
 Description:
 ============
@@ -20,30 +15,11 @@ Commandline inputs: 1) directory
 # *************************************************************************
 # Import libraries
 
-import pandas as pd
-import sys
 import os
-import glob
-import subprocess
+import utils
 
 # *************************************************************************
-def get_directory():
-    """Read the directory name from the commandline argument
-
-    Return: direct      --- Directory of .log files that will be processed
-
-    15.03.2021  Original   By: VAB
-    """
-
-    # Take the commandline input as the directory, otherwise look in current directory
-    if sys.argv[1] != '':
-        direct = sys.argv[1]
-
-    return direct
-
-
-# *************************************************************************
-def find_data(direct):
+def find_data(testlog_dir, encoded_csv, csv_cols):
     """Look through test.log files and calculate the average correlation coefficient and RELRMSE
 
     Input:  direct       --- read directory
@@ -51,16 +27,15 @@ def find_data(direct):
 
     09.06.2021  Original   By: VAB
     """
-
     # Creates an empty list, then iterates over all files in the directory called from the
     # commandline. Adds all these .pdb files to the list.
     files = []
     coeff = []
     RMSE = []
 
-    for file in os.listdir(direct):
+    for file in os.listdir(testlog_dir):
         if file.endswith('test.log'):
-            files.append('{}/{}'.format(direct, file))
+            files.append(os.path.join(testlog_dir, file))
 
     num_files = len(files)
 
@@ -88,23 +63,12 @@ def find_data(direct):
     print('average correlation coefficient:', sum(coeff)/num_files)
     print('average RMSE:', sum(RMSE)/num_files)
 
-    # Call the python script that calculates RELRMSE from RMSE
-    try:
-        RELRMSE=subprocess.check_output(['python3', 'RELRMSE.py', sys.argv[2], sys.argv[3], str(sum(RMSE)/num_files)])
-        print('RELRMSE:', RELRMSE.strip())
-
-    except subprocess.CalledProcessError:
-        print('error: cannot calculate RELRMSE')
-
-
-    return
+    relrmse=utils.calc_relemse(encoded_csv, csv_cols, str(sum(RMSE)/num_files))
+    return relrmse
 
 
 # *************************************************************************
 # ******* Main ************************************************************
 # *************************************************************************
 
-directory = get_directory()
-
 values = find_data(directory)
-
