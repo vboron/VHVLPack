@@ -46,8 +46,8 @@ def calc_relemse(results_csv, columns, rmse):
     """
     col = []
     for i in open(columns).readlines():
-    i = i.strip('\n')
-    col.append(i)
+        i = i.strip('\n')
+        col.append(i)
 
     df = pd.read_csv(results_csv, usecols=col)
 
