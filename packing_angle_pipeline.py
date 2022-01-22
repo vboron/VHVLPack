@@ -1,4 +1,5 @@
-# *************************************************************************
+#!/usr/bin/python3
+# # *************************************************************************
 from enum import Enum, auto
 import os
 import argparse
@@ -68,7 +69,7 @@ def run_nr(ds: Dataset, nr: NonRedundantization):
 # *************************************************************************
 def run_papa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', ds.name, '--seq_directory', os.path.join(ds.name,
-                   'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--which_papa', 'papa',
+                   'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--which_papa', 'papa', '--csv_output',
                    f'{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
@@ -127,8 +128,10 @@ def MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
             utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
 
     utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--xval_cols', 'xval_postprocessing.dat',
-                   '--out_csv', f'{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
+                   '--out_csv', f'{ds.name}_{nr.name}_{meth.name}', '--input_csv', f'{ds.name}_{nr.name}_4d.csv', 
+                   '--cols_4d', '4d.dat', '--stats_csv', f'{ds.name}_{nr.name}_{meth.name}_stats'], args.dry_run)
 
+# *************************************************************************
 def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
     unique_name = f"{ds.name}_{nr.name}_{meth.name}_{cf.name}"
     # print(f"Processing {unique_name} case")
@@ -139,8 +142,7 @@ def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: Correction
 
 
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    if file == f'{ds.name}_{nr.name}':
-        pass
+    pass
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
