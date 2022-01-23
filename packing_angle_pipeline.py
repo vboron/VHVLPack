@@ -29,25 +29,22 @@ class MLMethod(Enum):
     XvalWeka = auto()
 
 class CorrectionFactor(Enum):
-    Yes = auto()
-    No = auto()
-
+    Enabled = auto()
+    Disabled = auto()
 
 # *************************************************************************
 def preprocessing(ds: Dataset):
+    def run_compile_angles(ds: Dataset):
+        utils.run_cmd(['./compile_angles.py', '--directory', ds.name, '--csv-output', f'{ds.name}_ang'], args.dry_run)
+    def run_find_VHVLres(ds: Dataset):
+        utils.run_cmd(['./find_VHVLres.py','--directory', ds.name,'--csv-output', f'{ds.name}_res'], args.dry_run)
+    def run_encode_4d(ds: Dataset):
+        utils.run_cmd(['./encode_4d.py', '--residue_csv', f'{ds.name}_res.csv', '--angle_csv', f'{ds.name}_ang.csv',
+                    '--columns', '4d.dat', '--csv_output', f'{ds.name}_4d', '--directory', f'{ds.name}'], args.dry_run)
     run_compile_angles(ds)
     run_find_VHVLres(ds)
     run_encode_4d(ds)
 
-def run_compile_angles(ds: Dataset):
-    utils.run_cmd(['./compile_angles.py', '--directory', ds.name, '--csv-output', f'{ds.name}_ang'], args.dry_run)
-
-def run_find_VHVLres(ds: Dataset):
-    utils.run_cmd(['./find_VHVLres.py','--directory', ds.name,'--csv-output', f'{ds.name}_res'], args.dry_run)
-
-def run_encode_4d(ds: Dataset):
-    utils.run_cmd(['./encode_4d.py', '--residue_csv', f'{ds.name}_res.csv', '--angle_csv', f'{ds.name}_ang.csv',
-                   '--columns', '4d.dat', '--csv_output', f'{ds.name}_4d', '--directory', f'{ds.name}'], args.dry_run)
 
 # *************************************************************************
 def run_nr(ds: Dataset, nr: NonRedundantization):
@@ -56,7 +53,6 @@ def run_nr(ds: Dataset, nr: NonRedundantization):
     if nr == NonRedundantization.NR0:
         src_path = os.path.join(ds.name, f'{ds.name}_4d.csv')
         dst_path = os.path.join(ds.name, f'{new_file}.csv')
-        print(f'Copying {src_path} to {dst_path}...')
         shutil.copyfile(src_path, dst_path)
     elif nr == NonRedundantization.NR1:
         nonred.NR1(ds.name, '4d.dat', new_file, encoded_csv_path)
@@ -98,6 +94,8 @@ def run_snns(ds: Dataset, meth: MLMethod):
         run_papa()
     elif meth == MLMethod.RetrainedPAPA:
         run_newpapa()
+    else:
+        raise ValueError(f'Handling of meth={meth} not implemented')
 
 def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--directory', ds.name, '--columns_4d', '4d.dat', '--training_csv',
@@ -141,8 +139,9 @@ def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(cmd, args.dry_run)
 
 def correction(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
-    if cf == CorrectionFactor.Yes:
-        cmd = ['--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_4d.csv', '--cols4d', '4d.dat',
+    if cf == CorrectionFactor.Enabled:
+        cmd = ['./add_correction_factor.pl',
+               '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_4d.csv', '--cols4d', '4d.dat',
                '--cols_stats', 'statistics.dat', '--csv_stats', f'{ds.name}_{nr.name}_{meth.name}_stats',
                '--output_name', f'{ds.name}_{nr.name}_{meth.name}_{cf.name}']
         utils.run_cmd(cmd, args.dry_run)

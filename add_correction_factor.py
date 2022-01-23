@@ -25,10 +25,11 @@ def correct_pred(prediction, stats_cols, stats_csv):
 
     stats = pd.read_csv(stats_csv, usecols=stat_col)
 
+    # y = mx + c
     m = stats['bf_slope_a']
     c = stats['bf_int_a']
 
-    correction = round(((prediction-c)/m), 3)
+    correction = round(((prediction - c) / m), 3)
     return correction
 
 
@@ -41,17 +42,14 @@ def make_dataset_with_corrections(input_csv, input_cols, stats_cols, stats_csv):
     # Specify column names for .csv file that will be made from the log files
     data_col = [i.strip('\n') for i in open(input_cols).readlines()]
 
-
     # file with uncorrected data
     data_df = pd.read_csv(input_csv, usecols=data_col)
 
     # file with statistics
-
     data_df['predicted'] = data_df['predicted'].apply(correct_pred, stats_cols, stats_csv)
-
     data_df['error'] = data_df['predicted'] - data_df['angle']
 
-    return
+    return data_df
 
 # *************************************************************************
 # *** Main program                                                      ***
@@ -64,9 +62,7 @@ if __name__ == '__main__':
     parser.add_argument('--cols_stats', help='.dat with columns for reading the statistics data', required=True)
     parser.add_argument('--csv_stats', help='Table with output stats', required=True)
     parser.add_argument('--output_name', help='Name for outputted correction', required=True)
-
     args = parser.parse_args()
-
 
     result = make_dataset_with_corrections(args.csv_input, args.cols4d, args.cols_stats, args.csv_stats)
     path = os.path.join(args.directory, args.output_name)

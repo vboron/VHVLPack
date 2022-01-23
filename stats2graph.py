@@ -35,6 +35,7 @@ def find_normal_and_outliers(directory, input_cols, input_csv, norm_name, out_na
     df_a = pd.read_csv(os.path.join(directory, input_csv), usecols=col)
 
     # define the boundaries for the range of angles that are not outliers
+    # -48 and -42 are chosen based on angle population graphs
     min_norm = -48
     max_norm = -42
 
@@ -75,13 +76,13 @@ def find_stats(directory, input_csv, input_cols, df_a, df_o):
     df_a_temp['sqerror'] = np.square( df_a_temp['error'])
     sum_sqerror =  df_a_temp['sqerror'].sum()
     average_error = sum_sqerror / int( df_a_temp['code'].size)
-    RMSE = math.sqrt(average_error)
+    rmse = math.sqrt(average_error)
 
     os.path.join(directory, input_csv)
 
     # Call the utils.calc_rmse script which converts the RMSE into Relative RMSE
     getResult = lambda rmse: utils.calc_relemse(os.path.join(directory, input_csv), input_cols, rmse)
-    RELRMSE   = getResult(str(RMSE)).decode('ascii')
+    relrmse = getResult(str(rmse)).decode('ascii')
 
     # gather all of the relevant run statistics into a single table
     # .corr() returns the correlation between two columns
@@ -95,20 +96,20 @@ def find_stats(directory, input_csv, input_cols, df_a, df_o):
         df_o['sqerror'] = np.square(df_o['error'])
         sum_sqerror_o = df_o['sqerror'].sum()
         average_error_o = sum_sqerror_o/num_outliers
-        RMSE_o = math.sqrt(average_error_o)
-        RELRMSE_o = getResult(str(RMSE_o)).decode('ascii')
+        rmse_o = math.sqrt(average_error_o)
+        relrmse_o = getResult(str(rmse_o)).decode('ascii')
         pearson_o = df_o['angle'].corr(df_o['predicted'])
         mean_abs_err_o = df_o['error'].mean()
     else:
         average_error_o = None
-        RMSE_o = None
-        RELRMSE_o = None
+        rmse_o = None
+        relrmse_o = None
         pearson_o = None
         mean_abs_err_o = None
 
-    stat_data = [pearson_a, pearson_o, mean_abs_err_a, mean_abs_err_o, RMSE, RMSE_o, RELRMSE, RELRMSE_o]
+    stat_data = [pearson_a, pearson_o, mean_abs_err_a, mean_abs_err_o, rmse, rmse_o, relrmse, relrmse_o]
     stat_col = ['pearson_a', 'pearson_o', 'mean_abs_err_a', 'mean_abs_err_o', 'RMSE', 'RMSE_o', 'RELRMSE_a',
-    'RELRMSE_o']
+                'RELRMSE_o']
 
     stats_df = pd.DataFrame(data=[stat_data], columns=stat_col)
 
@@ -149,7 +150,6 @@ def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, gra
     m3, b3 = np.polyfit(x3, y3, 1)
     plt.plot(x3, m3 * x3 + b3, color=c4, linestyle='dashed', linewidth=1)
 
-
     # Plot the outliers and normal values as scatter plots
     plt.scatter(x2, y2, s=2, color=c2)
 
@@ -160,12 +160,6 @@ def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, gra
     axes.set_ylim([-60, -30])
 
     axes.axline((0, 0), (1, 1), color='k')
-    # y_counter = -60
-    # while y_counter < -30:
-    #     x_counter = y_counter
-    #     # Plot a y=x line in black
-    #     plt.plot(x_counter, y_counter, 'k')
-    #     y_counter + 1
 
     # Sets the axes labels
     plt.xlabel('Calculated Angle')
@@ -176,8 +170,6 @@ def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, gra
 
     plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m3, b3), x=-61, y=-33, fontsize=8, color=c4)
     plt.text(s='RELRMSE (all): {:.3}'.format(float(stat_df['RELRMSE_a'])), x=-61, y=-34, fontsize=8)
-
-
     plt.text(s='-48 < Normal Values < -42', x=-61, y=-38, fontsize=8, color=c2)
 
     # Adds graph title
@@ -219,10 +211,7 @@ def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, gra
     plt.savefig(path_fig, format='tiff')
     plt.show()
 
-    return
 
-# *************************************************************************
-# *** Main program                                                      ***
 # *************************************************************************
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
@@ -241,5 +230,5 @@ if __name__ == '__main__':
 
     statistics_df = find_stats(args.directory, args.csv_input, args.cols_input, all_df, out_df)
 
-    plot = plot_scatter(args.directory, out_df, norm_df, statistics_df, all_df.copy(),
-                        args.name_stats, args.name_graph, args.graph_title)
+    plot_scatter(args.directory, out_df, norm_df, statistics_df, all_df.copy(),
+                 args.name_stats, args.name_graph, args.graph_title)
