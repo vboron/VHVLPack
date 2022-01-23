@@ -13,7 +13,7 @@ import os
 import re
 import utils
 
-def extract_xval_stats(directory, columns, output_name, encoded_csv, csv_cols, stat_output):
+def extract_xval_stats(directory, xval_columns, encoded_csv, csv_cols):
 
     all_data = []
     files = []
@@ -42,32 +42,44 @@ def extract_xval_stats(directory, columns, output_name, encoded_csv, csv_cols, s
             all_data.append(stat_lines)
 
     stat_cols = []
-    for i in open(columns).readlines():
+    for i in open(xval_columns).readlines():
         i = i.strip('\n')
         stat_cols.append(i)
 
-    df_a = pd.DataFrame(data=all_data, columns=stat_cols)
-    path = os.path.join(directory, f'{output_name}.csv')
-    df_a.to_csv(path, index=False)
+    df_stats_for_each_fold = pd.DataFrame(data=all_data, columns=stat_cols)
 
-    average_coeff=df_a['pearson_a'].mean()
-    average_rmse=df_a['RMSE'].mean()
+    average_coeff=df_stats_for_each_fold['pearson_a'].mean()
+    average_error=df_stats_for_each_fold['mean_abs_err_a'].mean()
+    average_rmse=df_stats_for_each_fold['RMSE'].mean()
     relrmse=utils.calc_relemse(encoded_csv, csv_cols, str(average_rmse))
-    mean_stats=[average_coeff, average_rmse, relrmse]
-    df_stats = pd.DataFrame(data=mean_stats, columns=['mean_pearsons', 'mean_rmse', 'relrmse'])
-    path = os.path.join(directory, f'{stat_output}.csv')
-    df_stats.to_csv(path, index=False)
-    return average_coeff, average_rmse, relrmse
+
+    return average_coeff, average_rmse, relrmse, average_error
+
+def make_table_for_graphing(directory, input_csv, input_cols, error, output_name):
+    cols = []
+    for i in open(input_cols).readlines():
+        i = i.strip('\n')
+        cols.append(i)
+
+    df=pd.read_csv(os.path.join(directory, input_csv), usecols=cols)
+    df_all=df[['code', 'angle']].copy()
+    df_all['predicted']=df_all['angle']+error
+    df_all['error']=error
+
+    path = os.path.join(directory, output_name)
+    df_all.to_csv(path, index=False)
+
+
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
+    parser = argparse.ArgumentParser(description='Program extracts data from log files of MLP run with cross validation')
     parser.add_argument('--directory', help='Directory where log files are', required=True)
     parser.add_argument('--xval_cols', help='.dat columns for processing xval MLP outputs', required=True)
     parser.add_argument('--out_csv', help='Name for the .csv output', required=True)
     parser.add_argument('--input_csv', help='File that was the input to the method ', required=True)
     parser.add_argument('--cols_4d', help='.dat for 4d columns', required=True)
-    parser.add_argument('--stats_csv', help='Name for output with mean stats for run', required=True)
     args = parser.parse_args()
 
-    mean_pearsons, mean_rmse, relrmse = extract_xval_stats(args.directory, args.xval_cols, args.out_csv,
-                                                           args.input_csv, args.cols_4d, args.stats_csv)
+    mean_pearsons, mean_rmse, relrmse, mean_error= extract_xval_stats(args.directory, args.xval_cols, args.input_csv, args.cols_4d)
+
+    make_table_for_graphing(args.directory, args.input_csv, args.cols_4d, mean_error, args.out_csv)
