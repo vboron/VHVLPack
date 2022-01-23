@@ -71,10 +71,11 @@ def filter_df(column_names, csv_file, seq_dict):
 def NR1(dir_dataset_pdbs, cols_4d, out_file, encoded_csv):
     dictionary = make_seq_pdb_dict(dir_dataset_pdbs)
     nr1_dataframe = filter_df(cols_4d, encoded_csv, dictionary)
-    nr1_dataframe.to_csv(f'{out_file}.csv', index=False)
+    nr1_path = os.path.join(dir_dataset_pdbs, f'{out_file}.csv')
+    nr1_dataframe.to_csv(nr1_path, index=False)
 
 # *************************************************************************
-def NR2(encoded_csv_file, column_file, out_file):
+def NR2(encoded_csv_file, column_file, directory, out_file):
     """Read the .csv file containing encoded residues and angles and combine lines that have the same PDB code and
     the same encoded sequence into one line, averaging the angle
 
@@ -119,11 +120,11 @@ def NR2(encoded_csv_file, column_file, out_file):
     cols=seq_df.columns.tolist()
     cols = [cols[-2]]+ cols[:-3] + cols[-1:]
     seq_df=seq_df[cols]
-
-    seq_df.to_csv('{}.csv'.format(out_file), index=False)
+    nr2_path = os.path.join(directory, f'{out_file}.csv')
+    seq_df.to_csv(nr2_path, index=False)
 
 # *************************************************************************
-def NR3(encoded_csv_file, column_file, out_file):
+def NR3(encoded_csv_file, column_file, directory, out_file):
     """Read the .csv file containing encoded residues and angles and combine lines that have the same PDB code and
     the same encoded sequence into one line, averaging the angle
 
@@ -160,4 +161,5 @@ def NR3(encoded_csv_file, column_file, out_file):
     cols = [cols[-2]]+ cols[:-2] + cols[-1:]
     seq_df=seq_df[cols]
 
-    seq_df.to_csv('{}.csv'.format(out_file), index=False)
+    nr3_path = os.path.join(directory, f'{out_file}.csv')
+    seq_df.to_csv(nr3_path, index=False)

@@ -28,7 +28,6 @@ import pandas as pd
 
 # *************************************************************************
 def run_csv2arff():
-
     directory = sys.argv[1]
     cwd = os.getcwd()
     path = os.path.join(cwd, directory)
@@ -49,4 +48,3 @@ def run_csv2arff():
 # *************************************************************************
 
 result = run_csv2arff()
-

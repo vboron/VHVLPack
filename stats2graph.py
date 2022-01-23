@@ -82,7 +82,7 @@ def find_stats(directory, input_csv, input_cols, df_a, df_o):
 
     # Call the utils.calc_rmse script which converts the RMSE into Relative RMSE
     getResult = lambda rmse: utils.calc_relemse(os.path.join(directory, input_csv), input_cols, rmse)
-    relrmse = getResult(str(rmse)).decode('ascii')
+    relrmse = getResult(rmse)
 
     # gather all of the relevant run statistics into a single table
     # .corr() returns the correlation between two columns
@@ -97,7 +97,7 @@ def find_stats(directory, input_csv, input_cols, df_a, df_o):
         sum_sqerror_o = df_o['sqerror'].sum()
         average_error_o = sum_sqerror_o/num_outliers
         rmse_o = math.sqrt(average_error_o)
-        relrmse_o = getResult(str(rmse_o)).decode('ascii')
+        relrmse_o = getResult(rmse_o)
         pearson_o = df_o['angle'].corr(df_o['predicted'])
         mean_abs_err_o = df_o['error'].mean()
     else:

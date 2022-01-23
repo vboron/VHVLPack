@@ -27,7 +27,11 @@ def conv_pdb2seq():
 
     src_dir = sys.argv[1]
     dst_dir = os.path.join(src_dir, 'seq_files')
-    os.mkdir(dst_dir)
+    try:
+        os.mkdir(dst_dir)
+    except FileExistsError:
+        print(f'Directory {dst_dir} already exists. Continuing...')
+
     #takes a name of directiry from the commandline and looks through it
     for file in os.listdir(src_dir):
 

@@ -32,7 +32,8 @@ def run_cmd(cmd_list, is_dry_run: bool, stdout=None, env=None):
         env.update(os.environ.copy())
     print(log_msg)
     if not is_dry_run:
-        subprocess.run(cmd_list, stdout=stdout, env=env)
+        comp_process = subprocess.run(cmd_list, stdout=stdout, env=env)
+        comp_process.check_returncode()
 
 # *************************************************************************
 def calc_relemse(results_csv, columns, rmse):

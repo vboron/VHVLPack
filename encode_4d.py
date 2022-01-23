@@ -24,7 +24,7 @@ import os
 
 
 # *************************************************************************
-def make_res_seq(res_csv):
+def make_res_seq(directory, res_csv):
     """Take all individual residue identities for a pdb file and combine them into a single sequence for
     each individual pdb
 
@@ -40,7 +40,8 @@ def make_res_seq(res_csv):
 
     # read file with residues as a df
     col1 = ['code', 'L/H position', 'residue']
-    res_df = pd.read_csv(res_csv, usecols=col1)
+    path = os.path.join(directory, res_csv)
+    res_df = pd.read_csv(path, usecols=col1)
 
     # Add all items under the 'residue' column into one field
     aggregation_func = {'residue': 'sum'}
@@ -139,7 +140,7 @@ def encode(table):
 
 
 # *************************************************************************
-def combine_by_pdb_code(table, ang_csv, col_names):
+def combine_by_pdb_code(directory, table, ang_csv, col_names):
     """Take all individual residue identities for a pdb file and combine them into a single sequence for
     each individual pdb
 
@@ -188,10 +189,7 @@ def combine_by_pdb_code(table, ang_csv, col_names):
     # Split combined codes into separate fields with the position and parameter as the column name
     # ('trash' column created because the adjustment above that corrects data removal
     # ends up creating a blank column)
-    col2 = []
-    for i in open(col_names).readlines():
-        i = i.strip('\n')
-        col2.append(i)
+    col2 = [i.strip('\n') for i in open(col_names).readlines()]
 
     col2.remove('code')
     col2.append('trash')
@@ -209,7 +207,7 @@ def combine_by_pdb_code(table, ang_csv, col_names):
     col3 = ['code', 'angle']
 
     # Take the second input from the commandline (which will be the table of pdb codes and their packing angles)
-    angle_file = pd.read_csv(ang_csv, usecols=col3)
+    angle_file = pd.read_csv(os.path.join(directory, ang_csv), usecols=col3)
 
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file
@@ -234,11 +232,11 @@ parser.add_argument('--directory', help='Directory of pdb files', required=True)
 parser.add_argument('--csv_output', help='Name of the csv file that will be the output', required=True)
 args = parser.parse_args()
 
-res_seq = make_res_seq(args.residue_csv)
+res_seq = make_res_seq(args.directory, args.residue_csv)
 
 parameters = encode(res_seq)
 
-results = combine_by_pdb_code(parameters, args.angle_csv, args.columns)
+results = combine_by_pdb_code(args.directory, parameters, args.angle_csv, args.columns)
 
 csv_path = os.path.join(args.directory, (args.csv_output + '.csv'))
 results.to_csv(csv_path, index=False)
