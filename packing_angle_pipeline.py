@@ -128,21 +128,24 @@ def MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
             utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
 
     utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--xval_cols', 'xval_postprocessing.dat',
-                   '--out_csv', f'{ds.name}_{nr.name}_{meth.name}', '--input_csv', f'{ds.name}_{nr.name}_4d.csv', 
-                   '--cols_4d', '4d.dat', '--stats_csv', f'{ds.name}_{nr.name}_{meth.name}_stats'], args.dry_run)
+                   '--out_csv', f'{ds.name}_{nr.name}_{meth.name}', '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
+                   '--cols_4d', '4d.dat'], args.dry_run)
 
 # *************************************************************************
-def process(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
-    unique_name = f"{ds.name}_{nr.name}_{meth.name}_{cf.name}"
-    # print(f"Processing {unique_name} case")
-    # nonred.NR1(costam, costam, args.encoded_4d_cols_file)
-    if cf == CorrectionFactor.Yes:
-        # zrob ponownie costam
-        pass
-
-
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    pass
+    name = f'{ds.name}_{nr.name}_{meth.name}'
+    cmd=['--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_4d.csv', '--cols_input', '4d.dat', '--name_normal',
+         f'{name}_normal', '--name_outliers', f'{name}_normal',
+         '--name_stats', f'{name}_stats', '--name_graph', name, '--graph_title',
+         f'Graph of predicted vs actual values (Dataset:{ds.name}, Method{meth.name}).']
+    utils.run_cmd(cmd, args.dry_run)
+
+def correction(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cf: CorrectionFactor):
+    if cf == CorrectionFactor.Yes:
+        cmd = ['--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_4d.csv', '--cols4d', '4d.dat',
+               '--cols_stats', 'statistics.dat', '--csv_stats', f'{ds.name}_{nr.name}_{meth.name}_stats',
+               '--output_name', f'{ds.name}_{nr.name}_{meth.name}_{cf.name}']
+        utils.run_cmd(cmd, args.dry_run)
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
@@ -155,4 +158,4 @@ for ds in Dataset:
         run_nr(ds, nr)
     for meth in MLMethod:
         for cf in CorrectionFactor:
-            process(ds, nr, meth, cf)
+            correction(ds, nr, meth, cf)

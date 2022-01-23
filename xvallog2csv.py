@@ -41,10 +41,7 @@ def extract_xval_stats(directory, xval_columns, encoded_csv, csv_cols):
                     stat_lines.append(line)
             all_data.append(stat_lines)
 
-    stat_cols = []
-    for i in open(xval_columns).readlines():
-        i = i.strip('\n')
-        stat_cols.append(i)
+    stat_cols = [i.strip('\n') for i in open(xval_columns).readlines()]
 
     df_stats_for_each_fold = pd.DataFrame(data=all_data, columns=stat_cols)
 

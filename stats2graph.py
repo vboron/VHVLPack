@@ -30,10 +30,8 @@ def find_normal_and_outliers(directory, input_cols, input_csv, norm_name, out_na
 
         11.24.2021  Original   By: VAB
     """
-    col = []
-    for i in open(input_cols).readlines():
-        i = i.strip('\n')
-        col.append(i)
+    col = [i.strip('\n') for i in open(input_cols).readlines()]
+
     df_a = pd.read_csv(os.path.join(directory, input_csv), usecols=col)
 
     # define the boundaries for the range of angles that are not outliers
