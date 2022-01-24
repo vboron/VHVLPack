@@ -166,6 +166,8 @@ def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
          '--name_stats', f'{name}_stats', '--name_graph', name, '--graph_title',
          f'Graph of predicted vs actual values (Dataset:{ds.name}, Method{meth.name}).']
     utils.run_cmd(cmd, args.dry_run)
+    cmd=['.graph_angles.py', '--directory', ds.name, '--ang_csv', f'{ds.name}_ang.csv', '--out_graph',
+         f'{ds.name}/{ds.name}_{nr.name}_{meth.name}_angledistribution']
     correction()
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')

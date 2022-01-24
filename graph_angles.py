@@ -1,10 +1,5 @@
 #!/usr/bin/python3
 """
-Program:    graph_angles
-File:       graph_angles.py
-
-Version:    V1.0
-Date:       04.05.2021
 Function:   Graph distribution of VHVL packing angles
 
 Description:
@@ -17,40 +12,14 @@ This program takes a .csv file of encoded residues and their angles and then plo
 # *************************************************************************
 # Import libraries
 
+import argparse
+import os
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
-import sys
 import math
 
-
 # *************************************************************************
-def read():
-    """Read .csv file as a dataframe
-
-    Return: res_file    --- dataframe containing encoded residues and angles
-
-    04.05.2021  Original   By: VAB
-    """
-
-    # The column names contained in the .csv file
-    col1 = ['code', 'angle']
-
-    # Take the commandline input as the directory, otherwise look in current directory
-    if sys.argv[1] != '':
-        res_file = pd.read_csv(sys.argv[1], usecols=col1)
-
-    # remove lines that don't contain angles
-    try:
-        res_file = res_file[res_file['angle'].str.contains('Packing angle') == False]
-    except:
-        print('No missing angles.')
-
-    return res_file
-
-
-# *************************************************************************
-def plot(data):
+def plot(directory, csv_ang, graph_name):
     """Plot a histogram of the VH-VL packing angle distribution
 
     Input: data    --- dataframe containing encoded residues and angles
@@ -58,11 +27,15 @@ def plot(data):
     04.05.2021  Original   By: VAB
     """
 
+    col1 = ['code', 'angle']
+    ang_file = os.path.join(directory, csv_ang)
+    data = pd.read_csv(ang_file, usecols=col1)
+
     plt.figure()
     data['angle'] = (data['angle']).astype(float)
 
     # Specify the mean width of bins and make them equidistant
-    w = 1
+    w = 0.5
     n = math.ceil((data['angle'].max() - data['angle'].min()) / w)
     plt.hist(data['angle'], bins=n, edgecolor='k', color='rosybrown')
 
@@ -77,7 +50,10 @@ def plot(data):
     min_ylim, max_ylim = plt.ylim()
     plt.text(data['angle'].mean() * 0.9, max_ylim * 0.9, 'Mean: {:.2f}'.format(data['angle'].mean()))
 
-    # Open a pop-up window with plot
+    # plt.suptitle(f'{graph_title}', fontsize=14)
+
+    path_fig = os.path.join(directory, f'{graph_name}.tiff')
+    plt.savefig(path_fig, format='tiff')
     plt.show()
     return
 
@@ -85,7 +61,11 @@ def plot(data):
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
+parser = argparse.ArgumentParser(description='Program plots the frequency of packing angles')
+parser.add_argument('--directory', help='Directory of datset', required=True)
+parser.add_argument('--ang_csv', help='File that contains the packing angle for each .pdb file', required=True)
+parser.add_argument('--out_graph', help='Output name for graph', required=True)
+# parser.add_argument('--title_graph', help='Title that will appear above graph', required=True)
+args = parser.parse_args()
 
-dataframe = read()
-
-graph = plot(dataframe)
+graph = plot(args.directory, args.ang_csv, args.out_graph, args.title_graph)
