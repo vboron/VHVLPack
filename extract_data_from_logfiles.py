@@ -55,8 +55,7 @@ def stats_to_df(direct, columns, csv_out):
     # Make .csv files for all of the data, splitting it into files that have all the data, only outliers, and only the
     # data withing the 'norm'
     df_a = pd.DataFrame(data=all_data, columns=col)
-    path = os.path.join(direct, f'{csv_out}.csv')
-    df_a.to_csv(path, index=False)
+    df_a.to_csv(f'{csv_out}.csv', index=False)
 
 # *************************************************************************
 # *** Main program                                                      ***
@@ -68,4 +67,4 @@ if __name__ == '__main__':
     parser.add_argument('--output_name', help='name for .csv file for data ', required=True)
     args = parser.parse_args()
 
-    stats_to_df(args.directory, args.columns_postprocessing, args.output_names)
+    stats_to_df(args.directory, args.columns_postprocessing, args.output_name)

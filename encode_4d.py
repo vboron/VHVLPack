@@ -217,7 +217,7 @@ def combine_by_pdb_code(directory, table, ang_csv, col_names):
     nan_value = float('NaN')
     training_df.replace('', nan_value, inplace=True)
     training_df.dropna(axis=0, how='any', inplace=True)
-    print(training_df)
+
     return training_df
 
 
@@ -238,5 +238,5 @@ parameters = encode(res_seq)
 
 results = combine_by_pdb_code(args.directory, parameters, args.angle_csv, args.columns)
 
-csv_path = os.path.join(args.directory, (args.csv_output + '.csv'))
+csv_path = os.path.join(args.directory, f'{args.csv_output}.csv')
 results.to_csv(csv_path, index=False)

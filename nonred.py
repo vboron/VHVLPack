@@ -53,7 +53,6 @@ def make_seq_pdb_dict(dir_of_pdbs):
 
 
 def filter_df(column_names, csv_file, seq_dict):
-
     col = []
     with open(column_names) as f:
         for i in f.readlines():
@@ -63,9 +62,7 @@ def filter_df(column_names, csv_file, seq_dict):
     df = pd.read_csv(csv_file, usecols=col)
     pdbcode_list = list(seq_dict.values())
 
-    nr1_df = df[df['code'].isin(pdbcode_list)]
-
-    return nr1_df
+    return df[df['code'].isin(pdbcode_list)]
 
 
 def NR1(dir_dataset_pdbs, cols_4d, out_file, encoded_csv):
@@ -80,8 +77,6 @@ def NR2(encoded_csv_file, column_file, directory, out_file):
     the same encoded sequence into one line, averaging the angle
 
     Return: seq_df      --- Dataframe that contains a single angle for all PDB files with unique sequences
-
-    17.04.2021  Original   By: VAB
     """
 
     # The column names contained in the .csv file imported from a .dat file
@@ -129,8 +124,6 @@ def NR3(encoded_csv_file, column_file, directory, out_file):
     the same encoded sequence into one line, averaging the angle
 
     Return: seq_df      --- Dataframe that contains a single angle for all PDB files with unique sequences
-
-    17.04.2021  Original   By: VAB
     """
 
     # The column names contained in the .csv file imported from a .dat file

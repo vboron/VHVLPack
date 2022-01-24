@@ -6,15 +6,16 @@ import argparse
 import utils
 import nonred
 import shutil
+import subprocess
 
 
 # *************************************************************************
 class Dataset(Enum):
     PrePAPA = auto()
-    # PostPAPA = auto()
-    # PreAF2 = auto()
-    # PostAF2 = auto()
-    # Everything = auto()
+    PostPAPA = auto()
+    PreAF2 = auto()
+    PostAF2 = auto()
+    Everything = auto()
 
 class NonRedundantization(Enum):
     NR0 = auto()
@@ -74,15 +75,18 @@ def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     with open(pat_path) as f:
         utils.run_cmd(['arff2snns', f'{ds.name}/{ds.name}_{nr.name}_{meth.name}.arff'], args.dry_run, stdout=f)
 
-    utils.run_cmd(['batchman', '-f', 'SNNS/papa/training/final_training.cmd'], args.dry_run)
+    utils.run_cmd(['batchman', '-f', 'final_training.cmd'], args.dry_run,
+                  cwd=os.path.join(os.getcwd(), 'SNNS/papa/training'))
 
-    install_path = os.path.join('SNNS', 'papa', 'training', 'install.sh')
     home_dir = os.environ['HOME']
-    utils.run_cmd([f'./{install_path}', f'{home_dir}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
+    utils.run_cmd(['./install.sh', f'{home_dir}/{ds.name}_{nr.name}_{meth.name}'],
+                   args.dry_run,
+                   cwd='SNNS/papa')
 
-    utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', {ds.name}, '--seq_directory',
+    utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', ds.name, '--seq_directory',
                    os.path.join(ds.name, 'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--csv_output',
-                   f'{ds.name}_{nr.name}_{meth.name}', '--which_papa', f'~/{ds.name}_{nr.name}_{meth.name}/papa'],
+                   f'{ds.name}_{nr.name}_{meth.name}',
+                   '--which_papa', os.path.join(os.environ['HOME'], f'{ds.name}_{nr.name}_{meth.name}', 'papa')],
                   args.dry_run)
 
 def run_snns(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
@@ -98,30 +102,40 @@ def run_snns(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--directory', ds.name, '--columns_4d', args.cols_4d, '--training_csv',
                    f'{ds.name}_{nr.name}_4d.csv', '--testing_csv', f'{ds.name}_{nr.name}_4d.csv', '--input_cols',
-                   'in4d.dat', ds.name], args.dry_run)
+                   'in4d.dat'], args.dry_run)
     utils.run_cmd(['./extract_data_from_logfiles.py', '--directory', os.path.join(ds.name, 'testing_data'),
                    '--columns_postprocessing', 'post_processing.dat', '--output_name',
-                   f'{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
+                   f'{ds.name}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 # multilayer perceptron cross validation
 def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    utils.run_cmd(['./split_10.py', '--input_csv', f'{ds.name}_{nr.name}_4d.csv', '--columns', args.cols_4d,
-                   '--directory', ds.name, '--output_tag', f'{nr.name}'], args.dry_run)
+    utils.run_cmd(['./split_10.py',
+                   '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
+                   '--columns', args.cols_4d,
+                   '--directory', ds.name,
+                   '--output_tag', f'{nr.name}',
+                   '--csv2arff_cols', 'in4d.dat'],
+                  args.dry_run)
 
     classifier='weka.classifiers.functions.MultilayerPerceptron'
     env = {'WEKA': '/usr/local/apps/weka-3-8-3'}
     env['CLASSPATH'] = f'{env["WEKA"]}/weka.jar'
     for i in range (1, 11):
         # train
-        with open(os.path.join(ds.name, f'{nr.name}_{i}_train.log'), 'w') as f:
-            cmd = ['java', classifier, '-v', '-x', 10, '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
+        file_name = os.path.join(ds.name, f'{nr.name}_{i}_train.log')
+        with open(file_name, 'w') as f:
+            cmd = ['java', classifier, '-v', '-x', '10', '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
                 '-d', os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
-            utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
+            utils.run_cmd(cmd, args.dry_run, stdout=f, env=env, stderr=subprocess.DEVNULL)
+            assert(os.stat(file_name).st_size != 0)
+
         # test
-        with open(os.path.join(ds.name, f'{nr.name}_{i}_test.log')) as f:
+        file_name = os.path.join(ds.name, f'{nr.name}_{i}_test.log')
+        with open(file_name, 'w') as f:
             cmd = ['java', classifier, '-v', '-o', '-T', os.path.join(ds.name, f'{nr.name}_{i}_test.arff'), '-l',
                    os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
-            utils.run_cmd(cmd, args.dry_run, stdout=f, env=env)
+            utils.run_cmd(cmd, args.dry_run, stdout=f, env=env, stderr=subprocess.DEVNULL)
+            assert(os.stat(file_name).st_size != 0)
 
     utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--xval_cols', 'xval_postprocessing.dat',
                    '--out_csv', f'{ds.name}_{nr.name}_{meth.name}', '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
@@ -160,10 +174,12 @@ parser.add_argument('--cols-4d', default='4d.dat')
 args = parser.parse_args()
 
 for ds in Dataset:
-    print(f'Processing dataset {ds}...')
+    print(f'Processing dataset={ds}...')
     preprocessing(ds)
     for nr in NonRedundantization:
+        print(f"Dataset={ds}: processing nr={nr}")
         run_nr(ds, nr)
         for meth in MLMethod:
+            print(f"Dataset={ds}, nr={nr}: processing meth={meth}")
             run_method(ds, nr, meth)
             postprocessing(ds, nr, meth)

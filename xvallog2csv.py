@@ -45,10 +45,10 @@ def extract_xval_stats(directory, xval_columns, encoded_csv, csv_cols):
 
     df_stats_for_each_fold = pd.DataFrame(data=all_data, columns=stat_cols)
 
-    average_coeff=df_stats_for_each_fold['pearson_a'].mean()
-    average_error=df_stats_for_each_fold['mean_abs_err_a'].mean()
-    average_rmse=df_stats_for_each_fold['RMSE'].mean()
-    relrmse=utils.calc_relemse(encoded_csv, csv_cols, str(average_rmse))
+    average_coeff = df_stats_for_each_fold['pearson_a'].mean()
+    average_error = df_stats_for_each_fold['mean_abs_err_a'].mean()
+    average_rmse = df_stats_for_each_fold['RMSE'].mean()
+    relrmse = utils.calc_relemse(os.path.join(directory, encoded_csv), csv_cols, str(average_rmse))
 
     return average_coeff, average_rmse, relrmse, average_error
 
@@ -64,9 +64,7 @@ def make_table_for_graphing(directory, input_csv, input_cols, error, output_name
     df_all['error']=error
 
     path = os.path.join(directory, output_name)
-    df_all.to_csv(path, index=False)
-
-
+    df_all.to_csv(f'{path}.csv', index=False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program extracts data from log files of MLP run with cross validation')
@@ -78,5 +76,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     mean_pearsons, mean_rmse, relrmse, mean_error= extract_xval_stats(args.directory, args.xval_cols, args.input_csv, args.cols_4d)
-
     make_table_for_graphing(args.directory, args.input_csv, args.cols_4d, mean_error, args.out_csv)
