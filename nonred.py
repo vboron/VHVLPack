@@ -60,9 +60,9 @@ def filter_df(column_names, csv_file, seq_dict):
             col.append(i)
 
     df = pd.read_csv(csv_file, usecols=col)
-    pdbcode_list = list(seq_dict.values())
+    pdbcode_list = [seq_dict.values()]
 
-    return df[df['code'].isin(pdbcode_list)]
+    return df[~df['code'].isin(pdbcode_list)]
 
 
 def NR1(dir_dataset_pdbs, cols_4d, out_file, encoded_csv):
