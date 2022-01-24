@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 """
-Program:    pdb2seq
-File:       pdb2seq
-
-Version:    V1.0
-Date:       10.20.2021
 Function:   Convert .pdb files to .seq files
 
 Description:
@@ -12,20 +7,18 @@ Description:
 Program looks for .pdb files in directory and extracts the chain, position, and residue identity. It the uses that to
 construct a .seq file.
 
-Commandline input:  1) directory of pdb files
-
 ------------------------------------------------
 """
 # *************************************************************************
 # Import libraries
 
-import sys
+import argparse
 import os
 
 # *************************************************************************
-def conv_pdb2seq():
+def conv_pdb2seq(directory):
 
-    src_dir = sys.argv[1]
+    src_dir = directory
     dst_dir = os.path.join(src_dir, 'seq_files')
     try:
         os.mkdir(dst_dir)
@@ -63,4 +56,7 @@ def conv_pdb2seq():
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
-conv_pdb2seq()
+parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
+parser.add_argument('--directory', help='Directory of datset', required=True)
+args = parser.parse_args()
+conv_pdb2seq(args.directory)

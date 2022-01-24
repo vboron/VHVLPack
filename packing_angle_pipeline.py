@@ -90,7 +90,7 @@ def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
                   args.dry_run)
 
 def run_snns(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    utils.run_cmd(['./pdb2seq.py', ds.name], args.dry_run)
+    utils.run_cmd(['./pdb2seq.py', '--directory', ds.name], args.dry_run)
     # distinguish between making a new papa and running the old papa
     if meth == MLMethod.OrigPAPA:
         run_papa(ds, nr, meth)
