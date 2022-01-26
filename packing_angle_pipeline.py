@@ -7,7 +7,7 @@ import utils
 import nonred
 import shutil
 import subprocess
-
+import graphing
 
 # *************************************************************************
 class Dataset(Enum):
@@ -102,9 +102,9 @@ def run_snns(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--directory', ds.name, '--columns_4d', args.cols_4d, '--training_csv',
                    f'{ds.name}_{nr.name}_4d.csv', '--testing_csv', f'{ds.name}_{nr.name}_4d.csv', '--input_cols',
-                   'in4d.dat'], args.dry_run)
+                   'in4d.dat', '--dataset', f'{ds.name}_{nr.name}'], args.dry_run)
     utils.run_cmd(['./extract_data_from_logfiles.py', '--directory', os.path.join(ds.name, 'testing_data'),
-                   '--columns_postprocessing', 'post_processing.dat', '--output_name',
+                   '--columns_postprocessing', args.postprocessing_cols, '--output_name',
                    f'{ds.name}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 # multilayer perceptron cross validation
@@ -154,25 +154,29 @@ def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     def correction():
         cmd = ['./add_correction_factor.py',
                 '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
-                'post_processing.dat','--cols_stats', 'statistics.dat', '--csv_stats',
+                args.postprocessing_cols,'--cols_stats', 'statistics.dat', '--csv_stats',
                 f'{ds.name}_{nr.name}_{meth.name}_stats.csv', '--output_name', f'{ds.name}_{nr.name}_{meth.name}_corrected']
         utils.run_cmd(cmd, args.dry_run)
 
     name = f'{ds.name}_{nr.name}_{meth.name}'
     cmd=['./stats2graph.py',
          '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
-         'post_processing.dat', '--name_normal',
+         args.postprocessing_cols, '--name_normal',
          f'{name}_normal', '--name_outliers', f'{name}_normal',
          '--name_stats', f'{name}_stats', '--name_graph', name, '--graph_title',
          f'Graph of predicted vs actual values (Dataset:{ds.name}, Method{meth.name}).']
     utils.run_cmd(cmd, args.dry_run)
-    cmd=['.graph_angles.py', '--directory', ds.name, '--ang_csv', f'{ds.name}_ang.csv', '--out_graph',
-         f'{ds.name}/{ds.name}_{nr.name}_{meth.name}_angledistribution']
+    graphing.angle_distribution(ds.name, f'{ds.name}_ang', f'{ds.name}_{nr.name}_{meth.name}_angledistribution')
+    graphing.error_distribution(ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv', args.postprocessing_cols,
+                                f'{ds.name}_{nr.name}_{meth.name}_errordistribution')
+    graphing.sq_error_vs_actual_angle(ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv', args.postprocessing_cols,
+                                f'{ds.name}_{nr.name}_{meth.name}_sqerror_vs_actual')
     correction()
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
 parser.add_argument('--cols-4d', default='4d.dat')
+parser.add_argument('--postprocessing_cols', default='post_processing.dat')
 args = parser.parse_args()
 
 for ds in Dataset:

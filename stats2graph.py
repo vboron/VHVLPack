@@ -162,8 +162,8 @@ def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, gra
     axes.axline((0, 0), (1, 1), color='k')
 
     # Sets the axes labels
-    plt.xlabel('Calculated Angle')
-    plt.ylabel('Predicted Angle')
+    plt.xlabel('Actual interface angle')
+    plt.ylabel('Predicted interface angle')
 
     # Adds graph annotations
     plt.text(s='Line: y=x', x=-61, y=-32, fontsize=8)
