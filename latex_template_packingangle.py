@@ -73,17 +73,22 @@ def _add_data(doc: pl.Document, ds: Dataset, nr: NonRedundantization, meth: MLMe
                         'Squared error in predicted packing angle against actual packing angle.')
                 graphs.add_caption('Graphs for further metrics.')
 
-def output_data(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
+def generate_latex():
     doc = pl.Document(page_numbers=True, geometry_options={"tmargin": "1cm", "lmargin": "1cm"})
+
     doc.packages.append(pl.Package('booktabs'))
     doc.preamble.append(pl.Command('title', 'VH/VL Packing Angle Pipeline Results'))
     doc.preamble.append(pl.Command('author', 'Veronica A. Boron'))
-    doc.append(pl.NoEscape(r'\maketitle'))
 
+    doc.append(pl.NoEscape(r'\maketitle'))
     doc.append(
-        'This document summerizes the results obtaning by running `packing_angle_pipeline.py` on various datasets.')
+            'This document summarizes the results obtaning by running `packing_angle_pipeline.py` on various datasets.')
+    doc.append(pl.NoEscape(r'\tableofcontents'))
+    doc.append(pl.NoEscape(r'\newpage'))
 
     for ds, nr, meth in itertools.product(Dataset, NonRedundantization, MLMethod):
         _add_data(doc, ds, nr, meth)
+        doc.append(pl.NoEscape(r'\newpage'))
 
+    print('Generating PDF...')
     doc.generate_pdf('testing', clean_tex=False)

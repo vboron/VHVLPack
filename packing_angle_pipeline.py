@@ -206,7 +206,6 @@ if args.postprocess:
 
 if args.latex:
     print('Generating LaTeX...')
-    for ds, nr, meth in itertools.product(Dataset, NonRedundantization, MLMethod):
-        ltp.output_data(ds, nr, meth)
+    ltp.generate_latex()
 
 print('Goodbye!')
