@@ -43,8 +43,8 @@ def angle_distribution(directory, csv_ang, graph_name):
 
     # plt.suptitle(f'{graph_title}', fontsize=14)
 
-    path_fig = os.path.join(directory, f'{graph_name}.tiff')
-    plt.savefig(path_fig, format='tiff')
+    path_fig = os.path.join(directory, f'{graph_name}.png')
+    plt.savefig(path_fig, format='png')
     plt.show()
 
 # *************************************************************************
@@ -72,8 +72,8 @@ def error_distribution(directory, csv_input, csv_columns, graph_name):
 
     plt.tight_layout()
 
-    path_fig = os.path.join(directory, f'{graph_name}.tiff')
-    plt.savefig(path_fig, format='tiff')
+    path_fig = os.path.join(directory, f'{graph_name}.png')
+    plt.savefig(path_fig, format='png')
 
 # *************************************************************************
 def sq_error_vs_actual_angle(directory, csv_input, csv_columns, graph_name):
@@ -100,5 +100,5 @@ def sq_error_vs_actual_angle(directory, csv_input, csv_columns, graph_name):
 
     plt.tight_layout()
 
-    path_fig = os.path.join(directory, f'{graph_name}.tiff')
-    plt.savefig(path_fig, format='tiff')
+    path_fig = os.path.join(directory, f'{graph_name}.png')
+    plt.savefig(path_fig, format='png')

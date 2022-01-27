@@ -50,12 +50,12 @@ def find_normal_and_outliers(directory, input_cols, input_csv, norm_name, out_na
     # reset the indexes (as the original ones will be kept) and export as .csv files
 
     df_n = df_n.reset_index()
-    path_n = os.path.join(directory, (f'{norm_name}.csv'))
-    df_n.to_csv(path_n, index=False)
+    # path_n = os.path.join(directory, (f'{norm_name}.csv'))
+    # df_n.to_csv(path_n, index=False)
 
     df_o = df_o.reset_index()
-    path_o = os.path.join(directory, (f'{out_name}.csv'))
-    df_o.to_csv(path_o, index=False)
+    # path_o = os.path.join(directory, (f'{out_name}.csv'))
+    # df_o.to_csv(path_o, index=False)
 
     return df_a, df_n, df_o
 
@@ -107,17 +107,17 @@ def find_stats(directory, input_csv, input_cols, df_a, df_o):
         pearson_o = None
         mean_abs_err_o = None
 
-    stat_data = [pearson_a, pearson_o, mean_abs_err_a, mean_abs_err_o, rmse, rmse_o, relrmse, relrmse_o]
-    stat_col = ['pearson_a', 'pearson_o', 'mean_abs_err_a', 'mean_abs_err_o', 'RMSE', 'RMSE_o', 'RELRMSE_a',
-                'RELRMSE_o']
+    stat_data_all = [pearson_a, mean_abs_err_a, rmse, relrmse]
+    stat_data_out = [pearson_o, mean_abs_err_o, rmse_o, relrmse_o]
+    stat_col = ['pearson', 'error', 'RMSE', 'RELRMSE']
+    stats_all = pd.DataFrame(data=[stat_data_all], columns=stat_col)
+    stats_out = pd.DataFrame(data=[stat_data_out], columns=stat_col)
 
-    stats_df = pd.DataFrame(data=[stat_data], columns=stat_col)
-
-    return stats_df
+    return stats_all, stats_out
 
 
 # *************************************************************************
-def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, graph_name, title_for_graph):
+def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, stats_csv_name, graph_name):
     """ Create a scatter plot where outliers and normal range values are different colors. There is also a best fit
         line for outliers and for the whole dataset, as well as a y=x line for comparisons. Axis titles and max/mins
         are set. Text displays the legend, equation of best fit lines, and the RELRMSE for the whole set and the
@@ -156,6 +156,7 @@ def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, gra
     axes = plt.gca()
 
     # Sets the maximum and minimum values for the axes
+    # axes.autoscale(tight=True)
     axes.set_xlim([-62, -30])
     axes.set_ylim([-60, -30])
 
@@ -169,11 +170,8 @@ def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, gra
     plt.text(s='Line: y=x', x=-61, y=-32, fontsize=8)
 
     plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m3, b3), x=-61, y=-33, fontsize=8, color=c4)
-    plt.text(s='RELRMSE (all): {:.3}'.format(float(stat_df['RELRMSE_a'])), x=-61, y=-34, fontsize=8)
+    plt.text(s='RELRMSE (all): {:.3}'.format(float(stat_df_all['RELRMSE'])), x=-61, y=-34, fontsize=8)
     plt.text(s='-48 < Normal Values < -42', x=-61, y=-38, fontsize=8, color=c2)
-
-    # Adds graph title
-    plt.suptitle(f'{title_for_graph}', fontsize=14)
 
     plt.tight_layout()
 
@@ -181,9 +179,9 @@ def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, gra
     # add best fit lines to statistics dataframe
     best_ft_a = 'y={:.3f}x+{:.3f}'.format(m3, b3)
 
-    stat_df['best_ft_a'] = best_ft_a
-    stat_df['bf_slope_a'] = m3
-    stat_df['bf_int_a'] = b3
+    stat_df_all['fit'] = best_ft_a
+    stat_df_all['slope'] = m3
+    stat_df_all['intercept'] = b3
 
     num_outliers = int(file_o['code'].size)
     if num_outliers != 0:
@@ -195,20 +193,22 @@ def plot_scatter(directory, file_o, file_n, stat_df, file_a, stats_csv_name, gra
         m1, b1 = np.polyfit(x1, y1, 1)
         plt.plot(x1, m1 * x1 + b1, color=c3, linestyle='dashed', linewidth=1)
         plt.scatter(x1, y1, s=2, color=c1)
-        plt.text(s='RELRMSE (outliers): {:.3}'.format(float(stat_df['RELRMSE_o'])), x=-61, y=-37, fontsize=8)
+        plt.text(s='RELRMSE (outliers): {:.3}'.format(float(stat_df_out['RELRMSE'])), x=-61, y=-37, fontsize=8)
         plt.text(s='Best fit (outliers): y={:.3f}x+{:.3f}'.format(m1, b1), x=-61, y=-36, fontsize=8, color=c3)
         plt.text(s='Outliers', x=-61, y=-35, fontsize=8, color=c1)
         best_ft_o = 'y={:.3f}x+{:.3f}'.format(m1, b1)
-        stat_df['best_ft_o'] = best_ft_o
-        stat_df['bf_int_o'] = b1
-        stat_df['bf_slope_o'] = m1
+        stat_df_out['fit'] = best_ft_o
+        stat_df_out['slope'] = m1
+        stat_df_out['intercept'] = b1
 
-    path_stats = os.path.join(directory, (f'{stats_csv_name}.csv'))
-    stat_df.to_csv(path_stats, index=False)
+    path_stats_all = os.path.join(directory, (f'{stats_csv_name}_all.csv'))
+    path_stats_out = os.path.join(directory, (f'{stats_csv_name}_out.csv'))
+    stat_df_all.to_csv(path_stats_all, index=False)
+    stat_df_out.to_csv(path_stats_out, index=False)
 
     # Exports the figure as a .png file
-    path_fig = os.path.join(directory, f'{graph_name}.tiff')
-    plt.savefig(path_fig, format='tiff')
+    path_fig = os.path.join(directory, f'{graph_name}.png')
+    plt.savefig(path_fig, format='png')
     plt.show()
 
 
@@ -222,13 +222,12 @@ if __name__ == '__main__':
     parser.add_argument('--name_outliers', help='Name for output with ouliers', required=True)
     parser.add_argument('--name_stats', help='Name for output with statistics for run', required=True)
     parser.add_argument('--name_graph', help='Name for graph outputted', required=True)
-    parser.add_argument('--graph_title', help='Title for graph', required=True)
     args = parser.parse_args()
 
     all_df, norm_df, out_df = find_normal_and_outliers(args.directory, args.cols_input, args.csv_input,
                                                     args.name_normal, args.name_outliers)
 
-    statistics_df = find_stats(args.directory, args.csv_input, args.cols_input, all_df, out_df)
+    stat_df_all, stats_df_out = find_stats(args.directory, args.csv_input, args.cols_input, all_df, out_df)
 
-    plot_scatter(args.directory, out_df, norm_df, statistics_df, all_df.copy(),
-                 args.name_stats, args.name_graph, args.graph_title)
+    plot_scatter(args.directory, out_df, norm_df, stat_df_all, stats_df_out, all_df.copy(),
+                 args.name_stats, args.name_graph)

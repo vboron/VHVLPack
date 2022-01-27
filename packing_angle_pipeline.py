@@ -8,20 +8,24 @@ import nonred
 import shutil
 import subprocess
 import graphing
-
+import latex_template_packingangle as ltp
 # *************************************************************************
+
+
 class Dataset(Enum):
     PrePAPA = auto()
-    PostPAPA = auto()
-    PreAF2 = auto()
-    PostAF2 = auto()
-    Everything = auto()
+    # PostPAPA = auto()
+    # PreAF2 = auto()
+    # PostAF2 = auto()
+    # Everything = auto()
+
 
 class NonRedundantization(Enum):
     NR0 = auto()
-    NR1 = auto()
-    NR2 = auto()
-    NR3 = auto()
+    # NR1 = auto()
+    # NR2 = auto()
+    # NR3 = auto()
+
 
 class MLMethod(Enum):
     OrigPAPA = auto()
@@ -33,12 +37,16 @@ class MLMethod(Enum):
 # *************************************************************************
 def preprocessing(ds: Dataset):
     def run_compile_angles(ds: Dataset):
-        utils.run_cmd(['./compile_angles.py', '--directory', ds.name, '--csv_output', f'{ds.name}_ang'], args.dry_run)
+        utils.run_cmd(['./compile_angles.py', '--directory', ds.name,
+                      '--csv_output', f'{ds.name}_ang'], args.dry_run)
+
     def run_find_VHVLres(ds: Dataset):
-        utils.run_cmd(['./find_VHVLres.py','--directory', ds.name,'--csv_output', f'{ds.name}_res'], args.dry_run)
+        utils.run_cmd(['./find_VHVLres.py', '--directory', ds.name,
+                      '--csv_output', f'{ds.name}_res'], args.dry_run)
+
     def run_encode_4d(ds: Dataset):
         utils.run_cmd(['./encode_4d.py', '--residue_csv', f'{ds.name}_res.csv', '--angle_csv', f'{ds.name}_ang.csv',
-                    '--columns', args.cols_4d, '--csv_output', f'{ds.name}_4d', '--directory', f'{ds.name}'], args.dry_run)
+                       '--columns', args.cols_4d, '--csv_output', f'{ds.name}_4d', '--directory', f'{ds.name}'], args.dry_run)
     run_compile_angles(ds)
     run_find_VHVLres(ds)
     run_encode_4d(ds)
@@ -52,12 +60,12 @@ def run_nr(ds: Dataset, nr: NonRedundantization):
         src_path = os.path.join(ds.name, f'{ds.name}_4d.csv')
         dst_path = os.path.join(ds.name, f'{new_file}.csv')
         shutil.copyfile(src_path, dst_path)
-    elif nr == NonRedundantization.NR1:
-        nonred.NR1(ds.name, args.cols_4d, new_file, encoded_csv_path)
-    elif nr == NonRedundantization.NR2:
-        nonred.NR2(encoded_csv_path, args.cols_4d, ds.name, new_file)
-    elif nr == NonRedundantization.NR3:
-        nonred.NR3(encoded_csv_path, args.cols_4d, ds.name, new_file)
+    # elif nr == NonRedundantization.NR1:
+    #     nonred.NR1(ds.name, args.cols_4d, new_file, encoded_csv_path)
+    # elif nr == NonRedundantization.NR2:
+    #     nonred.NR2(encoded_csv_path, args.cols_4d, ds.name, new_file)
+    # elif nr == NonRedundantization.NR3:
+    #     nonred.NR3(encoded_csv_path, args.cols_4d, ds.name, new_file)
 
 
 # *************************************************************************
@@ -66,6 +74,7 @@ def run_papa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
                    'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--which_papa', 'papa', '--csv_output',
                    f'{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
+
 def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     with open(f'{ds.name}/{ds.name}_{nr.name}_{meth.name}.arff', 'w') as f:
         path = os.path.join(ds.name, f'{ds.name}_{nr.name}_4d.csv')
@@ -73,21 +82,24 @@ def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
                       args.dry_run, stdout=f)
     pat_path = os.path.join('SNNS', 'papa', 'training', 'final.pat')
     with open(pat_path) as f:
-        utils.run_cmd(['arff2snns', f'{ds.name}/{ds.name}_{nr.name}_{meth.name}.arff'], args.dry_run, stdout=f)
+        utils.run_cmd(
+            ['arff2snns', f'{ds.name}/{ds.name}_{nr.name}_{meth.name}.arff'], args.dry_run, stdout=f)
 
     utils.run_cmd(['batchman', '-f', 'final_training.cmd'], args.dry_run,
                   cwd=os.path.join(os.getcwd(), 'SNNS/papa/training'))
 
     home_dir = os.environ['HOME']
     utils.run_cmd(['./install.sh', f'{home_dir}/{ds.name}_{nr.name}_{meth.name}'],
-                   args.dry_run,
-                   cwd='SNNS/papa')
+                  args.dry_run,
+                  cwd='SNNS/papa')
 
     utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', ds.name, '--seq_directory',
-                   os.path.join(ds.name, 'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--csv_output',
+                   os.path.join(
+                       ds.name, 'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--csv_output',
                    f'{ds.name}_{nr.name}_{meth.name}',
                    '--which_papa', os.path.join(os.environ['HOME'], f'{ds.name}_{nr.name}_{meth.name}', 'papa')],
                   args.dry_run)
+
 
 def run_snns(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./pdb2seq.py', '--directory', ds.name], args.dry_run)
@@ -99,6 +111,7 @@ def run_snns(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     else:
         raise ValueError(f'Handling of meth={meth} not implemented')
 
+
 def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--directory', ds.name, '--columns_4d', args.cols_4d, '--training_csv',
                    f'{ds.name}_{nr.name}_4d.csv', '--testing_csv', f'{ds.name}_{nr.name}_4d.csv', '--input_cols',
@@ -108,6 +121,8 @@ def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
                    f'{ds.name}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 # multilayer perceptron cross validation
+
+
 def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./split_10.py',
                    '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
@@ -117,16 +132,17 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
                    '--csv2arff_cols', 'in4d.dat'],
                   args.dry_run)
 
-    classifier='weka.classifiers.functions.MultilayerPerceptron'
+    classifier = 'weka.classifiers.functions.MultilayerPerceptron'
     env = {'WEKA': '/usr/local/apps/weka-3-8-3'}
     env['CLASSPATH'] = f'{env["WEKA"]}/weka.jar'
-    for i in range (1, 11):
+    for i in range(1, 11):
         # train
         file_name = os.path.join(ds.name, f'{nr.name}_{i}_train.log')
         with open(file_name, 'w') as f:
             cmd = ['java', classifier, '-v', '-x', '10', '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
-                '-d', os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
-            utils.run_cmd(cmd, args.dry_run, stdout=f, env=env, stderr=subprocess.DEVNULL)
+                   '-d', os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
+            utils.run_cmd(cmd, args.dry_run, stdout=f,
+                          env=env, stderr=subprocess.DEVNULL)
             assert(os.stat(file_name).st_size != 0)
 
         # test
@@ -134,12 +150,14 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
         with open(file_name, 'w') as f:
             cmd = ['java', classifier, '-v', '-o', '-T', os.path.join(ds.name, f'{nr.name}_{i}_test.arff'), '-l',
                    os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
-            utils.run_cmd(cmd, args.dry_run, stdout=f, env=env, stderr=subprocess.DEVNULL)
+            utils.run_cmd(cmd, args.dry_run, stdout=f,
+                          env=env, stderr=subprocess.DEVNULL)
             assert(os.stat(file_name).st_size != 0)
 
     utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--xval_cols', 'xval_postprocessing.dat',
                    '--out_csv', f'{ds.name}_{nr.name}_{meth.name}', '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
                    '--cols_4d', args.cols_4d], args.dry_run)
+
 
 def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     if meth == MLMethod.OrigPAPA or meth == MLMethod.RetrainedPAPA:
@@ -150,28 +168,36 @@ def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
         run_MLPxval(ds, nr, meth)
 
 # *************************************************************************
+
+
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     def correction():
         cmd = ['./add_correction_factor.py',
-                '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
-                args.postprocessing_cols,'--cols_stats', 'statistics.dat', '--csv_stats',
-                f'{ds.name}_{nr.name}_{meth.name}_stats.csv', '--output_name', f'{ds.name}_{nr.name}_{meth.name}_corrected']
+               '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
+               args.postprocessing_cols, '--cols_stats', 'statistics.dat', '--csv_stats',
+               f'{ds.name}_{nr.name}_{meth.name}_stats.csv', '--output_name', f'{ds.name}_{nr.name}_{meth.name}_corrected']
         utils.run_cmd(cmd, args.dry_run)
+    # def to_latex():
 
     name = f'{ds.name}_{nr.name}_{meth.name}'
-    cmd=['./stats2graph.py',
-         '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
-         args.postprocessing_cols, '--name_normal',
-         f'{name}_normal', '--name_outliers', f'{name}_normal',
-         '--name_stats', f'{name}_stats', '--name_graph', name, '--graph_title',
-         f'Graph of predicted vs actual values (Dataset:{ds.name}, Method{meth.name}).']
+    cmd = ['./stats2graph.py',
+           '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
+           args.postprocessing_cols, '--name_normal',
+           f'{name}_normal', '--name_outliers', f'{name}_normal',
+           '--name_stats', f'{name}_stats', '--name_graph', name]
     utils.run_cmd(cmd, args.dry_run)
-    graphing.angle_distribution(ds.name, f'{ds.name}_ang', f'{ds.name}_{nr.name}_{meth.name}_angledistribution')
-    graphing.error_distribution(ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv', args.postprocessing_cols,
-                                f'{ds.name}_{nr.name}_{meth.name}_errordistribution')
-    graphing.sq_error_vs_actual_angle(ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv', args.postprocessing_cols,
-                                f'{ds.name}_{nr.name}_{meth.name}_sqerror_vs_actual')
+    graphing.angle_distribution(
+        ds.name, f'{ds.name}_ang.csv', f'{name}_angledistribution')
+    graphing.error_distribution(ds.name, f'{name}.csv', args.postprocessing_cols,
+                                f'{name}_errordistribution')
+    graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', args.postprocessing_cols,
+                                      f'{name}_sqerror_vs_actual')
+    ltp.output_data(ds.name, ds.name, nr.name, meth.name,
+                    f'{name}.png', f'{name}_angledistribution.png',
+                    f'{name}_errordistribution.png', f'{name}_sqerror_vs_actual.png',
+                    f'{name}_stats_all.csv', f'{name}_stats_out.csv', 'read_stats_csv.dat')
     correction()
+
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
