@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # # *************************************************************************
-from enum import Enum, auto
+from pipeline_enums import Dataset, NonRedundantization, MLMethod, unique_name
 import os
 import argparse
 import utils
@@ -8,31 +8,8 @@ import nonred
 import shutil
 import subprocess
 import graphing
+import itertools
 import latex_template_packingangle as ltp
-# *************************************************************************
-
-
-class Dataset(Enum):
-    PrePAPA = auto()
-    # PostPAPA = auto()
-    # PreAF2 = auto()
-    # PostAF2 = auto()
-    # Everything = auto()
-
-
-class NonRedundantization(Enum):
-    NR0 = auto()
-    # NR1 = auto()
-    # NR2 = auto()
-    # NR3 = auto()
-
-
-class MLMethod(Enum):
-    OrigPAPA = auto()
-    RetrainedPAPA = auto()
-    WekaMLP = auto()
-    XvalWeka = auto()
-
 
 # *************************************************************************
 def preprocessing(ds: Dataset):
@@ -121,8 +98,6 @@ def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
                    f'{ds.name}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 # multilayer perceptron cross validation
-
-
 def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./split_10.py',
                    '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
@@ -171,47 +146,67 @@ def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 
 
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    def correction():
-        cmd = ['./add_correction_factor.py',
-               '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
-               args.postprocessing_cols, '--cols_stats', 'statistics.dat', '--csv_stats',
-               f'{ds.name}_{nr.name}_{meth.name}_stats.csv', '--output_name', f'{ds.name}_{nr.name}_{meth.name}_corrected']
-        utils.run_cmd(cmd, args.dry_run)
-    # def to_latex():
+    name = unique_name(ds, nr, meth)
 
-    name = f'{ds.name}_{nr.name}_{meth.name}'
     cmd = ['./stats2graph.py',
-           '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
+           '--directory', ds.name, '--csv_input', f'{name}.csv', '--cols_input',
            args.postprocessing_cols, '--name_normal',
            f'{name}_normal', '--name_outliers', f'{name}_normal',
            '--name_stats', f'{name}_stats', '--name_graph', name]
     utils.run_cmd(cmd, args.dry_run)
+    graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', args.postprocessing_cols,
+                                      f'{name}_sqerror_vs_actual')
     graphing.angle_distribution(
         ds.name, f'{ds.name}_ang.csv', f'{name}_angledistribution')
     graphing.error_distribution(ds.name, f'{name}.csv', args.postprocessing_cols,
                                 f'{name}_errordistribution')
     graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', args.postprocessing_cols,
                                       f'{name}_sqerror_vs_actual')
-    ltp.output_data(ds.name, ds.name, nr.name, meth.name,
-                    f'{name}.png', f'{name}_angledistribution.png',
-                    f'{name}_errordistribution.png', f'{name}_sqerror_vs_actual.png',
-                    f'{name}_stats_all.csv', f'{name}_stats_out.csv', 'read_stats_csv.dat')
-    correction()
+
+    # def correction():
+    #     cmd = ['./add_correction_factor.py',
+    #            '--directory', ds.name, '--csv_input', f'{name}.csv', '--cols_input',
+    #            args.postprocessing_cols, '--cols_stats', 'statistics.dat', '--csv_stats',
+    #            f'{name}_stats.csv', '--output_name', f'{name}_corrected']
+    #     utils.run_cmd(cmd, args.dry_run)
+    # # TODO should we have correction here?
+    # correction()
 
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
 parser.add_argument('--cols-4d', default='4d.dat')
 parser.add_argument('--postprocessing_cols', default='post_processing.dat')
+parser.add_argument('--process', action='store_true', default=False)
+parser.add_argument('--postprocess', action='store_true', default=False)
+parser.add_argument('--latex', action='store_true', default=False)
+
 args = parser.parse_args()
 
-for ds in Dataset:
-    print(f'Processing dataset={ds}...')
-    preprocessing(ds)
-    for nr in NonRedundantization:
-        print(f"Dataset={ds}: processing nr={nr}")
-        run_nr(ds, nr)
-        for meth in MLMethod:
-            print(f"Dataset={ds}, nr={nr}: processing meth={meth}")
-            run_method(ds, nr, meth)
-            postprocessing(ds, nr, meth)
+if not args.process and not args.postprocess and not args.latex:
+    print('Neither --process nor --postprocess nor --latex has been specified. Enabling all of them.')
+    args.process = args.postprocess = args.latex = True
+
+if args.process:
+    print('Processing...')
+    for ds in Dataset:
+        print(f'Processing dataset={ds}...')
+        preprocessing(ds)
+        for nr in NonRedundantization:
+            print(f"Dataset={ds}: processing nr={nr}")
+            run_nr(ds, nr)
+            for meth in MLMethod:
+                print(f"Dataset={ds}, nr={nr}: processing meth={meth}")
+                run_method(ds, nr, meth)
+
+if args.postprocess:
+    print('Postprocessing...')
+    for ds, nr, meth in itertools.product(Dataset, NonRedundantization, MLMethod):
+        postprocessing(ds, nr, meth)
+
+if args.latex:
+    print('Generating LaTeX...')
+    for ds, nr, meth in itertools.product(Dataset, NonRedundantization, MLMethod):
+        ltp.output_data(ds, nr, meth)
+
+print('Goodbye!')

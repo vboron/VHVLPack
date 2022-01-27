@@ -121,7 +121,7 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     """ Create a scatter plot where outliers and normal range values are different colors. There is also a best fit
         line for outliers and for the whole dataset, as well as a y=x line for comparisons. Axis titles and max/mins
         are set. Text displays the legend, equation of best fit lines, and the RELRMSE for the whole set and the
-        outliers. Graphs are exported as a .png.
+        outliers. Graphs are exported as a .jpg.
 
         Inputs: file_o    -- Dataframe containing predicted and actual angles for outliers
                 file_n    -- Dataframe containing predicted and actual angles for normal range values
@@ -129,6 +129,7 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
 
         14.07.2021  Original   By: VAB
     """
+    plt.figure()
     # Color of outlier points
     c1 = 'rosybrown'
 
@@ -206,10 +207,10 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     stat_df_all.to_csv(path_stats_all, index=False)
     stat_df_out.to_csv(path_stats_out, index=False)
 
-    # Exports the figure as a .png file
-    path_fig = os.path.join(directory, f'{graph_name}.png')
-    plt.savefig(path_fig, format='png')
-    plt.show()
+    # Exports the figure as a .jpg file
+    path_fig = os.path.join(directory, f'{graph_name}.jpg')
+    plt.savefig(path_fig, format='jpg')
+    plt.close()
 
 
 # *************************************************************************

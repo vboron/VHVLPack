@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import math
 
+
 # *************************************************************************
 def angle_distribution(directory, csv_ang, graph_name):
     """Plot a histogram of the VH-VL packing angle distribution
@@ -18,11 +19,11 @@ def angle_distribution(directory, csv_ang, graph_name):
     By: VAB
     """
 
+    plt.figure()
     col1 = ['code', 'angle']
     ang_file = os.path.join(directory, csv_ang)
     data = pd.read_csv(ang_file, usecols=col1)
 
-    plt.figure()
     data['angle'] = (data['angle']).astype(float)
 
     # Specify the mean width of bins and make them equidistant
@@ -38,14 +39,15 @@ def angle_distribution(directory, csv_ang, graph_name):
     plt.axvline(data['angle'].mean(), color='k', linestyle='dashed', linewidth=1)
 
     # Add 'Mean: ' label to graph, the first number specifies the x-position of the label and the second the y-position
-    min_ylim, max_ylim = plt.ylim()
+    _, max_ylim = plt.ylim()
     plt.text(data['angle'].mean() * 0.9, max_ylim * 0.9, 'Mean: {:.2f}'.format(data['angle'].mean()))
 
     # plt.suptitle(f'{graph_title}', fontsize=14)
 
-    path_fig = os.path.join(directory, f'{graph_name}.png')
-    plt.savefig(path_fig, format='png')
-    plt.show()
+    path_fig = os.path.join(directory, f'{graph_name}.jpg')
+    plt.savefig(path_fig, format='jpg')
+    plt.close()
+
 
 # *************************************************************************
 def error_distribution(directory, csv_input, csv_columns, graph_name):
@@ -58,6 +60,7 @@ def error_distribution(directory, csv_input, csv_columns, graph_name):
 
     By: VAB
     """
+    plt.figure()
     cols = [i.strip('\n') for i in open(csv_columns).readlines()]
 
     df = pd.read_csv(os.path.join(directory, csv_input), usecols=cols).copy()
@@ -72,8 +75,9 @@ def error_distribution(directory, csv_input, csv_columns, graph_name):
 
     plt.tight_layout()
 
-    path_fig = os.path.join(directory, f'{graph_name}.png')
-    plt.savefig(path_fig, format='png')
+    path_fig = os.path.join(directory, f'{graph_name}.jpg')
+    plt.savefig(path_fig, format='jpg')
+    plt.close()
 
 # *************************************************************************
 def sq_error_vs_actual_angle(directory, csv_input, csv_columns, graph_name):
@@ -86,6 +90,7 @@ def sq_error_vs_actual_angle(directory, csv_input, csv_columns, graph_name):
 
     By: VAB
     """
+    plt.figure()
     cols = [i.strip('\n') for i in open(csv_columns).readlines()]
 
     df = pd.read_csv(os.path.join(directory, csv_input), usecols=cols).copy()
@@ -100,5 +105,6 @@ def sq_error_vs_actual_angle(directory, csv_input, csv_columns, graph_name):
 
     plt.tight_layout()
 
-    path_fig = os.path.join(directory, f'{graph_name}.png')
-    plt.savefig(path_fig, format='png')
+    path_fig = os.path.join(directory, f'{graph_name}.jpg')
+    plt.savefig(path_fig, format='jpg')
+    plt.close()
