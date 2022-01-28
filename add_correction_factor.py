@@ -25,8 +25,8 @@ def correct_pred(prediction, directory, stats_cols, stats_csv):
 
     stats = pd.read_csv(os.path.join(directory, stats_csv), usecols=stat_col)
     # y = mx + c
-    m = stats['bf_slope_a']
-    c = stats['bf_int_a']
+    m = stats['slope']
+    c = stats['intercept']
 
     correction = round(((prediction - c) / m), 3)
     return correction
