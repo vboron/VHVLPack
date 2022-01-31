@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # # *************************************************************************
-from pipeline_enums import Dataset, NonRedundantization, MLMethod, unique_name
+from pipeline_enums import Correction, Dataset, NonRedundantization, MLMethod, unique_name
 import os
 import argparse
 import utils
@@ -144,10 +144,14 @@ def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 
 # *************************************************************************
 
+def correction(ds: Dataset, nr: NonRedundantization, meth: MLMethod, name):
+    cmd = ['./add_correction_factor.py',
+            '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
+            args.postprocessing_cols, '--cols_stats', 'read_stats_csv.dat', '--csv_stats',
+            f'{ds.name}_{nr.name}_{meth.name}_NotCorrected_stats_all.csv', '--output_name', f'{name}']
+    utils.run_cmd(cmd, args.dry_run)
 
-def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    name = unique_name(ds, nr, meth)
-
+def run_graphs(ds: Dataset, name):
     cmd = ['./stats2graph.py',
            '--directory', ds.name, '--csv_input', f'{name}.csv', '--cols_input',
            args.postprocessing_cols, '--name_normal',
@@ -163,14 +167,16 @@ def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', args.postprocessing_cols,
                                       f'{name}_sqerror_vs_actual')
 
-    # def correction():
-    #     cmd = ['./add_correction_factor.py',
-    #            '--directory', ds.name, '--csv_input', f'{name}.csv', '--cols_input',
-    #            args.postprocessing_cols, '--cols_stats', 'statistics.dat', '--csv_stats',
-    #            f'{name}_stats.csv', '--output_name', f'{name}_corrected']
-    #     utils.run_cmd(cmd, args.dry_run)
-    # # TODO should we have correction here?
-    # correction()
+def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction):
+    name = unique_name(ds, nr, meth, cr)
+    if cr == Correction.NotCorrected:
+        src_path = os.path.join(ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
+        dst_path = os.path.join(ds.name, f'{name}.csv')
+        shutil.copyfile(src_path, dst_path)
+        run_graphs(ds, name)
+    else:
+        correction(ds, nr, meth, name)
+        run_graphs(ds, name)
 
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
@@ -201,8 +207,8 @@ if args.process:
 
 if args.postprocess:
     print('Postprocessing...')
-    for ds, nr, meth in itertools.product(Dataset, NonRedundantization, MLMethod):
-        postprocessing(ds, nr, meth)
+    for ds, nr, meth, cr in itertools.product(Dataset, NonRedundantization, MLMethod, Correction):
+        postprocessing(ds, nr, meth, cr)
 
 if args.latex:
     print('Generating LaTeX...')
