@@ -37,12 +37,12 @@ def run_nr(ds: Dataset, nr: NonRedundantization):
         src_path = os.path.join(ds.name, f'{ds.name}_4d.csv')
         dst_path = os.path.join(ds.name, f'{new_file}.csv')
         shutil.copyfile(src_path, dst_path)
-    # elif nr == NonRedundantization.NR1:
-    #     nonred.NR1(ds.name, args.cols_4d, new_file, encoded_csv_path)
-    # elif nr == NonRedundantization.NR2:
-    #     nonred.NR2(encoded_csv_path, args.cols_4d, ds.name, new_file)
-    # elif nr == NonRedundantization.NR3:
-    #     nonred.NR3(encoded_csv_path, args.cols_4d, ds.name, new_file)
+    elif nr == NonRedundantization.NR1:
+        nonred.NR1(ds.name, args.cols_4d, new_file, encoded_csv_path)
+    elif nr == NonRedundantization.NR2:
+        nonred.NR2(encoded_csv_path, args.cols_4d, ds.name, new_file)
+    elif nr == NonRedundantization.NR3:
+        nonred.NR3(encoded_csv_path, args.cols_4d, ds.name, new_file)
 
 
 # *************************************************************************
@@ -131,7 +131,7 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 
     utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--xval_cols', 'xval_postprocessing.dat',
                    '--out_csv', f'{ds.name}_{nr.name}_{meth.name}', '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
-                   '--cols_4d', args.cols_4d], args.dry_run)
+                   '--cols_4d', args.cols_4d, '--nr', nr.name], args.dry_run)
 
 
 def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod):

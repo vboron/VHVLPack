@@ -13,14 +13,14 @@ import os
 import re
 import utils
 
-def extract_xval_stats(directory, xval_columns, encoded_csv, csv_cols):
+def extract_xval_stats(directory, xval_columns, encoded_csv, csv_cols, nr):
 
     all_data = []
     files = []
 
     # Open the directory and make a list of .log files that are in there
     for file in os.listdir(directory):
-        if file.endswith("_test.log"):
+        if file.endswith("_test.log") and file.startswith(nr):
             files.append(os.path.join(directory, file))
 
     stats_to_get = ['Correlation coefficient', 'Mean absolute error', 'Root mean squared error',
@@ -73,7 +73,8 @@ if __name__ == '__main__':
     parser.add_argument('--out_csv', help='Name for the .csv output', required=True)
     parser.add_argument('--input_csv', help='File that was the input to the method ', required=True)
     parser.add_argument('--cols_4d', help='.dat for 4d columns', required=True)
+    parser.add_argument('--nr', help='which NR is being used', required=True)
     args = parser.parse_args()
 
     mean_pearsons, mean_rmse, relrmse, mean_error= extract_xval_stats(args.directory, args.xval_cols, args.input_csv, args.cols_4d)
-    make_table_for_graphing(args.directory, args.input_csv, args.cols_4d, mean_error, args.out_csv)
+    make_table_for_graphing(args.directory, args.input_csv, args.cols_4d, mean_error, args.out_csv, args.nr)
