@@ -31,6 +31,9 @@ E/
 *.pdb
 *.tiff
 *.txt
+*.jpg
+*.tex
+*.pdf
 test*
 *test
 *.pyc
