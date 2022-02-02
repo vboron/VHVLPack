@@ -83,7 +83,8 @@ def generate_latex():
     doc.append(pl.NoEscape(r'\maketitle'))
     doc.append(
             'This document summarizes the results obtaning by running `packing_angle_pipeline.py` on various datasets.')
-    doc.append(pl.NoEscape(r'\tableofcontents'))
+    # TODO table of contents is broken and doesn't show all sections
+    # doc.append(pl.NoEscape(r'\tableofcontents'))
     doc.append(pl.NoEscape(r'\newpage'))
 
     for ds, nr, meth in itertools.product(Dataset, NonRedundantization, MLMethod):

@@ -114,7 +114,7 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
         # train
         file_name = os.path.join(ds.name, f'{nr.name}_{i}_train.log')
         with open(file_name, 'w') as f:
-            cmd = ['java', classifier, '-v', '-x', '10', '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
+            cmd = ['java', classifier, '-v', '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
                    '-d', os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
             utils.run_cmd(cmd, args.dry_run, stdout=f,
                           env=env, stderr=subprocess.DEVNULL)
@@ -135,11 +135,11 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 
 
 def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    if meth == MLMethod.OrigPAPA or meth == MLMethod.RetrainedPAPA:
-        run_snns(ds, nr, meth)
-    elif meth == MLMethod.WekaMLP:
-        run_MLP(ds, nr, meth)
-    elif meth == MLMethod.XvalWeka:
+    # if meth == MLMethod.OrigPAPA or meth == MLMethod.RetrainedPAPA:
+    #     run_snns(ds, nr, meth)
+    # elif meth == MLMethod.WekaMLP:
+    #     run_MLP(ds, nr, meth)
+    if meth == MLMethod.XvalWeka:
         run_MLPxval(ds, nr, meth)
 
 # *************************************************************************

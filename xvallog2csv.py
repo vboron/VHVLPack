@@ -76,5 +76,5 @@ if __name__ == '__main__':
     parser.add_argument('--nr', help='which NR is being used', required=True)
     args = parser.parse_args()
 
-    mean_pearsons, mean_rmse, relrmse, mean_error= extract_xval_stats(args.directory, args.xval_cols, args.input_csv, args.cols_4d)
-    make_table_for_graphing(args.directory, args.input_csv, args.cols_4d, mean_error, args.out_csv, args.nr)
+    mean_pearsons, mean_rmse, relrmse, mean_error= extract_xval_stats(args.directory, args.xval_cols, args.input_csv, args.cols_4d, args.nr)
+    make_table_for_graphing(args.directory, args.input_csv, args.cols_4d, mean_error, args.out_csv)
