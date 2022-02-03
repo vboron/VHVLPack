@@ -7,74 +7,64 @@ Program searches for the test log files and extracts the lines containing the st
 stats are then put into a pandas DataFrame and exported as a .csv file.
 ------------------------------------------------
 """
-import argparse
-import pandas as pd
 import os
+import pandas as pd
 import re
-import utils
+import argparse
 
-def extract_xval_stats(directory, xval_columns, encoded_csv, csv_cols, nr):
+# *************************************************************************
+def stats_to_df(direct, columns, csv_out):
+    """ Read the directory and extract .log files. For each log file, extract the predicted angle, actual angle and
+        error, and put into dataframe. Export as a .csv file.
+
+        11.23.2021  Original   By: VAB
+    """
+
+    # Specify column names for .csv file that will be made from the log files
+    col = []
+    for i in open(columns).readlines():
+        i = i.strip('\n')
+        col.append(i)
 
     all_data = []
     files = []
 
     # Open the directory and make a list of .log files that are in there
-    for file in os.listdir(directory):
-        if file.endswith("_test.log") and file.startswith(nr):
-            files.append(os.path.join(directory, file))
-
-    stats_to_get = ['Correlation coefficient', 'Mean absolute error', 'Root mean squared error',
-                    'Total Number of Instances']
+    for i in range (1, 11):
+        test_dir = f'test_files_{i}'
+        test_dir_path = os.path.join(direct, test_dir)
+        for file in os.listdir(test_dir_path):
+            if file.endswith(".log"):
+                files.append(os.path.join(test_dir_path, file))
 
     # Open each log file in the directory and find the relevant information
-    all_data = []
     for log_file in files:
-        with open(log_file) as f:
-            stat_lines = []
-            lines = f.readlines()
-            name = log_file.split('_')[1]
-            stat_lines.append(name)
-            for line in lines:
-                if str(line).strip().startswith(tuple(stats_to_get)):
-                    line = re.split('[a-z\\s]+', line, flags=re.IGNORECASE)
-                    line = float(line[1])
-                    stat_lines.append(line)
-            all_data.append(stat_lines)
+        with open(log_file) as text_file:
+            for line in text_file:
+                if str(line).strip().startswith('1'):
+                    line = re.sub(' +', ' ', line)
+                    line = line.strip()
+                    line_list = line.split(' ')
+                    name = log_file.split('/')
+                    name = name[-1]
+                    code = name[:6]
+                    pred = float(line_list[2])
+                    angle = float(line_list[1])
+                    error = float(line_list[3])
+                    _all_ = [code, angle, pred, error]
+                    all_data.append(_all_)
 
-    stat_cols = [i.strip('\n') for i in open(xval_columns).readlines()]
+    df_a = pd.DataFrame(data=all_data, columns=col)
+    df_a.to_csv(f'{csv_out}.csv', index=False)
 
-    df_stats_for_each_fold = pd.DataFrame(data=all_data, columns=stat_cols)
-
-    average_coeff = df_stats_for_each_fold['pearson_a'].mean()
-    average_error = df_stats_for_each_fold['mean_abs_err_a'].mean()
-    average_rmse = df_stats_for_each_fold['RMSE'].mean()
-    relrmse = utils.calc_relemse(os.path.join(directory, encoded_csv), csv_cols, str(average_rmse))
-
-    return average_coeff, average_rmse, relrmse, average_error
-
-def make_table_for_graphing(directory, input_csv, input_cols, error, output_name):
-    cols = []
-    for i in open(input_cols).readlines():
-        i = i.strip('\n')
-        cols.append(i)
-
-    df=pd.read_csv(os.path.join(directory, input_csv), usecols=cols)
-    df_all=df[['code', 'angle']].copy()
-    df_all['predicted']=df_all['angle']+error
-    df_all['error']=error
-
-    path = os.path.join(directory, output_name)
-    df_all.to_csv(f'{path}.csv', index=False)
-
+# *************************************************************************
+# *** Main program                                                      ***
+# *************************************************************************
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Program extracts data from log files of MLP run with cross validation')
+    parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
     parser.add_argument('--directory', help='Directory where log files are', required=True)
-    parser.add_argument('--xval_cols', help='.dat columns for processing xval MLP outputs', required=True)
-    parser.add_argument('--out_csv', help='Name for the .csv output', required=True)
-    parser.add_argument('--input_csv', help='File that was the input to the method ', required=True)
-    parser.add_argument('--cols_4d', help='.dat for 4d columns', required=True)
-    parser.add_argument('--nr', help='which NR is being used', required=True)
+    parser.add_argument('--columns_postprocessing', help='Columns for postprocessing', required=True)
+    parser.add_argument('--output_name', help='name for .csv file for data ', required=True)
     args = parser.parse_args()
 
-    mean_pearsons, mean_rmse, relrmse, mean_error= extract_xval_stats(args.directory, args.xval_cols, args.input_csv, args.cols_4d, args.nr)
-    make_table_for_graphing(args.directory, args.input_csv, args.cols_4d, mean_error, args.out_csv)
+    stats_to_df(args.directory, args.columns_postprocessing, args.output_name)

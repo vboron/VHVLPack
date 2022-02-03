@@ -12,6 +12,8 @@ import itertools
 import latex_template_packingangle as ltp
 
 # *************************************************************************
+
+
 def preprocessing(ds: Dataset):
     def run_compile_angles(ds: Dataset):
         utils.run_cmd(['./compile_angles.py', '--directory', ds.name,
@@ -98,6 +100,8 @@ def run_MLP(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
                    f'{ds.name}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 # multilayer perceptron cross validation
+
+
 def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     utils.run_cmd(['./split_10.py',
                    '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
@@ -111,27 +115,34 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     env = {'WEKA': '/usr/local/apps/weka-3-8-3'}
     env['CLASSPATH'] = f'{env["WEKA"]}/weka.jar'
     for i in range(1, 11):
-        # train
-        file_name = os.path.join(ds.name, f'{nr.name}_{i}_train.log')
-        with open(file_name, 'w') as f:
-            cmd = ['java', classifier, '-v', '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
-                   '-d', os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
-            utils.run_cmd(cmd, args.dry_run, stdout=f,
-                          env=env, stderr=subprocess.DEVNULL)
-            assert(os.stat(file_name).st_size != 0)
+            # train
+            file_name = os.path.join(ds.name, f'{nr.name}_{i}_train.log')
+            with open(file_name, 'w') as f:
+                cmd = ['java', classifier, '-v', '-x', '3', '-H', '20',
+                       '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
+                       '-d', os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
+                utils.run_cmd(cmd, args.dry_run, stdout=f,
+                              env=env, stderr=subprocess.DEVNULL)
+                assert(os.stat(file_name).st_size != 0)
 
         # test
-        file_name = os.path.join(ds.name, f'{nr.name}_{i}_test.log')
-        with open(file_name, 'w') as f:
-            cmd = ['java', classifier, '-v', '-o', '-T', os.path.join(ds.name, f'{nr.name}_{i}_test.arff'), '-l',
-                   os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
-            utils.run_cmd(cmd, args.dry_run, stdout=f,
-                          env=env, stderr=subprocess.DEVNULL)
-            assert(os.stat(file_name).st_size != 0)
+            path = os.path.join(ds.name, f'test_files_{i}')
+            for file in os.listdir(path):
+                arff_files = []
+                if file.endswith('.arff'):
+                    arff_files.append(file)
+                for _file in arff_files:
+                    name = os.path.splitext(_file)[0]
+                    file_path = os.path.join(path, f'{name}.log')
+                    with open(file_path, 'w') as f:
+                        cmd = ['java', classifier, '-v', '-T', os.path.join(path, file), '-p', '0', '-l',
+                               os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
+                        utils.run_cmd(cmd, args.dry_run, stdout=f,
+                                      env=env, stderr=subprocess.DEVNULL)
+                        assert(os.stat(file_path).st_size != 0)
 
-    utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--xval_cols', 'xval_postprocessing.dat',
-                   '--out_csv', f'{ds.name}_{nr.name}_{meth.name}', '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
-                   '--cols_4d', args.cols_4d, '--nr', nr.name], args.dry_run)
+    utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--columns_postprocessing', args.postprocessing_cols,
+                   '--output_name', f'{ds.name}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 
 def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
@@ -144,12 +155,14 @@ def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 
 # *************************************************************************
 
+
 def correction(ds: Dataset, nr: NonRedundantization, meth: MLMethod, name):
     cmd = ['./add_correction_factor.py',
-            '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
-            args.postprocessing_cols, '--cols_stats', 'read_stats_csv.dat', '--csv_stats',
-            f'{ds.name}_{nr.name}_{meth.name}_NotCorrected_stats_all.csv', '--output_name', f'{name}']
+           '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
+           args.postprocessing_cols, '--cols_stats', 'read_stats_csv.dat', '--csv_stats',
+           f'{ds.name}_{nr.name}_{meth.name}_NotCorrected_stats_all.csv', '--output_name', f'{name}']
     utils.run_cmd(cmd, args.dry_run)
+
 
 def run_graphs(ds: Dataset, name):
     cmd = ['./stats2graph.py',
@@ -167,10 +180,12 @@ def run_graphs(ds: Dataset, name):
     graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', args.postprocessing_cols,
                                       f'{name}_sqerror_vs_actual')
 
+
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction):
     name = unique_name(ds, nr, meth, cr)
     if cr == Correction.NotCorrected:
-        src_path = os.path.join(ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
+        src_path = os.path.join(
+            ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
         dst_path = os.path.join(ds.name, f'{name}.csv')
         shutil.copyfile(src_path, dst_path)
         run_graphs(ds, name)
@@ -197,10 +212,10 @@ if args.process:
     print('Processing...')
     for ds in Dataset:
         print(f'Processing dataset={ds}...')
-        preprocessing(ds)
+        # preprocessing(ds)
         for nr in NonRedundantization:
             print(f"Dataset={ds}: processing nr={nr}")
-            run_nr(ds, nr)
+            # run_nr(ds, nr)
             for meth in MLMethod:
                 print(f"Dataset={ds}, nr={nr}: processing meth={meth}")
                 run_method(ds, nr, meth)
