@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # # *************************************************************************
-from pipeline_enums import Correction, Dataset, NonRedundantization, MLMethod, unique_name
+from pipeline_enums import Correction, Dataset, NonRedundantization, MLMethod, unique_name, TestTrain, get_all_testtrain
 import os
 import argparse
 import utils
@@ -48,45 +48,48 @@ def run_nr(ds: Dataset, nr: NonRedundantization):
 
 
 # *************************************************************************
-def run_papa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', ds.name, '--seq_directory', os.path.join(ds.name,
-                   'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--which_papa', 'papa', '--csv_output',
-                   f'{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
+def run_papa(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
+    utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', tt.testing, '--seq_directory',
+                   os.path.join(
+                       tt.testing, 'seq_files'),
+                   '--angle_csv', f'{tt.testing}_ang.csv', '--which_papa', 'papa', '--csv_output',
+                   f'{tt.testing}_{nr.name}_{meth.name}'], args.dry_run)
 
 
-def run_newpapa(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    with open(f'{ds.name}/{ds.name}_{nr.name}_{meth.name}.arff', 'w') as f:
-        path = os.path.join(ds.name, f'{ds.name}_{nr.name}_4d.csv')
+def run_newpapa(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
+    with open(f'{tt.training}/{tt.training}_{nr.name}_{meth.name}.arff', 'w') as f:
+        path = os.path.join(tt.training, f'{tt.training}_{nr.name}_4d.csv')
         utils.run_cmd(['csv2arff', '-norm', '-ni', 'in4d.dat', 'angle', path],
                       args.dry_run, stdout=f)
     pat_path = os.path.join('SNNS', 'papa', 'training', 'final.pat')
     with open(pat_path) as f:
         utils.run_cmd(
-            ['arff2snns', f'{ds.name}/{ds.name}_{nr.name}_{meth.name}.arff'], args.dry_run, stdout=f)
+            ['arff2snns', f'{tt.training}/{tt.training}_{nr.name}_{meth.name}.arff'], args.dry_run, stdout=f)
 
     utils.run_cmd(['batchman', '-f', 'final_training.cmd'], args.dry_run,
                   cwd=os.path.join(os.getcwd(), 'SNNS/papa/training'))
 
     home_dir = os.environ['HOME']
-    utils.run_cmd(['./install.sh', f'{home_dir}/{ds.name}_{nr.name}_{meth.name}'],
+    utils.run_cmd(['./install.sh', f'{home_dir}/{tt.training}_{nr.name}_{meth.name}'],
                   args.dry_run,
                   cwd='SNNS/papa')
 
-    utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', ds.name, '--seq_directory',
+    utils.run_cmd(['./snns_run_and_compile_data.py', '--directory', tt.testing, '--seq_directory',
                    os.path.join(
-                       ds.name, 'seq_files'), '--angle_csv', f'{ds.name}_ang.csv', '--csv_output',
-                   f'{ds.name}_{nr.name}_{meth.name}',
-                   '--which_papa', os.path.join(os.environ['HOME'], f'{ds.name}_{nr.name}_{meth.name}', 'papa')],
+                       tt.testing, 'seq_files'), '--angle_csv', f'{tt.testing}_ang.csv', '--csv_output',
+                   f'{tt.testing}_{nr.name}_{meth.name}',
+                   '--which_papa', os.path.join(os.environ['HOME'], f'{tt.training}_{nr.name}_{meth.name}', 'papa')],
                   args.dry_run)
 
 
-def run_snns(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    utils.run_cmd(['./pdb2seq.py', '--directory', ds.name], args.dry_run)
+def run_snns(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
+    utils.run_cmd(['./pdb2seq.py', '--directory', tt.training], args.dry_run)
+    utils.run_cmd(['./pdb2seq.py', '--directory', tt.testing], args.dry_run)
     # distinguish between making a new papa and running the old papa
     if meth == MLMethod.OrigPAPA:
-        run_papa(ds, nr, meth)
+        run_papa(nr, meth, tt)
     elif meth == MLMethod.RetrainedPAPA:
-        run_newpapa(ds, nr, meth)
+        run_newpapa(nr, meth, tt)
     else:
         raise ValueError(f'Handling of meth={meth} not implemented')
 
@@ -115,41 +118,41 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     env = {'WEKA': '/usr/local/apps/weka-3-8-3'}
     env['CLASSPATH'] = f'{env["WEKA"]}/weka.jar'
     for i in range(1, 11):
-            # train
-            file_name = os.path.join(ds.name, f'{nr.name}_{i}_train.log')
-            with open(file_name, 'w') as f:
-                cmd = ['java', classifier, '-v', '-x', '3', '-H', '20',
-                       '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
-                       '-d', os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
-                utils.run_cmd(cmd, args.dry_run, stdout=f,
-                              env=env, stderr=subprocess.DEVNULL)
-                assert(os.stat(file_name).st_size != 0)
+        # train
+        file_name = os.path.join(ds.name, f'{nr.name}_{i}_train.log')
+        with open(file_name, 'w') as f:
+            cmd = ['java', classifier, '-v', '-x', '3', '-H', '20',
+                   '-t', os.path.join(ds.name, f'{nr.name}_{i}_train.arff'),
+                   '-d', os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
+            utils.run_cmd(cmd, args.dry_run, stdout=f,
+                          env=env, stderr=subprocess.DEVNULL)
+            assert(os.stat(file_name).st_size != 0)
 
         # test
-            path = os.path.join(ds.name, f'test_files_{i}')
-            for file in os.listdir(path):
-                arff_files = []
-                if file.endswith('.arff'):
-                    arff_files.append(file)
-                for _file in arff_files:
-                    name = os.path.splitext(_file)[0]
-                    file_path = os.path.join(path, f'{name}.log')
-                    with open(file_path, 'w') as f:
-                        cmd = ['java', classifier, '-v', '-T', os.path.join(path, file), '-p', '0', '-l',
-                               os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
-                        utils.run_cmd(cmd, args.dry_run, stdout=f,
-                                      env=env, stderr=subprocess.DEVNULL)
-                        assert(os.stat(file_path).st_size != 0)
+        path = os.path.join(ds.name, f'test_files_{i}')
+        for file in os.listdir(path):
+            arff_files = []
+            if file.endswith('.arff'):
+                arff_files.append(file)
+            for _file in arff_files:
+                name = os.path.splitext(_file)[0]
+                file_path = os.path.join(path, f'{name}.log')
+                with open(file_path, 'w') as f:
+                    cmd = ['java', classifier, '-v', '-T', os.path.join(path, file), '-p', '0', '-l',
+                           os.path.join(ds.name, f'{nr.name}_fold_{i}.model')]
+                    utils.run_cmd(cmd, args.dry_run, stdout=f,
+                                  env=env, stderr=subprocess.DEVNULL)
+                    assert(os.stat(file_path).st_size != 0)
 
     utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--columns_postprocessing', args.postprocessing_cols,
                    '--output_name', f'{ds.name}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 
-def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
-    # if meth == MLMethod.OrigPAPA or meth == MLMethod.RetrainedPAPA:
-    #     run_snns(ds, nr, meth)
-    # elif meth == MLMethod.WekaMLP:
-    #     run_MLP(ds, nr, meth)
+def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
+    if meth == MLMethod.OrigPAPA or meth == MLMethod.RetrainedPAPA:
+        run_snns(ds, nr, meth, tt)
+    elif meth == MLMethod.WekaMLP:
+        run_MLP(ds, nr, meth)
     if meth == MLMethod.XvalWeka:
         run_MLPxval(ds, nr, meth)
 
@@ -181,7 +184,7 @@ def run_graphs(ds: Dataset, name):
                                       f'{name}_sqerror_vs_actual')
 
 
-def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction):
+def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction, tt: TestTrain):
     name = unique_name(ds, nr, meth, cr)
     if cr == Correction.NotCorrected:
         src_path = os.path.join(
@@ -198,32 +201,36 @@ parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
 parser.add_argument('--cols-4d', default='4d.dat')
 parser.add_argument('--postprocessing_cols', default='post_processing.dat')
+parser.add_argument('--preprocess', action='store_true', default=False)
 parser.add_argument('--process', action='store_true', default=False)
 parser.add_argument('--postprocess', action='store_true', default=False)
 parser.add_argument('--latex', action='store_true', default=False)
 
 args = parser.parse_args()
 
-if not args.process and not args.postprocess and not args.latex:
+if not args.preprocess and not args.process and not args.postprocess and not args.latex:
     print('Neither --process nor --postprocess nor --latex has been specified. Enabling all of them.')
     args.process = args.postprocess = args.latex = True
 
+if args.preprocess:
+    print('Pre-processing...')
+    for ds in Dataset:
+        print(f'Dataset={ds}...')
+        preprocessing(ds)
+        for nr in NonRedundantization:
+            print(f"Dataset={ds}: nr={nr}")
+            run_nr(ds, nr)
+
 if args.process:
     print('Processing...')
-    for ds in Dataset:
-        print(f'Processing dataset={ds}...')
-        # preprocessing(ds)
-        for nr in NonRedundantization:
-            print(f"Dataset={ds}: processing nr={nr}")
-            # run_nr(ds, nr)
-            for meth in MLMethod:
-                print(f"Dataset={ds}, nr={nr}: processing meth={meth}")
-                run_method(ds, nr, meth)
+    for ds, nr, meth in itertools.product(Dataset, NonRedundantization, MLMethod):
+        print(f"Dataset={ds}, nr={nr}: processing meth={meth}")
+        run_method(ds, nr, meth)
 
 if args.postprocess:
     print('Postprocessing...')
-    for ds, nr, meth, cr in itertools.product(Dataset, NonRedundantization, MLMethod, Correction):
-        postprocessing(ds, nr, meth, cr)
+    for ds, nr, meth, cr, tt in itertools.product(Dataset, NonRedundantization, MLMethod, Correction, get_all_testtrain()):
+        postprocessing(ds, nr, meth, cr, tt)
 
 if args.latex:
     print('Generating LaTeX...')
