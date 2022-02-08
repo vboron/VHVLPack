@@ -14,18 +14,21 @@ import pandas as pd
 import utils
 
 # *************************************************************************
-def make_separate_files(directory, cols_4d, train_csv, test_csv, in_cols, dataset):
+
+
+def make_separate_files(train_dir, test_dir, cols_4d, train_csv, test_csv, in_cols, trainset, testset):
     """Create .csv files for each pdb
     """
 
-    arff_name = f'{dataset}.arff'
-    arff_path = os.path.join(directory, arff_name)
+    arff_name = f'{trainset}.arff'
+    arff_path = os.path.join(train_dir, arff_name)
     with open(arff_path, 'w') as train_arff:
-        cmd = ['csv2arff', '-v', '-ni', in_cols, 'angle', os.path.join(directory, train_csv)]
+        cmd = ['csv2arff', '-v', '-ni', in_cols,
+               'angle', os.path.join(train_dir, train_csv)]
         utils.run_cmd(cmd, False, stdout=train_arff)
 
-    new_dir = f'{dataset}_testing_data'
-    path = os.path.join(directory, new_dir)
+    new_dir = f'{testset}_testing_data'
+    path = os.path.join(test_dir, new_dir)
     try:
         os.mkdir(path)
     except:
@@ -33,7 +36,7 @@ def make_separate_files(directory, cols_4d, train_csv, test_csv, in_cols, datase
 
     col = [l.strip('\n') for l in open(cols_4d).readlines()]
     csv_files = []
-    df_of_all_data = pd.read_csv(os.path.join(directory, test_csv), usecols=col)
+    df_of_all_data = pd.read_csv(os.path.join(test_dir, test_csv), usecols=col)
     i = 0
     for _ in df_of_all_data.iterrows():
         row_df = df_of_all_data.iloc[i:(i+1)]
@@ -46,14 +49,17 @@ def make_separate_files(directory, cols_4d, train_csv, test_csv, in_cols, datase
     return csv_files, arff_path
 
 # *************************************************************************
-def run_weka(files, train_file, in_cols, directory, dataset):
 
-    classifier='weka.classifiers.functions.MultilayerPerceptron'
+
+def run_weka(files, train_file, in_cols, test_dir, trainset, testset):
+
+    classifier = 'weka.classifiers.functions.MultilayerPerceptron'
     env = {'WEKA': '/usr/local/apps/weka-3-8-3'}
     env['CLASSPATH'] = f'{env["WEKA"]}/weka.jar'
 
-    with open(os.path.join(directory, f'{dataset}_testing_data', f'{dataset}_train.log'), 'w') as f:
-        cmd = ['java', classifier, '-v', '-x', '3', '-H', '20', '-t', train_file, '-d', f'{directory}/{dataset}.model']
+    with open(os.path.join(test_dir, f'{testset}_testing_data', f'{trainset}_train.log'), 'w') as f:
+        cmd = ['java', classifier, '-v', '-x', '3', '-H', '20',
+               '-t', train_file, '-d', f'{test_dir}/{testset}.model']
         utils.run_cmd(cmd, False, stdout=f, env=env, stderr=subprocess.DEVNULL)
 
     arff_files = []
@@ -65,22 +71,37 @@ def run_weka(files, train_file, in_cols, directory, dataset):
             utils.run_cmd(cmd, False, stdout=f)
 
         with open(f'{file[:-4]}_test.log', 'w') as f:
-            cmd = ['java', classifier, '-v', '-T', arff_file, '-p', '0', '-l', f'{directory}/{dataset}.model']
-            utils.run_cmd(cmd, False, stdout=f, env=env, stderr=subprocess.DEVNULL)
+            cmd = ['java', classifier, '-v', '-T', arff_file,
+                   '-p', '0', '-l', f'{test_dir}/{testset}.model']
+            utils.run_cmd(cmd, False, stdout=f, env=env,
+                          stderr=subprocess.DEVNULL)
 
 
 # *************************************************************************
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
-    parser.add_argument('--directory', help='Directory of datset', required=True)
-    parser.add_argument('--columns_4d', help='columns for reading encoded file', required=True)
-    parser.add_argument('--training_csv', help='.csv file used to train model for MLP', required=True)
-    parser.add_argument('--testing_csv', help='.csv file which will be split for testing', required=True)
-    parser.add_argument('--input_cols', help='Columns for .csv conversion', required=True)
-    parser.add_argument('--dataset', help='Name of set being tested (name+nr)', required=True)
+    parser = argparse.ArgumentParser(
+        description='Program for extracting VH/VL relevant residues')
+    parser.add_argument(
+        '--train_dir', help='Directory of training datset', required=True)
+    parser.add_argument(
+        '--test_dir', help='Directory of testing datset', required=True)
+    parser.add_argument(
+        '--columns_4d', help='columns for reading encoded file', required=True)
+    parser.add_argument(
+        '--training_csv', help='.csv file used to train model for MLP', required=True)
+    parser.add_argument(
+        '--testing_csv', help='.csv file which will be split for testing', required=True)
+    parser.add_argument(
+        '--input_cols', help='Columns for .csv conversion', required=True)
+    parser.add_argument(
+        '--train_set', help='Name of set used for training (name+nr)', required=True)
+    parser.add_argument(
+        '--test_set', help='Name of set used for training (name+nr)', required=True)
     args = parser.parse_args()
 
-    list_of_csv_files, training_file = make_separate_files(args.directory, args.columns_4d, args.training_csv,
-                                                           args.testing_csv, args.input_cols, args.dataset)
+    list_of_csv_files, training_file = make_separate_files(args.train_dir, args.test_dir, args.columns_4d,
+                                                           args.training_csv, args.testing_csv, args.input_cols,
+                                                           args.train_set, args.test_set)
 
-    run_weka(list_of_csv_files, training_file, args.input_cols, args.directory, args.dataset)
+    run_weka(list_of_csv_files, training_file, args.input_cols,
+             args.test_dir, args.train_set, args.test_set)
