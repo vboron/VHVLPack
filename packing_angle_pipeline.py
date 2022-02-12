@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # # *************************************************************************
-from pipeline_enums import Correction, Dataset, NonRedundantization, MLMethod, unique_name, TestTrain, get_all_testtrain
+from pipeline_enums import *
 import os
 import argparse
 import utils
@@ -10,6 +10,7 @@ import subprocess
 import graphing
 import itertools
 import latex_template_packingangle as ltp
+from multiprocessing import Pool
 
 # *************************************************************************
 
@@ -84,6 +85,9 @@ def run_newpapa(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
 
 
 def run_snns(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
+    print(
+        f'Training on {tt.training.name}, testing on {tt.testing.name}, meth={meth.name}, nr={nr.name}')
+
     utils.run_cmd(['./pdb2seq.py', '--directory',
                   tt.training.name], args.dry_run)
     utils.run_cmd(['./pdb2seq.py', '--directory',
@@ -97,7 +101,11 @@ def run_snns(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
         raise ValueError(f'Handling of meth={meth} not implemented')
 
 
-def run_MLP(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
+def run_MLP(nr: NonRedundantization, tt: TestTrain):
+    meth = MLMethod.WekaMLP
+    print(
+        f'Training on {tt.training.name}, testing on {tt.testing.name}, meth={meth.name}, nr={nr.name}')
+
     utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--train_dir', tt.training.name, '--test_dir', tt.testing.name,
                    '--columns_4d', args.cols_4d, '--training_csv', f'{tt.training.name}_{nr.name}_4d.csv',
                    '--testing_csv', f'{tt.testing.name}_{nr.name}_4d.csv', '--input_cols', 'in4d.dat', '--train_set',
@@ -111,7 +119,10 @@ def run_MLP(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
 # multilayer perceptron cross validation
 
 
-def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
+def run_MLPxval(ds: Dataset, nr: NonRedundantization):
+    meth = MLMethod.XvalWeka
+    print(f'Testing/training on ds={ds.name}, meth={meth.name}, nr={nr.name}')
+
     utils.run_cmd(['./split_10.py',
                    '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
                    '--columns', args.cols_4d,
@@ -152,15 +163,6 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 
     utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--columns_postprocessing', args.postprocessing_cols,
                    '--output_name', f'{ds.name}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
-
-
-def run_method(ds: Dataset, nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
-    # if meth == MLMethod.OrigPAPA or meth == MLMethod.RetrainedPAPA:
-    #     run_snns(nr, meth, tt)
-    if meth == MLMethod.WekaMLP:
-        run_MLP(nr, meth, tt)
-    if meth == MLMethod.XvalWeka:
-        run_MLPxval(ds, nr, meth)
 
 # *************************************************************************
 
@@ -224,18 +226,28 @@ if args.preprocess:
         print(f'Dataset={ds.name}...')
         preprocessing(ds)
         for nr in NonRedundantization:
-            print(f"Non-redundantizing (Dataset={ds.name}: nr={nr.name})")
+            print(f'Non-redundantizing (Dataset={ds.name}: nr={nr.name})')
             run_nr(ds, nr)
 
 if args.process:
     print('Processing...')
-    for ds, nr, meth, tt in itertools.product(Dataset, NonRedundantization, MLMethod, get_all_testtrain()):
-        print(f"Training={tt.training.name}, Testing={tt.testing.name}, nr={nr.name}: processing meth={meth.name}")
-        run_method(ds, nr, meth, tt)
+    with Pool() as p:
+        results = []
+        for nr, tt in itertools.product(NonRedundantization, get_all_testtrain()):
+            results.append(p.apply_async(run_snns, (nr, MLMethod.OrigPAPA, tt)))
+            results.append(p.apply_async(run_snns, (nr, MLMethod.RetrainedPAPA, tt)))
+            results.append(p.apply_async(run_MLP, (nr, tt)))
+        for ds, nr in itertools.product(Dataset, NonRedundantization):
+            results.append(p.apply_async(run_MLPxval, (ds, nr)))
+        p.close()
+        p.join()
+        if not all([r.successful() for r in results]):
+            raise Exception('Processing: AsyncResult not successful')
 
 if args.postprocess:
     print('Postprocessing...')
-    for ds, nr, meth, cr, tt in itertools.product(Dataset, NonRedundantization, MLMethod, Correction, get_all_testtrain()):
+    for ds, nr, meth, cr, tt in itertools.product(Dataset, NonRedundantization, MLMethod,
+                                                  Correction, get_all_testtrain()):
         postprocessing(ds, nr, meth, cr, tt)
 
 if args.latex:

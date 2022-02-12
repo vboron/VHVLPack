@@ -40,5 +40,5 @@ def get_all_testtrain():
     everything = TestTrain(training=Dataset.Everything, testing=Dataset.Everything)
 
     # return [papa]
-    return [papa, af2, everything]
     # return [af2, everything]
+    return [papa, af2, everything]

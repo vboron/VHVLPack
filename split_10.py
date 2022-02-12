@@ -34,8 +34,8 @@ def make_group(directory, input_csv, columns, out_name, arff_cols):
             end = start + size + 1
             test_df = df.iloc[start: end]
             train_df = df[~df.isin(test_df)].dropna()
-            print(len(train_df.index))
-            print(len(test_df.index))
+            # print(len(train_df.index))
+            # print(len(test_df.index))
             train_df.to_csv(os.path.join(
                 directory, f'{n_train}.csv'), index=False)
             with open(os.path.join(directory, f'{n_train}.arff'), 'w') as f:
