@@ -11,6 +11,7 @@ import graphing
 import itertools
 import latex_template_packingangle as ltp
 from multiprocessing import Pool
+import rank_packing_methods
 
 # *************************************************************************
 
@@ -192,17 +193,24 @@ def run_graphs(ds: Dataset, name):
                                       f'{name}_sqerror_vs_actual')
 
 
-def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction, tt: TestTrain):
+def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction):
     name = unique_name(ds, nr, meth, cr)
     if cr == Correction.NotCorrected:
-        src_path = os.path.join(
-            ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
-        dst_path = os.path.join(ds.name, f'{name}.csv')
-        shutil.copyfile(src_path, dst_path)
-        run_graphs(ds, name)
+        try:
+            src_path = os.path.join(
+                ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
+            dst_path = os.path.join(ds.name, f'{name}.csv')
+            shutil.copyfile(src_path, dst_path)
+            run_graphs(ds, name)
+        except:
+            print(f'Does not exist: {ds.name}/{meth.name}')
     else:
-        correction(ds, nr, meth, name)
-        run_graphs(ds, name)
+        try:
+            correction(ds, nr, meth, name)
+            run_graphs(ds, name)
+            rank_packing_methods()
+        except:
+            print(f'Cannot postprocess: {ds.name}/{meth.name}')
 
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
@@ -248,7 +256,7 @@ if args.postprocess:
     print('Postprocessing...')
     for ds, nr, meth, cr, tt in itertools.product(Dataset, NonRedundantization, MLMethod,
                                                   Correction, get_all_testtrain()):
-        postprocessing(ds, nr, meth, cr, tt)
+        postprocessing(ds, nr, meth, cr)
 
 if args.latex:
     print('Generating LaTeX...')
