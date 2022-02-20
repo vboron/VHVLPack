@@ -193,16 +193,19 @@ def run_graphs(ds: Dataset, name):
                                       f'{name}_sqerror_vs_actual')
 
 
-def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction):
-    name = unique_name(ds, nr, meth, cr)
-    if cr == Correction.NotCorrected:
-        src_path = os.path.join(
-            ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
-        dst_path = os.path.join(ds.name, f'{name}.csv')
-        shutil.copyfile(src_path, dst_path)
-    else:
-        correction(ds, nr, meth, name)
-    run_graphs(ds, name)
+def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
+    # NB: Here, the order matters
+    # correction() needs the output of the NotCorrected file graphing
+    for cr in [Correction.NotCorrected, Correction.Corrected]:
+        name = unique_name(ds, nr, meth, cr)
+        if cr is Correction.NotCorrected:
+            src_path = os.path.join(
+                ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
+            dst_path = os.path.join(ds.name, f'{name}.csv')
+            shutil.copyfile(src_path, dst_path)
+        elif cr is Correction.Corrected:
+            correction(ds, nr, meth, name)
+        run_graphs(ds, name)
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
@@ -245,13 +248,19 @@ if args.process:
 
 if args.postprocess:
     print('Postprocessing...')
-    # Special processing for XValWeka
-    for ds, nr, cr in itertools.product(Dataset, NonRedundantization, Correction):
-        postprocessing(ds, nr, MLMethod.XvalWeka, cr)
+    with Pool() as p:
+        results = []
+        # Special processing for XValWeka
+        for ds, nr in itertools.product(Dataset, NonRedundantization):
+            results.append(p.apply_async(postprocessing, (ds, nr, MLMethod.XvalWeka)))
 
-    for tt, nr, meth, cr in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod, Correction):
-        if meth is not MLMethod.XvalWeka:
-            postprocessing(tt.testing, nr, meth, cr)
+        for tt, nr, meth in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod):
+            if meth is not MLMethod.XvalWeka:
+                results.append(p.apply_async(postprocessing, (tt.testing, nr, meth)))
+        p.close()
+        p.join()
+        if not all([r.successful() for r in results]):
+            raise Exception('Postprocessing: AsyncResult not successful')
 
     rank_packing_methods.rank_methods()
 
