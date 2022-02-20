@@ -10,23 +10,20 @@ def rank_methods():
     data_o = []
     for ds, nr, meth, cr in itertools.product(Dataset, NonRedundantization, MLMethod, Correction):
         if meth == MLMethod.XvalWeka and nr == NonRedundantization.NR0:
-            print(f'Skipping {meth.name}/{nr.name}...')
+            print(f'Skipping {ds.name}/{meth.name}/{nr.name}...')
         else:
-            try:
-                name = unique_name(ds, nr, meth, cr)
-                path = os.path.join(ds.name, f'{name}_stats_all.csv')
-                col = [i.strip('\n')
-                    for i in open('read_stats_csv.dat').readlines()]
-                df = pd.read_csv(path, usecols=col)
-                df.insert(0, 'name', name)
-                data.append(df)
-                path_o = os.path.join(ds.name, f'{name}_stats_out.csv')
-                df_o = pd.read_csv(path_o, usecols=col)
-                df_o.insert(0, 'name', name)
-                data_o.append(df_o)
-            except:
-                print(
-                    f'Dataset: {ds.name}, Method: {meth.name}, Correction: {cr.name} has no file')
+            name = unique_name(ds, nr, meth, cr)
+            path = os.path.join(ds.name, f'{name}_stats_all.csv')
+            col = [i.strip('\n')
+                for i in open('read_stats_csv.dat').readlines()]
+            df = pd.read_csv(path, usecols=col)
+            df.insert(0, 'name', name)
+            data.append(df)
+            path_o = os.path.join(ds.name, f'{name}_stats_out.csv')
+            df_o = pd.read_csv(path_o, usecols=col)
+            df_o.insert(0, 'name', name)
+            data_o.append(df_o)
+
     df = pd.concat(data)
 
     # Create a combined parameter which will allow sorting by 'all' parameters

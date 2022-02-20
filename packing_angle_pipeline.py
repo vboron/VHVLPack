@@ -196,22 +196,13 @@ def run_graphs(ds: Dataset, name):
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction):
     name = unique_name(ds, nr, meth, cr)
     if cr == Correction.NotCorrected:
-        try:
-            src_path = os.path.join(
-                ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
-            dst_path = os.path.join(ds.name, f'{name}.csv')
-            shutil.copyfile(src_path, dst_path)
-            run_graphs(ds, name)
-        except:
-            print(f'Does not exist: {ds.name}/{meth.name}')
+        src_path = os.path.join(
+            ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
+        dst_path = os.path.join(ds.name, f'{name}.csv')
+        shutil.copyfile(src_path, dst_path)
     else:
-        try:
-            correction(ds, nr, meth, name)
-            run_graphs(ds, name)
-            rank_packing_methods()
-        except:
-            print(f'Cannot postprocess: {ds.name}/{meth.name}')
-
+        correction(ds, nr, meth, name)
+    run_graphs(ds, name)
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
@@ -254,9 +245,15 @@ if args.process:
 
 if args.postprocess:
     print('Postprocessing...')
-    for ds, nr, meth, cr, tt in itertools.product(Dataset, NonRedundantization, MLMethod,
-                                                  Correction, get_all_testtrain()):
-        postprocessing(ds, nr, meth, cr)
+    # Special processing for XValWeka
+    for ds, nr, cr in itertools.product(Dataset, NonRedundantization, Correction):
+        postprocessing(ds, nr, MLMethod.XvalWeka, cr)
+
+    for tt, nr, meth, cr in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod, Correction):
+        if meth is not MLMethod.XvalWeka:
+            postprocessing(tt.testing, nr, meth, cr)
+
+    rank_packing_methods.rank_methods()
 
 if args.latex:
     print('Generating LaTeX...')
