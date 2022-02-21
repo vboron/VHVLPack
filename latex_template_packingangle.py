@@ -1,5 +1,4 @@
 import itertools
-import numpy as np
 
 from pipeline_enums import *
 
@@ -8,7 +7,7 @@ import os
 import pandas as pd
 
 
-def _add_data(doc: pl.Document, ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction, tt: get_all_testtrain()):
+def _add_data(doc: pl.Document, ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction):
     name = f'{ds.name}_{nr.name}_{meth.name}_{cr.name}'
     directory = ds.name
 
@@ -24,77 +23,74 @@ def _add_data(doc: pl.Document, ds: Dataset, nr: NonRedundantization, meth: MLMe
     error_dist_file = os.path.join(directory, error_dist_graph)
     sqerror_file = os.path.join(directory, sqerror_graph)
 
-    try:
-        df_all = pd.read_csv(os.path.join(
-            directory, stats_csv_all), usecols=col)
-        df_out = pd.read_csv(os.path.join(
-            directory, stats_csv_out), usecols=col)
+    df_all = pd.read_csv(os.path.join(
+        directory, stats_csv_all))
+    df_out = pd.read_csv(os.path.join(
+        directory, stats_csv_out))
 
-        if meth != MLMethod.XvalWeka:
-            with doc.create(pl.Section(f'Method: {tt.training.name}, {tt.testing.name}, {nr.name}, {meth.name}')):
-                with doc.create(pl.Subsection('Summary of method:')):
-                    doc.append(f'Train set: {tt.training.name}')
-                    doc.append(f'\nTest set: {tt.testing.name}')
-                    doc.append(f'\nNon-redundantization: {nr.name}')
-                    doc.append(f'\nType of machine learning used: {meth.name}')
+    if meth != MLMethod.XvalWeka:
+        tt = TestTrain(get_training_from_testing(ds), ds)
+        with doc.create(pl.Section(f'Method: {tt.training.name}, {tt.testing.name}, {nr.name}, {meth.name}, {cr.name}')):
+            with doc.create(pl.Subsection('Summary of method:')):
+                doc.append(f'Train set: {tt.training.name}')
+                doc.append(f'\nTest set: {tt.testing.name}')
+                doc.append(f'\nNon-redundantization: {nr.name}')
+                doc.append(f'\nType of machine learning used: {meth.name}')
+                doc.append(f'\nCorrection: {cr.name}')
+    else:
+        with doc.create(pl.Section(f'Method: {ds.name}, {nr.name}, {meth.name}, {cr.name}')):
+            with doc.create(pl.Subsection('Summary of method:')):
+                doc.append(f'Dataset: {ds.name}')
+                doc.append(f'\nNon-redundantization: {nr.name}')
+                doc.append(f'\nType of machine learning used: {meth.name}')
+                doc.append(f'\nCorrection: {cr.name}')
 
-        else:
-            with doc.create(pl.Section(f'Method: {ds.name}, {nr.name}, {meth.name}')):
-                with doc.create(pl.Subsection('Summary of method:')):
-                    doc.append(f'Dataset: {ds.name}')
-                    doc.append(f'\nNon-redundantization: {nr.name}')
-                    doc.append(f'\nType of machine learning used: {meth.name}')
+    with doc.create(pl.Subsection('Summary of the data:')):
+        with doc.create(pl.Figure(position='!htbp')) as actualVpred:
+            actualVpred.add_image(actualVpred_file, width='300px')
+            actualVpred.add_caption(
+                'Graph showing the predicted packing angle against the actual packing angle, when using the above specified methods of non-redundetization and machine learning.')
 
-        with doc.create(pl.Subsection('Summary of the data:')):
-            with doc.create(pl.Figure(position='!htbp')) as actualVpred:
-                actualVpred.add_image(actualVpred_file, width='300px')
-                actualVpred.add_caption(
-                    'Graph showing the predicted packing angle against the actual packing angle, when using the above specified methods of non-redundetization and machine learning.')
+        with doc.create(pl.Table(position='!htbp')) as table:
+            table.add_caption('Summary of results for all data')
+            table.append(pl.Command('centering'))
+            table.append(pl.NoEscape(df_all.to_latex(escape=False)))
 
-            with doc.create(pl.Table(position='!htbp')) as table:
-                table.add_caption('Summary of results for all data')
-                table.append(pl.Command('centering'))
-                table.append(pl.NoEscape(df_all.to_latex(escape=False)))
+        with doc.create(pl.Table(position='!htbp')) as table:
+            table.add_caption('Summary of results for outliers.')
+            table.append(pl.Command('centering'))
+            table.append(pl.NoEscape(df_out.to_latex(escape=False)))
 
-            with doc.create(pl.Table(position='!htbp')) as table:
-                table.add_caption('Summary of results for outliers.')
-                table.append(pl.Command('centering'))
-                table.append(pl.NoEscape(df_out.to_latex(escape=False)))
-
-            with doc.create(pl.Figure(position='!htbp')) as graphs:
-                with doc.create(pl.SubFigure(
-                        position='!htbp',
-                        width=pl.NoEscape(r'0.30\linewidth'))) as ang_dist_graph:
-                    ang_dist_graph.add_image(ang_dist_file,
-                                             width=pl.NoEscape(r'\linewidth'))
-                    ang_dist_graph.add_caption(
-                        'Frequency distribution of the packing angle.')
-                with doc.create(pl.SubFigure(
-                        position='!htbp',
-                        width=pl.NoEscape(r'0.33\linewidth'))) as error_dist_graph:
-                    error_dist_graph.add_image(error_dist_file,
-                                               width=pl.NoEscape(r'\linewidth'))
-                    error_dist_graph.add_caption(
-                        'Distribution of errors calculated as the difference between the predicted and actual interface angle.')
-                with doc.create(pl.SubFigure(
-                        position='!htbp',
-                        width=pl.NoEscape(r'0.33\linewidth'))) as sqerror_graph:
-                    sqerror_graph.add_image(sqerror_file,
+        with doc.create(pl.Figure(position='!htbp')) as graphs:
+            with doc.create(pl.SubFigure(
+                    position='!htbp',
+                    width=pl.NoEscape(r'0.30\linewidth'))) as ang_dist_graph:
+                ang_dist_graph.add_image(ang_dist_file,
                                             width=pl.NoEscape(r'\linewidth'))
-                    sqerror_graph.add_caption(
-                        'Squared error in predicted packing angle against actual packing angle.')
-                graphs.add_caption('Graphs for further metrics.')
-    except:
-        print(f'No data for {ds.name} with {meth.name}')
+                ang_dist_graph.add_caption(
+                    'Frequency distribution of the packing angle.')
+            with doc.create(pl.SubFigure(
+                    position='!htbp',
+                    width=pl.NoEscape(r'0.33\linewidth'))) as error_dist_graph:
+                error_dist_graph.add_image(error_dist_file,
+                                            width=pl.NoEscape(r'\linewidth'))
+                error_dist_graph.add_caption(
+                    'Distribution of errors calculated as the difference between the predicted and actual interface angle.')
+            with doc.create(pl.SubFigure(
+                    position='!htbp',
+                    width=pl.NoEscape(r'0.33\linewidth'))) as sqerror_graph:
+                sqerror_graph.add_image(sqerror_file,
+                                        width=pl.NoEscape(r'\linewidth'))
+                sqerror_graph.add_caption(
+                    'Squared error in predicted packing angle against actual packing angle.')
+            graphs.add_caption('Graphs for further metrics.')
 
 
 def generate_latex():
-    stats_cols = 'read_stats_csv.dat'
-    col = [i.strip('\n') for i in open(stats_cols).readlines()]
     top10 = 'top10.csv'
-    top10_df = pd.read_csv(top10, usecols=col)
+    top10_df = pd.read_csv(top10)
     top10_o = 'top10_out.csv'
-    top10_o_df = pd.read_csv(top10_o, usecols=col)
+    top10_o_df = pd.read_csv(top10_o)
 
     doc = pl.Document(page_numbers=True, geometry_options={
                       "tmargin": "1cm", "lmargin": "1cm"})
@@ -113,22 +109,31 @@ def generate_latex():
     with doc.create(pl.Section(f'Summary of Results')):
         with doc.create(pl.Table(position='!htbp')) as table:
             table.add_caption('Rakings of the top 10 combinations of methods, datasets, non-redundatizing, \
-            and correction factors. They were ranked in according to a combination parameter which was calcuated \
+            and correction factors. They were ranked according to a combination parameter which was calcuated \
             in the following way: Combined-parameter = |(1/Pearsons coefficient)| + |mean-error| + |RMSE| + \
-            |RELRMSE| + |slope| + |intercept|. The smallest comb_para value indicates a combination of low errors and \
+            |RELRMSE| + |slope| + |intercept|. The smallest combined-para value indicates a combination of low errors and \
             high correlation coefficient.')
             table.append(pl.Command('centering'))
+            table.append(pl.NoEscape(r'\resizebox{\textwidth}{!}{'))
             table.append(pl.NoEscape(top10_df.to_latex(escape=False)))
+            table.append(pl.NoEscape(r'}'))
 
         with doc.create(pl.Table(position='!htbp')) as table:
             table.add_caption('Rakings of the top 10 combinations of methods, datasets, non-redundatizing, \
             and correction factors for outlier prediction. They were ranked in according to a combination parameter.')
             table.append(pl.Command('centering'))
+            table.append(pl.NoEscape(r'\resizebox{\textwidth}{!}{'))
             table.append(pl.NoEscape(top10_o_df.to_latex(escape=False)))
+            table.append(pl.NoEscape(r'}'))
 
-    for ds, nr, meth, cr, tt in itertools.product(Dataset, NonRedundantization, MLMethod, Correction, get_all_testtrain()):
-        _add_data(doc, ds, nr, meth, cr, tt)
+    for ds, nr, cr in itertools.product(Dataset, NonRedundantization, Correction):
+        _add_data(doc, ds, nr, MLMethod.XvalWeka, cr)
+        doc.append(pl.NoEscape(r'\newpage'))
+
+    for tt, nr, meth, cr in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod, Correction):
+        if meth is not MLMethod.XvalWeka:
+            _add_data(doc, tt.testing, nr, meth, cr)
         doc.append(pl.NoEscape(r'\newpage'))
 
     print('Generating PDF...')
-    doc.generate_pdf('testing', clean_tex=False)
+    doc.generate_pdf('PipelineOutput', clean_tex=False)

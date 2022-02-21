@@ -43,3 +43,9 @@ def get_all_testtrain():
     # return [af2]
     # return [af2, everything]
     return [papa, af2, everything]
+
+def get_training_from_testing(testing: Dataset):
+    for tt in get_all_testtrain():
+        if tt.testing == testing:
+            return tt.training
+    raise ValueError(f'Could not get training out of testing={testing}')
