@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 
 # *************************************************************************
-def find_normal_and_outliers(directory, input_cols, input_csv, norm_name, out_name):
+def find_normal_and_outliers(directory, input_csv, norm_name, out_name):
     """ Function looks at data frame with prediction values and separates the data into two dataframes based
         on whether the predicted angles are withing a normal range or not.
         e.g. code,angle,predicted,error
@@ -30,9 +30,8 @@ def find_normal_and_outliers(directory, input_cols, input_csv, norm_name, out_na
 
         11.24.2021  Original   By: VAB
     """
-    col = [i.strip('\n') for i in open(input_cols).readlines()]
 
-    df_a = pd.read_csv(os.path.join(directory, input_csv), usecols=col)
+    df_a = pd.read_csv(os.path.join(directory, input_csv))
 
     # define the boundaries for the range of angles that are not outliers
     # -48 and -42 are chosen based on angle population graphs
@@ -73,9 +72,9 @@ def find_stats(directory, input_csv, input_cols, df_a, df_o):
     df_a_temp = df_a.copy()
 
     # Calculate the Root Mean Square Error
-    df_a_temp['sqerror'] = np.square( df_a_temp['error'])
+    df_a_temp['sqerror'] = np.square(df_a_temp['error'])
     sum_sqerror =  df_a_temp['sqerror'].sum()
-    average_error = sum_sqerror / int( df_a_temp['code'].size)
+    average_error = sum_sqerror / int(df_a_temp['code'].size)
     rmse = math.sqrt(average_error)
 
     os.path.join(directory, input_csv)
@@ -88,31 +87,23 @@ def find_stats(directory, input_csv, input_cols, df_a, df_o):
     # .corr() returns the correlation between two columns
     pearson_a =  df_a_temp['angle'].corr( df_a_temp['predicted'])
 
-    mean_abs_err_a =  df_a_temp['error'].mean()
+    mean_abs_err_a =  df_a_temp['error'].abs().mean()
 
     # everything is done for outliers, if they exist
     num_outliers = int(df_o['code'].size)
-    if num_outliers != 0:
-        df_o['sqerror'] = np.square(df_o['error'])
-        sum_sqerror_o = df_o['sqerror'].sum()
-        average_error_o = sum_sqerror_o/num_outliers
-        rmse_o = math.sqrt(average_error_o)
-        relrmse_o = getResult(rmse_o)
-        pearson_o = df_o['angle'].corr(df_o['predicted'])
-        mean_abs_err_o = df_o['error'].mean()
-    else:
-        average_error_o = None
-        rmse_o = None
-        relrmse_o = None
-        pearson_o = None
-        mean_abs_err_o = None
+    df_o['sqerror'] = np.square(df_o['error'])
+    sum_sqerror_o = df_o['sqerror'].sum()
+    average_error_o = sum_sqerror_o/num_outliers
+    rmse_o = math.sqrt(average_error_o)
+    relrmse_o = getResult(rmse_o)
+    pearson_o = df_o['angle'].corr(df_o['predicted'])
+    mean_abs_err_o = df_o['error'].abs().mean()
 
     stat_data_all = [pearson_a, mean_abs_err_a, rmse, relrmse]
     stat_data_out = [pearson_o, mean_abs_err_o, rmse_o, relrmse_o]
     stat_col = ['pearson', 'error', 'RMSE', 'RELRMSE']
     stats_all = pd.DataFrame(data=[stat_data_all], columns=stat_col)
     stats_out = pd.DataFrame(data=[stat_data_out], columns=stat_col)
-
     return stats_all, stats_out
 
 
@@ -212,7 +203,6 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     plt.savefig(path_fig, format='jpg')
     plt.close()
 
-
 # *************************************************************************
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
@@ -225,7 +215,7 @@ if __name__ == '__main__':
     parser.add_argument('--name_graph', help='Name for graph outputted', required=True)
     args = parser.parse_args()
 
-    all_df, norm_df, out_df = find_normal_and_outliers(args.directory, args.cols_input, args.csv_input,
+    all_df, norm_df, out_df = find_normal_and_outliers(args.directory, args.csv_input,
                                                     args.name_normal, args.name_outliers)
 
     stat_df_all, stats_df_out = find_stats(args.directory, args.csv_input, args.cols_input, all_df, out_df)

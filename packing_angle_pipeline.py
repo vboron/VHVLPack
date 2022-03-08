@@ -170,8 +170,7 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization):
 
 def correction(ds: Dataset, nr: NonRedundantization, meth: MLMethod, name):
     cmd = ['./add_correction_factor.py',
-           '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--cols_input',
-           args.postprocessing_cols, '--cols_stats', 'read_stats_csv.dat', '--csv_stats',
+           '--directory', ds.name, '--csv_input', f'{ds.name}_{nr.name}_{meth.name}.csv', '--csv_stats',
            f'{ds.name}_{nr.name}_{meth.name}_NotCorrected_stats_all.csv', '--output_name', f'{name}']
     utils.run_cmd(cmd, args.dry_run)
 
