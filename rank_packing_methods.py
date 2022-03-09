@@ -14,35 +14,31 @@ def rank_methods():
         name_latex_friendly = name.replace('_', '-')
 
         path = os.path.join(ds.name, f'{name}_stats_all.csv')
-        col = [i.strip('\n')
-            for i in open('read_stats_csv.dat').readlines()]
-        df = pd.read_csv(path, usecols=col)
+        df = pd.read_csv(path)
         df.insert(0, 'name', name_latex_friendly)
         data.append(df)
 
         path_o = os.path.join(ds.name, f'{name}_stats_out.csv')
-        df_o = pd.read_csv(path_o, usecols=col)
+        df_o = pd.read_csv(path_o)
         df_o.insert(0, 'name', name_latex_friendly)
         data_o.append(df_o)
 
-    for ds, nr, cr in itertools.product(Dataset, NonRedundantization, Correction):
-        if nr == NonRedundantization.NR0:
-            print(f'Skipping {ds.name}/{MLMethod.XvalWeka.name}/{nr.name}/{cr.name}...')
-            continue
-        extract_data(ds, nr, MLMethod.XvalWeka, cr)
+    # for ds, nr, cr in itertools.product(Dataset, NonRedundantization, Correction):
+    #     if nr == NonRedundantization.NR0:
+    #         print(f'Skipping {ds.name}/{MLMethod.XvalWeka.name}/{nr.name}/{cr.name}...')
+    #         continue
+    #     extract_data(ds, nr, MLMethod.XvalWeka, cr)
 
     for tt, nr, meth, cr in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod, Correction):
-        if meth != MLMethod.XvalWeka:
+        if nr != NonRedundantization.NR0 and tt.testing.name != 'Everything':
             extract_data(tt.testing, nr, meth, cr)
-
-    df = pd.concat(data)
 
     # Create a combined parameter which will allow sorting by 'all' parameters
     def process_combined_para(df, top10_csv_name):
         # Column name
         combined_para = 'combined-para'
 
-        df[combined_para] = (1/df['pearson']).abs() + df['error'].abs() + df['RMSE'].abs() + \
+        df[combined_para] = (1/df['pearson'].abs()) + df['error'].abs() + df['RMSE'].abs() + \
             df['RELRMSE'].abs()
         df = df.sort_values(by=[combined_para], key=abs)
         top10 = df.head(20)

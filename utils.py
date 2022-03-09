@@ -38,7 +38,7 @@ def run_cmd(cmd_list, is_dry_run: bool, stdout=None, env=None, cwd=None, stderr=
         comp_process.check_returncode()
 
 # *************************************************************************
-def calc_relemse(results_csv, columns, rmse):
+def calc_relemse(results_csv, rmse):
     """Read the .csv for angles and take the RMSE from the commandline to calculate the relative RMSE.
     Equation used: RELRMSE = (RMSE*(n**(1/2)))/((sum (angle**2))**(1/2))
 
@@ -47,12 +47,8 @@ def calc_relemse(results_csv, columns, rmse):
             rmse         --- Input numerical rmse
     Return: relrmse      --- The relative RMSE
     """
-    col = []
-    for i in open(columns).readlines():
-        i = i.strip('\n')
-        col.append(i)
 
-    df = pd.read_csv(results_csv, usecols=col)
+    df = pd.read_csv(results_csv)
 
     # Take the rmse from the second commandline input and convert it into a float
     rmse = float(rmse)

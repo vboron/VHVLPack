@@ -1,10 +1,5 @@
 #!/usr/bin/python3
 """
-Program:    encode_4dts
-File:       encode_4dts.py
-
-Version:    V1.0
-Date:       09.03.2021
 Function:   Encode VH/VL packing amino acids into 4d vectors for machine learning.
 
 Description:
@@ -20,36 +15,11 @@ code	L38a	L38b	L38c	L38d	L40a	...     angle
 1A0Q_1	0.5	       6	   4	-0.4	   0            -45.6
 ------------------------------------------------
 """
-# *************************************************************************
-# Import libraries
-
-# sys to take args from commandline, os for reading directory, pandas for making dataframes
-import sys
 import pandas as pd
-import numpy as np
-# *************************************************************************
-
-
-def read_csv():
-    """Read the file containing pdb id and the VHVL residue identity
-
-    Return: res_file      --- Data file with residue identities read by column names
-
-    15.03.2021  Original   By: VAB
-    """
-
-    # The column names contained in the .csv file
-    col1 = ['code', 'L/H position', 'residue']
-
-    # Take the commandline input as the directory, otherwise look in current directory
-    if sys.argv[1] != '':
-        res_file = pd.read_csv(sys.argv[1], usecols=col1)
-
-    return res_file
-
+import sys
 
 # *************************************************************************
-def make_res_seq(rfile):
+def make_res_seq():
     """Take all individual residue identities for a pdb file and combine them into a single sequence for
     each individual pdb
 
@@ -64,6 +34,8 @@ def make_res_seq(rfile):
     10.04.2021  Original   By: VAB
     """
 
+    res_file = pd.read_csv(sys.argv[1])
+
     # Add all items under the 'residue' column into one field
     aggregation_func = {'residue': 'sum'}
 
@@ -73,7 +45,7 @@ def make_res_seq(rfile):
     # 12E8_1  QPGPLFYELVKYQ
     # 12E8_2  QPGPLFYELVKYQ
 
-    seq_df = rfile.groupby(rfile['code']).aggregate(aggregation_func)
+    seq_df = res_file.groupby(res_file['code']).aggregate(aggregation_func)
 
     # Reset the indices back to single row of column names for easier manipulation:
     #         code        residue
@@ -268,8 +240,7 @@ def combine_by_pdb_code(table):
     col2 = ['code', 'angle']
 
     # Take the second input from the commandline (which will be the table of pdb codes and their packing angles)
-    if sys.argv[2] != '':
-        angle_file = pd.read_csv(sys.argv[2], usecols=col2)
+    angle_file = pd.read_csv(sys.argv[2])
 
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file

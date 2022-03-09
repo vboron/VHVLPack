@@ -102,16 +102,16 @@ def generate_latex():
 
     doc.append(pl.NoEscape(r'\maketitle'))
     doc.append(
-        'This document summarizes the results obtaned by running `packing_angle_pipeline.py` on various datasets.')
+        'This document summarizes the results obtained by running `packing_angle_pipeline.py` on various datasets.')
     # TODO table of contents is broken and doesn't show all sections
     # doc.append(pl.NoEscape(r'\tableofcontents'))
     doc.append(pl.NoEscape(r'\newpage'))
     with doc.create(pl.Section(f'Summary of Results')):
         with doc.create(pl.Table(position='!htbp')) as table:
-            table.add_caption('Rakings of the top 10 combinations of methods, datasets, non-redundatizing, \
+            table.add_caption('Rakings of the top 20 combinations of methods, datasets, non-redundatizing, \
             and correction factors. They were ranked according to a combination parameter which was calcuated \
             in the following way: Combined-parameter = |(1/Pearsons coefficient)| + |mean-error| + |RMSE| + \
-            |RELRMSE| + |slope| + |intercept|. The smallest combined-para value indicates a combination of low errors and \
+            |RELRMSE|. The smallest combined-para value indicates a combination of low errors and \
             high correlation coefficient.')
             table.append(pl.Command('centering'))
             table.append(pl.NoEscape(r'\resizebox{\textwidth}{!}{'))
@@ -119,7 +119,7 @@ def generate_latex():
             table.append(pl.NoEscape(r'}'))
 
         with doc.create(pl.Table(position='!htbp')) as table:
-            table.add_caption('Rakings of the top 10 combinations of methods, datasets, non-redundatizing, \
+            table.add_caption('Rakings of the top 20 combinations of methods, datasets, non-redundatizing, \
             and correction factors for outlier prediction. They were ranked in according to a combination parameter.')
             table.append(pl.Command('centering'))
             table.append(pl.NoEscape(r'\resizebox{\textwidth}{!}{'))
@@ -136,4 +136,4 @@ def generate_latex():
         doc.append(pl.NoEscape(r'\newpage'))
 
     print('Generating PDF...')
-    doc.generate_pdf('PipelineOutput', clean_tex=False)
+    doc.generate_pdf('PipelineTest', clean_tex=False)

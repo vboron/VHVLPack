@@ -20,9 +20,8 @@ def angle_distribution(directory, csv_ang, graph_name):
     """
 
     plt.figure()
-    col1 = ['code', 'angle']
     ang_file = os.path.join(directory, csv_ang)
-    data = pd.read_csv(ang_file, usecols=col1)
+    data = pd.read_csv(ang_file)
 
     data['angle'] = (data['angle']).astype(float)
 
@@ -50,7 +49,7 @@ def angle_distribution(directory, csv_ang, graph_name):
 
 
 # *************************************************************************
-def error_distribution(directory, csv_input, csv_columns, graph_name):
+def error_distribution(directory, csv_input, graph_name):
     """Plot the error distribution for the dataset predictions
 
     Input: directory    --- directory where the data can be found and where the graph will be saved
@@ -61,9 +60,8 @@ def error_distribution(directory, csv_input, csv_columns, graph_name):
     By: VAB
     """
     plt.figure()
-    cols = [i.strip('\n') for i in open(csv_columns).readlines()]
 
-    df = pd.read_csv(os.path.join(directory, csv_input), usecols=cols).copy()
+    df = pd.read_csv(os.path.join(directory, csv_input)).copy()
 
     df = df.round({'error': 1})
 
@@ -80,7 +78,7 @@ def error_distribution(directory, csv_input, csv_columns, graph_name):
     plt.close()
 
 # *************************************************************************
-def sq_error_vs_actual_angle(directory, csv_input, csv_columns, graph_name):
+def sq_error_vs_actual_angle(directory, csv_input, graph_name):
     """Plot squared error in predicted packing angle against actual packing angle.
 
     Input: directory    --- directory where the data can be found and where the graph will be saved
@@ -91,9 +89,8 @@ def sq_error_vs_actual_angle(directory, csv_input, csv_columns, graph_name):
     By: VAB
     """
     plt.figure()
-    cols = [i.strip('\n') for i in open(csv_columns).readlines()]
 
-    df = pd.read_csv(os.path.join(directory, csv_input), usecols=cols).copy()
+    df = pd.read_csv(os.path.join(directory, csv_input)).copy()
     df['sqerror'] = np.square(df['error'])
 
     x = df['angle']

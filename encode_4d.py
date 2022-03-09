@@ -39,9 +39,8 @@ def make_res_seq(directory, res_csv):
     """
 
     # read file with residues as a df
-    col1 = ['code', 'L/H position', 'residue']
     path = os.path.join(directory, res_csv)
-    res_df = pd.read_csv(path, usecols=col1)
+    res_df = pd.read_csv(path)
 
     # Add all items under the 'residue' column into one field
     aggregation_func = {'residue': 'sum'}
@@ -204,10 +203,8 @@ def combine_by_pdb_code(directory, table, ang_csv, col_names):
     # Add column containing pdb codes to the table of encoded residues
     encoded_df = pd.concat([pdb_code_df, res_df], axis=1)
 
-    col3 = ['code', 'angle']
-
     # Take the second input from the commandline (which will be the table of pdb codes and their packing angles)
-    angle_file = pd.read_csv(os.path.join(directory, ang_csv), usecols=col3)
+    angle_file = pd.read_csv(os.path.join(directory, ang_csv))
 
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file

@@ -16,7 +16,7 @@ import utils
 # *************************************************************************
 
 
-def make_separate_files(train_dir, test_dir, cols_4d, train_csv, test_csv, in_cols, trainset, testset):
+def make_separate_files(train_dir, test_dir, train_csv, test_csv, in_cols, trainset, testset):
     """Create .csv files for each pdb
     """
 
@@ -33,10 +33,8 @@ def make_separate_files(train_dir, test_dir, cols_4d, train_csv, test_csv, in_co
         os.mkdir(path)
     except:
         print(f'Directory {path} already exists')
-
-    col = [l.strip('\n') for l in open(cols_4d).readlines()]
     csv_files = []
-    df_of_all_data = pd.read_csv(os.path.join(test_dir, test_csv), usecols=col)
+    df_of_all_data = pd.read_csv(os.path.join(test_dir, test_csv))
     i = 0
     for _ in df_of_all_data.iterrows():
         row_df = df_of_all_data.iloc[i:(i+1)]

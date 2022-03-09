@@ -24,7 +24,7 @@ def make_group(directory, input_csv, columns, out_name, arff_cols):
             size        --- the number of data lines that will be
     """
     col1 = [l.strip('\n') for l in open(columns).readlines()]
-    df = pd.read_csv(os.path.join(directory, input_csv), usecols=col1)
+    df = pd.read_csv(os.path.join(directory, input_csv))
     size = math.ceil(len(df.index)/10)
 
     for i, _ in enumerate(df, start=1):

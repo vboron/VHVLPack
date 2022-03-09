@@ -1,10 +1,5 @@
 #!/usr/bin/python3
 """
-Program:    encode_ts
-File:       encode_ts.py
-
-Version:    V1.0
-Date:       15.04.2021
 Function:   Encode VH/VL packing amino acids into 4d vectors for machine learning.
 
 Description:
@@ -29,28 +24,8 @@ import pandas as pd
 import numpy as np
 
 
-
 # *************************************************************************
-def read_csv():
-    """Read the file containing pdb id and the VHVL residue identity
-
-        Return: res_file      --- Data file with residue identities read by column names
-
-        15.03.2021  Original   By: VAB
-        """
-
-    # The column names contained in the .csv file
-    col1 = ['code', 'L/H position', 'residue']
-
-    # Take the commandline input as the directory, otherwise look in current directory
-    if sys.argv[1] != '':
-        res_file = pd.read_csv(sys.argv[1], usecols=col1)
-
-    return res_file
-
-
-# *************************************************************************
-def make_res_seq(rfile):
+def make_res_seq():
     """Take all individual residue identities for a pdb file and combine them into a single sequence for
     each individual pdb
 
@@ -65,6 +40,7 @@ def make_res_seq(rfile):
     10.04.2021  Original   By: VAB
     """
 
+    rfile = pd.read_csv(sys.argv[1])
     # Add all items under the 'residue' column into one field
     aggregation_func = {'residue': 'sum'}
 
@@ -123,9 +99,9 @@ def encode(table):
 
 def t1(resi):
     T1_dic = {'A': -9.11, 'R': 0.23, "N": -4.62, "D": -4.65, "C": -7.35, "Q": -3, "E": -3.03,
-               "G": -10.61, "H": -1.01, "I": -4.25,
-               "L": -4.38, "K": -2.59, "M": -4.08, "F": 0.49, "P": -5.11,
-               "S": -7.44, "T": -5.97, "W": 5.73, "Y": 2.08, "V": -5.87, "X": -3.73}  # "X" is average
+              "G": -10.61, "H": -1.01, "I": -4.25,
+              "L": -4.38, "K": -2.59, "M": -4.08, "F": 0.49, "P": -5.11,
+              "S": -7.44, "T": -5.97, "W": 5.73, "Y": 2.08, "V": -5.87, "X": -3.73}  # "X" is average
     T1 = T1_dic[resi]
     return T1
 
@@ -219,7 +195,7 @@ def combine_by_pdb_code(table):
     col2.remove('angle')
 
     res_df = pd.DataFrame(enc_df.encoded_res.str.split(', ').tolist(),
-                      columns=col2)
+                          columns=col2)
 
     # Remove the blank column
     res_df = res_df.iloc[:, :-1]
@@ -227,15 +203,13 @@ def combine_by_pdb_code(table):
     # Add column containing pdb codes to the table of encoded residues
     encoded_df = pd.concat([pdb_code_df, res_df], axis=1)
 
-    col3 = ['code', 'angle']
-
     # Take the second input from the commandline (which will be the table of pdb codes and their packing angles)
-    if sys.argv[2] != '':
-        angle_file = pd.read_csv(sys.argv[2], usecols=col3)
+    angle_file = pd.read_csv(sys.argv[2])
 
     # Angle column will be added to the table of encoded residues and the table is sorted by code
     # to make sure all the data is for the right pdb file
-    training_df = pd.merge(encoded_df, angle_file, how="right", on=["code"], sort=True)
+    training_df = pd.merge(encoded_df, angle_file,
+                           how="right", on=["code"], sort=True)
     nan_value = float('NaN')
     training_df.replace('', nan_value, inplace=True)
     training_df.dropna(axis=0, how='any', inplace=True)
@@ -247,15 +221,12 @@ def combine_by_pdb_code(table):
 # *** Main program                                                      ***
 # *************************************************************************
 
-read_file = read_csv()
-# print(read_file)
-
-res_seq = make_res_seq(read_file)
-#print(res_seq)
+res_seq = make_res_seq()
+# print(res_seq)
 
 
 parameters = encode(res_seq)
-#print(parameters)
+# print(parameters)
 
 results = combine_by_pdb_code(parameters)
 results.to_csv('{}.csv'.format(sys.argv[4]), index=False)

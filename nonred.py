@@ -52,27 +52,22 @@ def make_seq_pdb_dict(dir_of_pdbs):
     return seq_dict
 
 
-def filter_df(column_names, csv_file, seq_dict):
-    col = []
-    with open(column_names) as f:
-        for i in f.readlines():
-            i = i.strip('\n')
-            col.append(i)
+def filter_df(csv_file, seq_dict):
 
-    df = pd.read_csv(csv_file, usecols=col)
+    df = pd.read_csv(csv_file)
     pdbcode_list = [seq_dict.values()]
 
     return df[~df['code'].isin(pdbcode_list)]
 
 
-def NR1(dir_dataset_pdbs, cols_4d, out_file, encoded_csv):
+def NR1(dir_dataset_pdbs, out_file, encoded_csv):
     dictionary = make_seq_pdb_dict(dir_dataset_pdbs)
-    nr1_dataframe = filter_df(cols_4d, encoded_csv, dictionary)
+    nr1_dataframe = filter_df(encoded_csv, dictionary)
     nr1_path = os.path.join(dir_dataset_pdbs, f'{out_file}.csv')
     nr1_dataframe.to_csv(nr1_path, index=False)
 
 # *************************************************************************
-def NR2(encoded_csv_file, column_file, directory, out_file):
+def NR2(encoded_csv_file, columns, directory, out_file):
     """Read the .csv file containing encoded residues and angles and combine lines that have the same PDB code and
     the same encoded sequence into one line, averaging the angle
 
@@ -80,13 +75,10 @@ def NR2(encoded_csv_file, column_file, directory, out_file):
     """
 
     # The column names contained in the .csv file imported from a .dat file
-    col1 = []
-    for i in open(column_file).readlines():
-        i = i.strip('\n')
-        col1.append(i)
+    col1 = [l.strip('\n') for l in open(columns).readlines()]
 
     # Take the commandline input as the directory, otherwise look in current directory
-    res_file = pd.read_csv(encoded_csv_file, usecols=col1)
+    res_file = pd.read_csv(encoded_csv_file)
 
     # angle needs to be converted to a float to be averaged
     res_file['angle'] = res_file['angle'].astype(float)
@@ -119,7 +111,7 @@ def NR2(encoded_csv_file, column_file, directory, out_file):
     seq_df.to_csv(nr2_path, index=False)
 
 # *************************************************************************
-def NR3(encoded_csv_file, column_file, directory, out_file):
+def NR3(encoded_csv_file, columns, directory, out_file):
     """Read the .csv file containing encoded residues and angles and combine lines that have the same PDB code and
     the same encoded sequence into one line, averaging the angle
 
@@ -127,13 +119,10 @@ def NR3(encoded_csv_file, column_file, directory, out_file):
     """
 
     # The column names contained in the .csv file imported from a .dat file
-    col1 = []
-    for i in open(column_file).readlines():
-        i = i.strip('\n')
-        col1.append(i)
+    col1 = [l.strip('\n') for l in open(columns).readlines()]
 
     # Take the commandline input as the directory, otherwise look in current directory
-    res_file = pd.read_csv(encoded_csv_file, usecols=col1)
+    res_file = pd.read_csv(encoded_csv_file)
 
     # angle needs to be converted to a float to be averaged
     res_file['angle'] = res_file['angle'].astype(float)

@@ -42,7 +42,7 @@ def run_nr(ds: Dataset, nr: NonRedundantization):
         dst_path = os.path.join(ds.name, f'{new_file}.csv')
         shutil.copyfile(src_path, dst_path)
     elif nr == NonRedundantization.NR1:
-        nonred.NR1(ds.name, args.cols_4d, new_file, encoded_csv_path)
+        nonred.NR1(ds.name, new_file, encoded_csv_path)
     elif nr == NonRedundantization.NR2:
         nonred.NR2(encoded_csv_path, args.cols_4d, ds.name, new_file)
     elif nr == NonRedundantization.NR3:
@@ -62,7 +62,7 @@ def run_newpapa(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
     with open(f'{tt.training.name}/{tt.training.name}_{nr.name}_{meth.name}.arff', 'w') as f:
         path = os.path.join(
             tt.training.name, f'{tt.training.name}_{nr.name}_4d.csv')
-        utils.run_cmd(['csv2arff', '-norm', '-ni', 'in4d.dat', 'angle', path],
+        utils.run_cmd(['csv2arff', '-norm', '-ni', args.in4d, 'angle', path],
                       args.dry_run, stdout=f)
     pat_path = os.path.join('SNNS', 'papa', 'training', 'final.pat')
     with open(pat_path) as f:
@@ -108,13 +108,11 @@ def run_MLP(nr: NonRedundantization, tt: TestTrain):
         f'Training on {tt.training.name}, testing on {tt.testing.name}, meth={meth.name}, nr={nr.name}')
 
     utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--train_dir', tt.training.name, '--test_dir', tt.testing.name,
-                   '--columns_4d', args.cols_4d, '--training_csv', f'{tt.training.name}_{nr.name}_4d.csv',
-                   '--testing_csv', f'{tt.testing.name}_{nr.name}_4d.csv', '--input_cols', 'in4d.dat', '--train_set',
+                   '--training_csv', f'{tt.training.name}_{nr.name}_4d.csv',
+                   '--testing_csv', f'{tt.testing.name}_{nr.name}_4d.csv', '--input_cols', args.in4d, '--train_set',
                    f'{tt.training.name}_{nr.name}', '--test_set', f'{tt.testing.name}_{nr.name}'], args.dry_run)
-    utils.run_cmd(['./extract_data_from_logfiles.py', '--directory',
-                   os.path.join(tt.testing.name,
-                                f'{tt.testing.name}_{nr.name}_testing_data'),
-                   '--columns_postprocessing', args.postprocessing_cols, '--output_name',
+    utils.run_cmd(['./extract_data_from_logfiles.py', '--directory', os.path.join(tt.testing.name,
+                   f'{tt.testing.name}_{nr.name}_testing_data'), '--output_name',
                    f'{tt.testing.name}/{tt.testing.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 # multilayer perceptron cross validation
@@ -126,10 +124,9 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization):
 
     utils.run_cmd(['./split_10.py',
                    '--input_csv', f'{ds.name}_{nr.name}_4d.csv',
-                   '--columns', args.cols_4d,
                    '--directory', ds.name,
                    '--output_tag', f'{nr.name}',
-                   '--csv2arff_cols', 'in4d.dat'],
+                   '--csv2arff_cols', args.in4d],
                   args.dry_run)
 
     classifier = 'weka.classifiers.functions.MultilayerPerceptron'
@@ -162,7 +159,7 @@ def run_MLPxval(ds: Dataset, nr: NonRedundantization):
                                   env=env, stderr=subprocess.DEVNULL)
                     assert(os.stat(file_path).st_size != 0)
 
-    utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name, '--columns_postprocessing', args.postprocessing_cols,
+    utils.run_cmd(['./xvallog2csv.py', '--directory', ds.name,
                    '--output_name', f'{ds.name}/{ds.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 # *************************************************************************
@@ -177,19 +174,14 @@ def correction(ds: Dataset, nr: NonRedundantization, meth: MLMethod, name):
 
 def run_graphs(ds: Dataset, name):
     cmd = ['./stats2graph.py',
-           '--directory', ds.name, '--csv_input', f'{name}.csv', '--cols_input',
-           args.postprocessing_cols, '--name_normal',
+           '--directory', ds.name, '--csv_input', f'{name}.csv', '--name_normal',
            f'{name}_normal', '--name_outliers', f'{name}_normal',
            '--name_stats', f'{name}_stats', '--name_graph', name]
     utils.run_cmd(cmd, args.dry_run)
-    graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', args.postprocessing_cols,
-                                      f'{name}_sqerror_vs_actual')
-    graphing.angle_distribution(
-        ds.name, f'{ds.name}_ang.csv', f'{name}_angledistribution')
-    graphing.error_distribution(ds.name, f'{name}.csv', args.postprocessing_cols,
-                                f'{name}_errordistribution')
-    graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', args.postprocessing_cols,
-                                      f'{name}_sqerror_vs_actual')
+    graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', f'{name}_sqerror_vs_actual')
+    graphing.angle_distribution( ds.name, f'{ds.name}_ang.csv', f'{name}_angledistribution')
+    graphing.error_distribution(ds.name, f'{name}.csv', f'{name}_errordistribution')
+    graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', f'{name}_sqerror_vs_actual')
 
 
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
@@ -206,10 +198,11 @@ def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
             correction(ds, nr, meth, name)
         run_graphs(ds, name)
 
+
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
 parser.add_argument('--cols-4d', default='4d.dat')
-parser.add_argument('--postprocessing_cols', default='post_processing.dat')
+parser.add_argument('--in4d', default='in4d.dat')
 parser.add_argument('--preprocess', action='store_true', default=False)
 parser.add_argument('--process', action='store_true', default=False)
 parser.add_argument('--postprocess', action='store_true', default=False)
@@ -235,8 +228,10 @@ if args.process:
     with Pool() as p:
         results = []
         for nr, tt in itertools.product(NonRedundantization, get_all_testtrain()):
-            results.append(p.apply_async(run_snns, (nr, MLMethod.OrigPAPA, tt)))
-            results.append(p.apply_async(run_snns, (nr, MLMethod.RetrainedPAPA, tt)))
+            results.append(p.apply_async(
+                run_snns, (nr, MLMethod.OrigPAPA, tt)))
+            results.append(p.apply_async(
+                run_snns, (nr, MLMethod.RetrainedPAPA, tt)))
             results.append(p.apply_async(run_MLP, (nr, tt)))
         for ds, nr in itertools.product(Dataset, NonRedundantization):
             results.append(p.apply_async(run_MLPxval, (ds, nr)))
@@ -251,11 +246,13 @@ if args.postprocess:
         results = []
         # Special processing for XValWeka
         for ds, nr in itertools.product(Dataset, NonRedundantization):
-            results.append(p.apply_async(postprocessing, (ds, nr, MLMethod.XvalWeka)))
+            results.append(p.apply_async(
+                postprocessing, (ds, nr, MLMethod.XvalWeka)))
 
         for tt, nr, meth in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod):
             if meth is not MLMethod.XvalWeka:
-                results.append(p.apply_async(postprocessing, (tt.testing, nr, meth)))
+                results.append(p.apply_async(
+                    postprocessing, (tt.testing, nr, meth)))
         p.close()
         p.join()
         if not all([r.successful() for r in results]):
