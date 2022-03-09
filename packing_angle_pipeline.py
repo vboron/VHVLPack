@@ -12,6 +12,7 @@ import itertools
 import latex_template_packingangle as ltp
 from multiprocessing import Pool
 import rank_packing_methods
+from sklearn_methods import *
 
 # *************************************************************************
 
@@ -102,18 +103,35 @@ def run_snns(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
         raise ValueError(f'Handling of meth={meth} not implemented')
 
 
-def run_MLP(nr: NonRedundantization, tt: TestTrain):
-    meth = MLMethod.WekaMLP
-    print(
-        f'Training on {tt.training.name}, testing on {tt.testing.name}, meth={meth.name}, nr={nr.name}')
+def runMLPReg(nr: NonRedundantization, tt: TestTrain):
+    X_train, y_train, _x_ = make_sets(
+        f'{tt.training.name}/{tt.training.name}_{nr.name}_4d.csv')
+    X_test, y_true, df_test = make_sets(
+        f'{tt.testing.name}/{tt.testing.name}_{nr.name}_4d.csv')
+    run_MLPRegressor(X_train, y_train, X_test, df_test).to_csv(
+        f'{tt.testing.name}/{tt.testing.name}_{nr.name}_{meth.name}.csv', index=False)
 
-    utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--train_dir', tt.training.name, '--test_dir', tt.testing.name,
-                   '--training_csv', f'{tt.training.name}_{nr.name}_4d.csv',
-                   '--testing_csv', f'{tt.testing.name}_{nr.name}_4d.csv', '--input_cols', args.in4d, '--train_set',
-                   f'{tt.training.name}_{nr.name}', '--test_set', f'{tt.testing.name}_{nr.name}'], args.dry_run)
-    utils.run_cmd(['./extract_data_from_logfiles.py', '--directory', os.path.join(tt.testing.name,
-                   f'{tt.testing.name}_{nr.name}_testing_data'), '--output_name',
-                   f'{tt.testing.name}/{tt.testing.name}_{nr.name}_{meth.name}'], args.dry_run)
+# def run_MLP(nr: NonRedundantization, tt: TestTrain):
+#     meth = MLMethod.WekaMLP
+#     print(
+#         f'Training on {tt.training.name}, testing on {tt.testing.name}, meth={meth.name}, nr={nr.name}')
+
+#     utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--train_dir', tt.training.name, '--test_dir', tt.testing.name,
+#                    '--training_csv', f'{tt.training.name}_{nr.name}_4d.csv',
+#                    '--testing_csv', f'{tt.testing.name}_{nr.name}_4d.csv', '--input_cols', args.in4d, '--train_set',
+#                    f'{tt.training.name}_{nr.name}', '--test_set', f'{tt.testing.name}_{nr.name}'], args.dry_run)
+#     utils.run_cmd(['./extract_data_from_logfiles.py', '--directory', os.path.join(tt.testing.name,
+#                    f'{tt.testing.name}_{nr.name}_testing_data'), '--output_name',
+#                    f'{tt.testing.name}/{tt.testing.name}_{nr.name}_{meth.name}'], args.dry_run)
+
+
+def runGBReg(nr: NonRedundantization, tt: TestTrain):
+    X_train, y_train, _x_ = make_sets(
+        f'{tt.training.name}/{tt.training.name}_{nr.name}_4d.csv')
+    X_test, y_true, df_test = make_sets(
+        f'{tt.testing.name}/{tt.testing.name}_{nr.name}_4d.csv')
+    run_GradientBoostingRegressor(X_train, y_train, X_test, df_test).to_csv(
+        f'{tt.testing.name}/{tt.testing.name}_{nr.name}_{meth.name}.csv', index=False)
 
 # multilayer perceptron cross validation
 
@@ -178,10 +196,14 @@ def run_graphs(ds: Dataset, name):
            f'{name}_normal', '--name_outliers', f'{name}_normal',
            '--name_stats', f'{name}_stats', '--name_graph', name]
     utils.run_cmd(cmd, args.dry_run)
-    graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', f'{name}_sqerror_vs_actual')
-    graphing.angle_distribution( ds.name, f'{ds.name}_ang.csv', f'{name}_angledistribution')
-    graphing.error_distribution(ds.name, f'{name}.csv', f'{name}_errordistribution')
-    graphing.sq_error_vs_actual_angle(ds.name, f'{name}.csv', f'{name}_sqerror_vs_actual')
+    graphing.sq_error_vs_actual_angle(
+        ds.name, f'{name}.csv', f'{name}_sqerror_vs_actual')
+    graphing.angle_distribution(
+        ds.name, f'{ds.name}_ang.csv', f'{name}_angledistribution')
+    graphing.error_distribution(
+        ds.name, f'{name}.csv', f'{name}_errordistribution')
+    graphing.sq_error_vs_actual_angle(
+        ds.name, f'{name}.csv', f'{name}_sqerror_vs_actual')
 
 
 def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
@@ -232,11 +254,12 @@ if args.process:
                 run_snns, (nr, MLMethod.OrigPAPA, tt)))
             results.append(p.apply_async(
                 run_snns, (nr, MLMethod.RetrainedPAPA, tt)))
-            results.append(p.apply_async(run_MLP, (nr, tt)))
-        for ds, nr in itertools.product(Dataset, NonRedundantization):
-            results.append(p.apply_async(run_MLPxval, (ds, nr)))
-        p.close()
-        p.join()
+            # results.append(p.apply_async(run_MLP, (nr, tt)))
+            results.append(p.apply_async(runMLPReg, (nr, tt)))
+        # for ds, nr in itertools.product(Dataset, NonRedundantization):
+        #     results.append(p.apply_async(run_MLPxval, (ds, nr)))
+        # p.close()
+        # p.join()
         if not all([r.successful() for r in results]):
             raise Exception('Processing: AsyncResult not successful')
 

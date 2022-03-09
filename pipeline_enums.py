@@ -18,8 +18,10 @@ class NonRedundantization(Enum):
 class MLMethod(Enum):
     OrigPAPA = auto()
     RetrainedPAPA = auto()
-    WekaMLP = auto()
-    XvalWeka = auto()
+    # WekaMLP = auto()
+    # XvalWeka = auto()
+    SklearnMLPReg = auto()
+    SklearnGBReg = auto()
 
 class Correction(Enum):
     NotCorrected = auto()
