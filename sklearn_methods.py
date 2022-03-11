@@ -21,7 +21,7 @@ def make_sets(file):
 # X_test, y_true, df_test = make_sets('PostAF2/PostAF2_NR2_4d.csv')
 
 def run_MLPRegressor(X_train, y_train, X_test, df):
-    mlp = MLPRegressor(hidden_layer_sizes=15, max_iter=1000).fit(X_train, y_train.ravel())
+    mlp = MLPRegressor(hidden_layer_sizes=15, max_iter=12000).fit(X_train, y_train.ravel())
     y_pred=mlp.predict(X_test)
     y_pred=mlp.predict(X_test)
     df['predicted']=y_pred
@@ -29,7 +29,7 @@ def run_MLPRegressor(X_train, y_train, X_test, df):
     return df
 
 def run_GradientBoostingRegressor(X_train, y_train, X_test, df):
-    gbr = GradientBoostingRegressor().fit(X_train, y_train.ravel())
+    gbr = gbr = GradientBoostingRegressor(n_estimators=550, max_depth=2, min_samples_leaf=9, learning_rate=0.25, max_features=52, subsample=0.55).fit(X_train, y_train.ravel())
     y_pred=gbr.predict(X_test)
     df['predicted']=y_pred
     df['error']=df['predicted']-df['angle']

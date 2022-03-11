@@ -5,7 +5,7 @@ class Dataset(Enum):
     PostPAPA = auto()
     PreAF2 = auto()
     PostAF2 = auto()
-    Everything = auto()
+    # Everything = auto()
 
 
 class NonRedundantization(Enum):
@@ -16,9 +16,9 @@ class NonRedundantization(Enum):
 
 
 class MLMethod(Enum):
-    OrigPAPA = auto()
-    RetrainedPAPA = auto()
-    # WekaMLP = auto()
+    # OrigPAPA = auto()
+    # RetrainedPAPA = auto()
+    WekaMLP = auto()
     # XvalWeka = auto()
     SklearnMLPReg = auto()
     SklearnGBReg = auto()
@@ -39,12 +39,13 @@ class TestTrain:
 def get_all_testtrain():
     papa = TestTrain(training=Dataset.PrePAPA, testing=Dataset.PostPAPA)
     af2 = TestTrain(training=Dataset.PreAF2, testing=Dataset.PostAF2)
-    everything = TestTrain(training=Dataset.Everything, testing=Dataset.Everything)
+    # everything = TestTrain(training=Dataset.Everything, testing=Dataset.Everything)
 
     # return [papa]
     # return [af2]
     # return [af2, everything]
-    return [papa, af2, everything]
+    return [papa, af2]
+    # return [papa, af2, everything]
 
 def get_training_from_testing(testing: Dataset):
     for tt in get_all_testtrain():

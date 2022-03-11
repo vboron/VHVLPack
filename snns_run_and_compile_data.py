@@ -21,7 +21,7 @@ def build_snns_dataframe(directory, seq_directory, angle_file, papa_version):
             code = file[:-4]
             seq_files.append((code, os.path.join(seq_directory, file)))
 
-    df_ang = pd.read_csv(os.path.join(directory, angle_file), usecols=['code', 'angle'])
+    df_ang = pd.read_csv(os.path.join(directory, angle_file))
 
     p_col = ['code', 'predicted']
     file_data = []

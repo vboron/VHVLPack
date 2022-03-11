@@ -13,18 +13,12 @@ import re
 import argparse
 
 # *************************************************************************
-def stats_to_df(direct, columns, csv_out):
+def stats_to_df(direct, csv_out):
     """ Read the directory and extract .log files. For each log file, extract the predicted angle, actual angle and
         error, and put into dataframe. Export as a .csv file.
 
         11.23.2021  Original   By: VAB
     """
-
-    # Specify column names for .csv file that will be made from the log files
-    col = []
-    for i in open(columns).readlines():
-        i = i.strip('\n')
-        col.append(i)
 
     all_data = []
     files = []
@@ -54,7 +48,7 @@ def stats_to_df(direct, columns, csv_out):
 
     # Make .csv files for all of the data, splitting it into files that have all the data, only outliers, and only the
     # data withing the 'norm'
-    df_a = pd.DataFrame(data=all_data, columns=col)
+    df_a = pd.DataFrame(data=all_data)
     df_a.to_csv(f'{csv_out}.csv', index=False)
 
 # *************************************************************************
@@ -63,8 +57,7 @@ def stats_to_df(direct, columns, csv_out):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
     parser.add_argument('--directory', help='Directory where log files are', required=True)
-    parser.add_argument('--columns_postprocessing', help='Columns for postprocessing', required=True)
     parser.add_argument('--output_name', help='name for .csv file for data ', required=True)
     args = parser.parse_args()
 
-    stats_to_df(args.directory, args.columns_postprocessing, args.output_name)
+    stats_to_df(args.directory, args.output_name)

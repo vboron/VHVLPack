@@ -9,8 +9,10 @@ def rank_methods():
     data = []
     data_o = []
 
-    def extract_data(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction):
-        name = unique_name(ds, nr, meth, cr)
+    # def extract_data(ds: Dataset, nr: NonRedundantization, meth: MLMethod, cr: Correction):
+    #     name = unique_name(ds, nr, meth, cr)
+    def extract_data(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
+        name = f'{ds.name}_{nr.name}_{meth.name}'
         name_latex_friendly = name.replace('_', '-')
 
         path = os.path.join(ds.name, f'{name}_stats_all.csv')
@@ -29,9 +31,11 @@ def rank_methods():
     #         continue
     #     extract_data(ds, nr, MLMethod.XvalWeka, cr)
 
-    for tt, nr, meth, cr in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod, Correction):
-        if nr != NonRedundantization.NR0 and tt.testing.name != 'Everything':
-            extract_data(tt.testing, nr, meth, cr)
+    # for tt, nr, meth, cr in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod, Correction):
+    for tt, nr, meth, in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod):
+        # if nr != NonRedundantization.NR0 and tt.testing.name != 'Everything':
+        #     extract_data(tt.testing, nr, meth, cr)
+        extract_data(tt.testing, nr, meth)
 
     # Create a combined parameter which will allow sorting by 'all' parameters
     def process_combined_para(df, top10_csv_name):

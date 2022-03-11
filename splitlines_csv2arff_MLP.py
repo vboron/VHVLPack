@@ -84,8 +84,6 @@ if __name__ == '__main__':
     parser.add_argument(
         '--test_dir', help='Directory of testing datset', required=True)
     parser.add_argument(
-        '--columns_4d', help='columns for reading encoded file', required=True)
-    parser.add_argument(
         '--training_csv', help='.csv file used to train model for MLP', required=True)
     parser.add_argument(
         '--testing_csv', help='.csv file which will be split for testing', required=True)
@@ -97,7 +95,7 @@ if __name__ == '__main__':
         '--test_set', help='Name of set used for training (name+nr)', required=True)
     args = parser.parse_args()
 
-    list_of_csv_files, training_file = make_separate_files(args.train_dir, args.test_dir, args.columns_4d,
+    list_of_csv_files, training_file = make_separate_files(args.train_dir, args.test_dir,
                                                            args.training_csv, args.testing_csv, args.input_cols,
                                                            args.train_set, args.test_set)
 

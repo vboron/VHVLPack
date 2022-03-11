@@ -104,33 +104,37 @@ def run_snns(nr: NonRedundantization, meth: MLMethod, tt: TestTrain):
 
 
 def runMLPReg(nr: NonRedundantization, tt: TestTrain):
+    meth= MLMethod.SklearnMLPReg
     X_train, y_train, _x_ = make_sets(
         f'{tt.training.name}/{tt.training.name}_{nr.name}_4d.csv')
     X_test, y_true, df_test = make_sets(
         f'{tt.testing.name}/{tt.testing.name}_{nr.name}_4d.csv')
+    print(f'Running MLPRegressor on {tt.testing.name}_{nr.name}')
     run_MLPRegressor(X_train, y_train, X_test, df_test).to_csv(
         f'{tt.testing.name}/{tt.testing.name}_{nr.name}_{meth.name}.csv', index=False)
 
-# def run_MLP(nr: NonRedundantization, tt: TestTrain):
-#     meth = MLMethod.WekaMLP
-#     print(
-#         f'Training on {tt.training.name}, testing on {tt.testing.name}, meth={meth.name}, nr={nr.name}')
+def run_MLP(nr: NonRedundantization, tt: TestTrain):
+    meth = MLMethod.WekaMLP
+    print(
+        f'Training on {tt.training.name}, testing on {tt.testing.name}, meth={meth.name}, nr={nr.name}')
 
-#     utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--train_dir', tt.training.name, '--test_dir', tt.testing.name,
-#                    '--training_csv', f'{tt.training.name}_{nr.name}_4d.csv',
-#                    '--testing_csv', f'{tt.testing.name}_{nr.name}_4d.csv', '--input_cols', args.in4d, '--train_set',
-#                    f'{tt.training.name}_{nr.name}', '--test_set', f'{tt.testing.name}_{nr.name}'], args.dry_run)
-#     utils.run_cmd(['./extract_data_from_logfiles.py', '--directory', os.path.join(tt.testing.name,
-#                    f'{tt.testing.name}_{nr.name}_testing_data'), '--output_name',
-#                    f'{tt.testing.name}/{tt.testing.name}_{nr.name}_{meth.name}'], args.dry_run)
+    utils.run_cmd(['./splitlines_csv2arff_MLP.py', '--train_dir', tt.training.name, '--test_dir', tt.testing.name,
+                   '--training_csv', f'{tt.training.name}_{nr.name}_4d.csv',
+                   '--testing_csv', f'{tt.testing.name}_{nr.name}_4d.csv', '--input_cols', args.in4d, '--train_set',
+                   f'{tt.training.name}_{nr.name}', '--test_set', f'{tt.testing.name}_{nr.name}'], args.dry_run)
+    utils.run_cmd(['./extract_data_from_logfiles.py', '--directory', os.path.join(tt.testing.name,
+                   f'{tt.testing.name}_{nr.name}_testing_data'), '--output_name',
+                   f'{tt.testing.name}/{tt.testing.name}_{nr.name}_{meth.name}'], args.dry_run)
 
 
 def runGBReg(nr: NonRedundantization, tt: TestTrain):
+    meth = MLMethod.SklearnGBReg
     X_train, y_train, _x_ = make_sets(
         f'{tt.training.name}/{tt.training.name}_{nr.name}_4d.csv')
     X_test, y_true, df_test = make_sets(
         f'{tt.testing.name}/{tt.testing.name}_{nr.name}_4d.csv')
-    run_GradientBoostingRegressor(X_train, y_train, X_test, df_test).to_csv(
+    print(f'Running GBRegressor on {tt.testing.name}_{nr.name}')
+    gbr = run_GradientBoostingRegressor(X_train, y_train, X_test, df_test).to_csv(
         f'{tt.testing.name}/{tt.testing.name}_{nr.name}_{meth.name}.csv', index=False)
 
 # multilayer perceptron cross validation
@@ -210,14 +214,15 @@ def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
     # NB: Here, the order matters
     # correction() needs the output of the NotCorrected file graphing
     for cr in [Correction.NotCorrected, Correction.Corrected]:
-        name = unique_name(ds, nr, meth, cr)
-        if cr is Correction.NotCorrected:
-            src_path = os.path.join(
-                ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
-            dst_path = os.path.join(ds.name, f'{name}.csv')
-            shutil.copyfile(src_path, dst_path)
-        elif cr is Correction.Corrected:
-            correction(ds, nr, meth, name)
+        # name = unique_name(ds, nr, meth, cr)
+        name = f'{ds.name}_{nr.name}_{meth.name}'
+        # if cr is Correction.NotCorrected:
+        #     src_path = os.path.join(
+        #         ds.name, f'{ds.name}_{nr.name}_{meth.name}.csv')
+        #     dst_path = os.path.join(ds.name, f'{name}.csv')
+        #     shutil.copyfile(src_path, dst_path)
+        # elif cr is Correction.Corrected:
+        #     correction(ds, nr, meth, name)
         run_graphs(ds, name)
 
 
@@ -250,16 +255,17 @@ if args.process:
     with Pool() as p:
         results = []
         for nr, tt in itertools.product(NonRedundantization, get_all_testtrain()):
-            results.append(p.apply_async(
-                run_snns, (nr, MLMethod.OrigPAPA, tt)))
-            results.append(p.apply_async(
-                run_snns, (nr, MLMethod.RetrainedPAPA, tt)))
-            # results.append(p.apply_async(run_MLP, (nr, tt)))
-            results.append(p.apply_async(runMLPReg, (nr, tt)))
+            # results.append(p.apply_async(
+            #     run_snns, (nr, MLMethod.OrigPAPA, tt)))
+            # results.append(p.apply_async(
+            #     run_snns, (nr, MLMethod.RetrainedPAPA, tt)))
+            results.append(p.apply_async(run_MLP, (nr, tt)))
+            # results.append(p.apply_async(runMLPReg, (nr, tt)))
+            # results.append(p.apply_async(runGBReg, (nr, tt)))
         # for ds, nr in itertools.product(Dataset, NonRedundantization):
         #     results.append(p.apply_async(run_MLPxval, (ds, nr)))
-        # p.close()
-        # p.join()
+        p.close()
+        p.join()
         if not all([r.successful() for r in results]):
             raise Exception('Processing: AsyncResult not successful')
 
@@ -268,14 +274,14 @@ if args.postprocess:
     with Pool() as p:
         results = []
         # Special processing for XValWeka
-        for ds, nr in itertools.product(Dataset, NonRedundantization):
-            results.append(p.apply_async(
-                postprocessing, (ds, nr, MLMethod.XvalWeka)))
+        # for ds, nr in itertools.product(Dataset, NonRedundantization):
+        #     results.append(p.apply_async(
+        #         postprocessing, (ds, nr, MLMethod.XvalWeka)))
 
         for tt, nr, meth in itertools.product(get_all_testtrain(), NonRedundantization, MLMethod):
-            if meth is not MLMethod.XvalWeka:
-                results.append(p.apply_async(
-                    postprocessing, (tt.testing, nr, meth)))
+            # if meth is not MLMethod.XvalWeka:
+            results.append(p.apply_async(
+                postprocessing, (tt.testing, nr, meth)))
         p.close()
         p.join()
         if not all([r.successful() for r in results]):

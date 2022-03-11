@@ -59,7 +59,7 @@ def find_normal_and_outliers(directory, input_csv, norm_name, out_name):
     return df_a, df_n, df_o
 
 # *************************************************************************
-def find_stats(directory, input_csv, input_cols, df_a, df_o):
+def find_stats(directory, input_csv, df_a, df_o):
     """ Function calculates and compiles relevant statistical data related to the (ML) run that the data is from.
 
         Input:  df_o        -- Dataframe containing angles out of normal range
@@ -80,7 +80,7 @@ def find_stats(directory, input_csv, input_cols, df_a, df_o):
     os.path.join(directory, input_csv)
 
     # Call the utils.calc_rmse script which converts the RMSE into Relative RMSE
-    getResult = lambda rmse: utils.calc_relemse(os.path.join(directory, input_csv), input_cols, rmse)
+    getResult = lambda rmse: utils.calc_relemse(os.path.join(directory, input_csv), rmse)
     relrmse = getResult(rmse)
 
     # gather all of the relevant run statistics into a single table
@@ -208,7 +208,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
     parser.add_argument('--directory', help='Directory where files will', required=True)
     parser.add_argument('--csv_input', help='File that was the input to the method', required=True)
-    parser.add_argument('--cols_input', help='.dat with columns for reading the input csv', required=True)
     parser.add_argument('--name_normal', help='Name for the output that has the normal values', required=True)
     parser.add_argument('--name_outliers', help='Name for output with ouliers', required=True)
     parser.add_argument('--name_stats', help='Name for output with statistics for run', required=True)
@@ -218,7 +217,7 @@ if __name__ == '__main__':
     all_df, norm_df, out_df = find_normal_and_outliers(args.directory, args.csv_input,
                                                     args.name_normal, args.name_outliers)
 
-    stat_df_all, stats_df_out = find_stats(args.directory, args.csv_input, args.cols_input, all_df, out_df)
+    stat_df_all, stats_df_out = find_stats(args.directory, args.csv_input, all_df, out_df)
 
     plot_scatter(args.directory, out_df, norm_df, stat_df_all, stats_df_out, all_df.copy(),
                  args.name_stats, args.name_graph)
