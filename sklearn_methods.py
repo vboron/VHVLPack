@@ -5,6 +5,7 @@ from sklearn.neural_network import MLPRegressor
 from ordered_set import OrderedSet
 from sklearn.datasets import make_regression
 from sklearn.ensemble import GradientBoostingRegressor
+import pickle
 
 
 def make_sets(file):
@@ -20,17 +21,30 @@ def make_sets(file):
 # X_train, y_train, _x_ = make_sets('PreAF2/PreAF2_NR2_4d.csv')
 # X_test, y_true, df_test = make_sets('PostAF2/PostAF2_NR2_4d.csv')
 
+
 def run_MLPRegressor(X_train, y_train, X_test, df):
-    mlp = MLPRegressor(hidden_layer_sizes=15, max_iter=12000).fit(X_train, y_train.ravel())
-    y_pred=mlp.predict(X_test)
-    y_pred=mlp.predict(X_test)
-    df['predicted']=y_pred
-    df['error']=df['predicted']-df['angle']
+    mlp = MLPRegressor(hidden_layer_sizes=15, max_iter=12000).fit(
+        X_train, y_train.ravel())
+    y_pred = mlp.predict(X_test)
+    y_pred = mlp.predict(X_test)
+    df['predicted'] = y_pred
+    df['error'] = df['predicted']-df['angle']
     return df
 
-def run_GradientBoostingRegressor(X_train, y_train, X_test, df):
-    gbr = gbr = GradientBoostingRegressor(n_estimators=550, max_depth=2, min_samples_leaf=9, learning_rate=0.25, max_features=52, subsample=0.55).fit(X_train, y_train.ravel())
-    y_pred=gbr.predict(X_test)
-    df['predicted']=y_pred
-    df['error']=df['predicted']-df['angle']
+
+def run_GradientBoostingRegressor(X_train, y_train, X_test, df, model_name):
+    gbr = GradientBoostingRegressor(n_estimators=550, max_depth=2, min_samples_leaf=9,
+                                    learning_rate=0.25, max_features=52, subsample=0.55).fit(X_train, y_train.ravel())
+    # Save to file in the current working directory
+    pkl_filename = f'{model_name}.pkl'
+    with open(pkl_filename, 'wb') as file:
+        pickle.dump(gbr, file)
+
+    # Load from file
+    with open(pkl_filename, 'rb') as file:
+        pickle_model = pickle.load(file)
+    y_pred = pickle_model.predict(X_test)
+
+    df['predicted'] = y_pred
+    df['error'] = df['predicted']-df['angle']
     return df

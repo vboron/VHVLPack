@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 
 
 # *************************************************************************
-def find_normal_and_outliers(directory, input_csv, norm_name, out_name):
+def find_normal_and_outliers(directory, input_csv):
     """ Function looks at data frame with prediction values and separates the data into two dataframes based
         on whether the predicted angles are withing a normal range or not.
         e.g. code,angle,predicted,error
@@ -214,8 +214,7 @@ if __name__ == '__main__':
     parser.add_argument('--name_graph', help='Name for graph outputted', required=True)
     args = parser.parse_args()
 
-    all_df, norm_df, out_df = find_normal_and_outliers(args.directory, args.csv_input,
-                                                    args.name_normal, args.name_outliers)
+    all_df, norm_df, out_df = find_normal_and_outliers(args.directory, args.csv_input)
 
     stat_df_all, stats_df_out = find_stats(args.directory, args.csv_input, all_df, out_df)
 

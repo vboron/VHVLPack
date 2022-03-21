@@ -291,6 +291,6 @@ if args.postprocess:
 
 if args.latex:
     print('Generating LaTeX...')
-    ltp.generate_latex()
+    ltp.generate_latex('PipelineOutput')
 
 print('Goodbye!')

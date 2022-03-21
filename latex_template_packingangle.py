@@ -153,7 +153,7 @@ def _add_data(doc: pl.Document, ds: Dataset, nr: NonRedundantization, meth: MLMe
             graphs.add_caption('Graphs for further metrics.')
 
 
-def generate_latex():
+def generate_latex(output):
     top10 = 'top10.csv'
     top10_df = pd.read_csv(top10)
     top10_o = 'top10_out.csv'
@@ -206,4 +206,4 @@ def generate_latex():
         doc.append(pl.NoEscape(r'\newpage'))
 
     print('Generating PDF...')
-    doc.generate_pdf('PipelineTest', clean_tex=False)
+    doc.generate_pdf(output, clean_tex=False)

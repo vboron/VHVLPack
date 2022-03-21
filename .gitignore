@@ -24,6 +24,8 @@ B/
 C/
 D/
 E/
+af2_ranked0/
+af2_models/
 *.csv
 *.arff
 *.swp
@@ -32,6 +34,8 @@ E/
 *.pdb
 *.tiff
 *.txt
+*.aux
+*.out
 *.jpg
 *.tex
 *.pdf

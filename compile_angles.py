@@ -64,7 +64,8 @@ def buid_table_of_angles():
             continue
         # Converts the output of the subprocess into normal string
         angle = angle.split()
-        angle = float(angle[1])
+        # angle = float(angle[1])
+        angle = angle[1]
 
         data = [pdb_code, angle]
         file_data.append(data)
@@ -73,9 +74,10 @@ def buid_table_of_angles():
     df_ang = pd.DataFrame(data=file_data, columns=col)
 
     try:
-        df_ang = df_ang[df_ang['angle'].str.contains('Packing angle') == False]
+        df_ang = df_ang[df_ang['angle'].str.contains('Packing') == False]
     except:
         print('No missing angles.')
+    df_ang['angle'] = df_ang['angle'].astype(float)
     return df_ang
 
 
@@ -84,8 +86,8 @@ parser.add_argument('--directory', help='Directory of pdb files', required=True)
 parser.add_argument('--csv_output', help='Name of the csv file that will be the output', required=True)
 args = parser.parse_args()
 
-csv_path = os.path.join(args.directory, (args.csv_output + '.csv'))
-
 result = buid_table_of_angles()
+# print(result)
+csv_path = os.path.join(args.directory, (args.csv_output + '.csv'))
 
 result.to_csv(csv_path, index=False)
