@@ -3,9 +3,16 @@
 import pandas as pd
 from sklearn.neural_network import MLPRegressor
 from ordered_set import OrderedSet
-from sklearn.datasets import make_regression
+# from sklearn.datasets import make_regression
 from sklearn.ensemble import GradientBoostingRegressor
 import pickle
+
+gbr_params = {
+    'n_estimators': 550,
+    'max_depth': 2,
+    'min_samples_leaf': 10,
+    'learning_rate': 0.25,
+    'subsample': 0.1}
 
 
 def make_sets(file):
@@ -33,8 +40,7 @@ def run_MLPRegressor(X_train, y_train, X_test, df):
 
 
 def run_GradientBoostingRegressor(X_train, y_train, X_test, df, model_name):
-    gbr = GradientBoostingRegressor(n_estimators=550, max_depth=2, min_samples_leaf=9,
-                                    learning_rate=0.05, max_features=52, subsample=0.1).fit(X_train, y_train.ravel())
+    gbr = GradientBoostingRegressor(**gbr_params).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename = f'{model_name}.pkl'
     with open(pkl_filename, 'wb') as file:

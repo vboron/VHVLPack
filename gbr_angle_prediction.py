@@ -37,15 +37,14 @@ def run_nr(dataset):
 
 # *************************************************************************
 
-
 def runGBReg(trainset, testset):
     X_train, y_train, _x_ = make_sets(
         f'{trainset}/{trainset}_NR2_4d.csv')
     X_test, y_true, df_test = make_sets(
         f'{testset}/{testset}_NR2_4d.csv')
     print(f'Running GBRegressor on {testset}_NR2')
-    run_GradientBoostingRegressor(X_train, y_train, X_test, df_test, 'gbr_postaf2').to_csv(
-        f'{testset}/{testset}_NR2_GBReg.csv', index=False)
+    df = run_GradientBoostingRegressor(X_train, y_train, X_test, df_test, 'gbr_postaf2')
+    df.to_csv(f'{testset}/{testset}_NR2_GBReg.csv', index=False)
 
 # *************************************************************************
 
