@@ -34,7 +34,7 @@ def run_MLPRegressor(X_train, y_train, X_test, df):
 
 def run_GradientBoostingRegressor(X_train, y_train, X_test, df, model_name):
     gbr = GradientBoostingRegressor(n_estimators=550, max_depth=2, min_samples_leaf=9,
-                                    learning_rate=0.25, max_features=52, subsample=0.55).fit(X_train, y_train.ravel())
+                                    learning_rate=0.05, max_features=52, subsample=0.1).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename = f'{model_name}.pkl'
     with open(pkl_filename, 'wb') as file:
