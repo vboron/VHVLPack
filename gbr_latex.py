@@ -6,7 +6,7 @@ import os
 import pandas as pd
 
 
-def _add_data(doc: pl.Document, dataset):
+def _add_data(doc: pl.Document, dataset, rs):
     name = f'{dataset}_NR2_GBReg'
     directory = dataset
 
@@ -34,6 +34,8 @@ def _add_data(doc: pl.Document, dataset):
             doc.append(f'Dataset tested: {dataset}')
             doc.append('\n')
             doc.append(f'GBR parameters: {gbr_params}.')
+            doc.append('\n')
+            doc.append(f'RandomState: {rs}.')
 
     with doc.create(pl.Subsection('Summary of the data:')):
         with doc.create(pl.Figure(position='!htbp')) as actualVpred:
@@ -77,7 +79,7 @@ def _add_data(doc: pl.Document, dataset):
             graphs.add_caption('Graphs for further metrics.')
 
 
-def generate_latex(dataset1, dataset2, output):
+def generate_latex(dataset1, dataset2, output, rs):
     doc = pl.Document(page_numbers=True, geometry_options={
                       "tmargin": "1cm", "lmargin": "1cm"})
 
@@ -91,10 +93,10 @@ def generate_latex(dataset1, dataset2, output):
         Scikit Learn framework.')
     doc.append(pl.NoEscape(r'\maketitle'))
 
-    _add_data(doc, dataset1)
+    _add_data(doc, dataset1, rs)
     doc.append(pl.NoEscape(r'\newpage'))
 
-    _add_data(doc, dataset2)
+    _add_data(doc, dataset2, rs)
     doc.append(pl.NoEscape(r'\newpage'))
 
     print('Generating PDF...')
