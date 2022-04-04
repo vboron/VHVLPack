@@ -12,7 +12,8 @@ gbr_params = {
     'max_depth': 2,
     'min_samples_leaf': 10,
     'learning_rate': 0.05,
-    'subsample': 0.1
+    'subsample': 0.1,
+    'random_state': 105
     }
 
 def make_sets(file):
@@ -39,11 +40,8 @@ def run_MLPRegressor(X_train, y_train, X_test, df):
     return df
 
 
-def run_GradientBoostingRegressor(X_train, y_train, X_test, df, model_name, rs):
-    params_rs = gbr_params
-    params_rs['random_state']=rs
-    print(params_rs)
-    gbr = GradientBoostingRegressor(**params_rs).fit(X_train, y_train.ravel())
+def run_GradientBoostingRegressor(X_train, y_train, X_test, df, model_name):
+    gbr = GradientBoostingRegressor(**gbr_params).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename = f'{model_name}.pkl'
     with open(pkl_filename, 'wb') as file:

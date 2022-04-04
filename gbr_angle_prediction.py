@@ -39,14 +39,14 @@ def run_nr(dataset):
 # *************************************************************************
 
 
-def runGBReg(trainset, testset, rs):
+def runGBReg(trainset, testset):
     X_train, y_train, _x_ = make_sets(
         f'{trainset}/{trainset}_NR2_4d.csv')
     X_test, y_true, df_test = make_sets(
         f'{testset}/{testset}_NR2_4d.csv')
     print(f'Running GBRegressor on {testset}_NR2')
     df = run_GradientBoostingRegressor(
-        X_train, y_train, X_test, df_test, 'gbr_postaf2', rs)
+        X_train, y_train, X_test, df_test, 'gbr_postaf2')
     df.to_csv(f'{testset}/{testset}_NR2_GBReg.csv', index=False)
 
 # *************************************************************************
@@ -98,47 +98,18 @@ if args.preprocess:
     preprocess_nr('PreAF2')
     preprocess_nr('Everything')
 
-stats = []
-stats_o = []
-for rs in range(1, 1500):
-    if args.process:
-        print('Processing...')
-        runGBReg('PreAF2', 'PostAF2', rs)
-        runGBReg('PreAF2', 'Everything', rs)
+if args.process:
+    print('Processing...')
+    runGBReg('PreAF2', 'PostAF2')
+    runGBReg('PreAF2', 'Everything')
 
-    if args.postprocess:
-        print('Postprocessing...')
-        postprocessing('PostAF2')
-        df = pd.read_csv('PostAF2/PostAF2_NR2_GBReg_stats_all.csv')
-        df['random_state'] = rs
-        df_o = pd.read_csv('PostAF2/PostAF2_NR2_GBReg_stats_out.csv')
-        df_o['random_state'] = rs
-        stats.append(df)
-        stats_o.append(df_o)
-        postprocessing('Everything')
+if args.postprocess:
+    print('Postprocessing...')
+    postprocessing('PostAF2')
+    postprocessing('Everything')
 
-    if args.latex:
-        print('Generating LaTeX...')
-        ltp.generate_latex('PostAF2', 'Everything', f'GBReg_PostAF2_{rs}', rs)
-# print(stats)
-# print(pd.concat(stats))
+if args.latex:
+    print('Generating LaTeX...')
+    ltp.generate_latex('PostAF2', 'Everything', 'GBReg_PostAF2')
 
-
-def process_combined_para(df, top10_csv_name):
-    # Column name
-    combined_para = 'combined-para'
-
-    df[combined_para] = (1/df['pearson'].abs()) + df['error'].abs() + df['RMSE'].abs() + \
-        df['RELRMSE'].abs()
-    df = df.sort_values(by=[combined_para], key=abs)
-    # top10 = df.head(20)
-    # print(df)
-    df.to_csv(top10_csv_name, index=False)
-
-
-for file in os.listdir('./'):
-    if file.endswith('.pdf') or file.endswith('.tex'):
-        shutil.move(file, os.path.join('GBReg_tests', file))
-process_combined_para(pd.concat(stats), 'rs_comp.csv')
-process_combined_para(pd.concat(stats_o), 'rs_comp_out.csv')
 print('Goodbye!')
