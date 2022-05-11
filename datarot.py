@@ -129,13 +129,13 @@ def CorrectAndPrintDataFile(dataFile, m, c):
     print("Rotated Data:")
     for i in range(ndata):
         print("%f,%f" % (xData[i], yData[i]))
-
+    data = []
     print("Rotated Y Data (X original):")
     for i in range(ndata):
         # print("%f,%f" % (xDataOrig[i], yData[i]))
-        data = [xDataOrig[i], yData[i]]
-        print(data)
-        # df2 = pd.DataFrame(data, columns=['x_orig', 'y'])
+        data.append([xDataOrig[i], yData[i]])
+    df2 = pd.DataFrame(data, columns=['x_orig', 'y'])
+    print(df2)
         # df2.to_csv('testing.csv', index=False)
 
 # -----------------------------------------------------------------------
