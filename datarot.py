@@ -9,7 +9,7 @@ import pandas as pd
 # Defaults
 m = 0.285
 c = -32.477
-dataFile = "Everything/Everything_NR2_SklearnGBReg.csv"
+dataFile = "testing_stuff.csv"
 
 # -----------------------------------------------------------------------
 # Defines
@@ -111,7 +111,6 @@ def CorrectAndPrintDataFile(dataFile, m, c):
     xDataOrig = df['angle'].tolist()
     yData = df['predicted'].tolist()
 
-
     for i in range(ndata):
         print("%f,%f" % (xData[i], yData[i]))
 
@@ -124,16 +123,19 @@ def CorrectAndPrintDataFile(dataFile, m, c):
         xData, yData = TranslateDataArrays(xData, yData, ndata,
                                             intersectX, intersectY)
 
-    # print("Int: %.3f %.3f" % (intersectX, intersectY))
-    # print("Ang: %.3f" % (180.0 * angle / math.pi))
+    print("Int: %.3f %.3f" % (intersectX, intersectY))
+    print("Ang: %.3f" % (180.0 * angle / math.pi))
 
-    # print("Rotated Data:")
-    # for i in range(ndata):
-    #     print("%f,%f" % (xData[i], yData[i]))
+    print("Rotated Data:")
+    for i in range(ndata):
+        print("%f,%f" % (xData[i], yData[i]))
 
-    # print("Rotated Y Data (X original):")
-    # for i in range(ndata):
-    #     print("%f,%f" % (xDataOrig[i], yData[i]))
+    print("Rotated Y Data (X original):")
+    for i in range(ndata):
+        # print("%f,%f" % (xDataOrig[i], yData[i]))
+        data = [xDataOrig[i], yData[i]]
+        df2 = pd.DataFrame(data, usecols=['x_orig', 'y'])
+        df2.to_csv('testing.csv')
 
 # -----------------------------------------------------------------------
 
