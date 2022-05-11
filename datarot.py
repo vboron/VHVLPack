@@ -134,8 +134,8 @@ def CorrectAndPrintDataFile(dataFile, m, c):
     for i in range(ndata):
         # print("%f,%f" % (xDataOrig[i], yData[i]))
         data = [xDataOrig[i], yData[i]]
-        df2 = pd.DataFrame(data, usecols=['x_orig', 'y'])
-        df2.to_csv('testing.csv')
+        df2 = pd.DataFrame(data, columns=['x_orig', 'y'])
+        df2.to_csv('testing.csv', index=False)
 
 # -----------------------------------------------------------------------
 
