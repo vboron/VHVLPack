@@ -1,5 +1,5 @@
 # *************************************************************************
-# Import libraries hello
+# Import libraries 
 
 import os
 import matplotlib.pyplot as plt
