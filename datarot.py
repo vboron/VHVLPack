@@ -112,8 +112,8 @@ def CorrectAndPrintDataFile(dataFile, m, c):
     yData = df['predicted'].tolist()
 
 
-     for i in range(ndata):
-         print("%f,%f" % (xData[i], yData[i]))
+    for i in range(ndata):
+        print("%f,%f" % (xData[i], yData[i]))
 
     intersectX, intersectY, ok = FindIntersection(m, c, 1, 0)
     if(ok):
