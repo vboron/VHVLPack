@@ -120,7 +120,7 @@ def CorrectAndPrintDataFile(dataFile, m, c):
                                             -intersectX, -intersectY)
         angle = FindAngle(m, 1)
         xData, yData = RotateDataArray(xData, yData, ndata, -angle)
-        xData, yData = TranslateDataArrays(yData, yData, ndata,
+        xData, yData = TranslateDataArrays(xData, yData, ndata,
                                             intersectX, intersectY)
 
     print("Int: %.3f %.3f" % (intersectX, intersectY))
