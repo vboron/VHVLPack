@@ -9,7 +9,7 @@ import pandas as pd
 # Defaults
 m = 0.285
 c = -32.477
-dataFile = "testing_stuff.csv"
+dataFile = "Everything/Everything_NR3_SklearnGBReg.csv"
 
 # -----------------------------------------------------------------------
 # Defines
@@ -116,11 +116,11 @@ def CorrectAndPrintDataFile(dataFile, m, c):
 
     intersectX, intersectY, ok = FindIntersection(m, c, 1, 0)
     if(ok):
-        xData, yData = TranslateDataArrays(xData, yData, ndata,
+        xData, yData = TranslateDataArrays(yData, yData, ndata,
                                             -intersectX, -intersectY)
         angle = FindAngle(m, 1)
         xData, yData = RotateDataArray(xData, yData, ndata, -angle)
-        xData, yData = TranslateDataArrays(xData, yData, ndata,
+        xData, yData = TranslateDataArrays(yData, yData, ndata,
                                             intersectX, intersectY)
 
     print("Int: %.3f %.3f" % (intersectX, intersectY))
