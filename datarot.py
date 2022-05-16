@@ -7,9 +7,12 @@ import pandas as pd
 
 # -----------------------------------------------------------------------
 # Defaults
-m = 0.285
-c = -32.477
-dataFile = "Everything/Everything_NR3_SklearnGBReg.csv"
+# m = 0.285
+# c = -32.477
+# dataFile = "Everything/Everything_NR3_SklearnGBReg.csv"
+dataFile = "testing.csv"
+m = 0.6928
+c = -14.119
 
 # -----------------------------------------------------------------------
 # Defines
