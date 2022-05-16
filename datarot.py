@@ -10,9 +10,9 @@ import pandas as pd
 # m = 0.285
 # c = -32.477
 # dataFile = "Everything/Everything_NR3_SklearnGBReg.csv"
-dataFile = "correct_testing3.csv"
-m = 0.9385
-c = -2.8278
+dataFile = "correct_testing4.csv"
+m = 0.9678
+c = -1.4812
 
 # -----------------------------------------------------------------------
 # Defines
@@ -138,7 +138,7 @@ def CorrectAndPrintDataFile(dataFile, m, c):
         # print("%f,%f" % (xDataOrig[i], yData[i]))
         data.append([xDataOrig[i], yData[i]])
     df2 = pd.DataFrame(data, columns=['x_orig', 'y'])
-    df2.to_csv('correct_testing4.csv', index=False)
+    df2.to_csv('correct_testing5.csv', index=False)
 
 # -----------------------------------------------------------------------
 
