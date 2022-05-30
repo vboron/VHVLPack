@@ -5,15 +5,14 @@ import os
 import pandas as pd
 import numpy as np
 import datarot 
-
-
-import math
+import utils
 import matplotlib.pyplot as plt
 
 def run_correction():
     for i in range(0, 1):
         path_name = os.path.join(args.directory, f'NR2_GBReg_correction_{i}')
-        datarot('--name', path_name)
+        utils.run_cmd[cmds] 
+        cmds = ['./datarot.py', '--name', path_name]
 
 
 if __name__ == '__main__':
