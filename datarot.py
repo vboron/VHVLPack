@@ -7,12 +7,9 @@ import pandas as pd
 
 # -----------------------------------------------------------------------
 # Defaults
-# m = 0.285
-# c = -32.477
-# dataFile = "Everything/Everything_NR3_SklearnGBReg.csv"
-dataFile = "correct_testing4.csv"
-m = 0.9678
-c = -1.4812
+m = 0.285
+c = -32.477
+dataFile = "Everything/Everything_NR2_GBReg.csv"
 
 # -----------------------------------------------------------------------
 # Defines
@@ -126,19 +123,19 @@ def CorrectAndPrintDataFile(dataFile, m, c):
         xData, yData = TranslateDataArrays(xData, yData, ndata,
                                             intersectX, intersectY)
 
-    print("Int: %.3f %.3f" % (intersectX, intersectY))
-    print("Ang: %.3f" % (180.0 * angle / math.pi))
+    # print("Int: %.3f %.3f" % (intersectX, intersectY))
+    # print("Ang: %.3f" % (180.0 * angle / math.pi))
 
-    print("Rotated Data:")
-    for i in range(ndata):
-        print("%f,%f" % (xData[i], yData[i]))
+    # print("Rotated Data:")
+    # for i in range(ndata):
+    #     print("%f,%f" % (xData[i], yData[i]))
     data = []
-    print("Rotated Y Data (X original):")
+    # print("Rotated Y Data (X original):")
     for i in range(ndata):
         # print("%f,%f" % (xDataOrig[i], yData[i]))
         data.append([xDataOrig[i], yData[i]])
     df2 = pd.DataFrame(data, columns=['x_orig', 'y'])
-    df2.to_csv('correct_testing5.csv', index=False)
+    return df2
 
 # -----------------------------------------------------------------------
 
@@ -162,7 +159,7 @@ def CorrectDataPoint(x, y, m, c, useOrigX):
 
 def CorrectAndPrintDataPoint(x, y, m, c, useOrigX):
     x, y = CorrectDataPoint(x, y, m, c, useOrigX)
-    print("%f %f" % (x, y))
+    # print("%f %f" % (x, y))
 
 
 # -----------------------------------------------------------------------
@@ -174,6 +171,7 @@ if(__name__ == '__main__'):
                         help="Slope of best-fit line")
     parser.add_argument("-c", "--intercept", dest="c", default=c, type=float,
                         help="Y intercept of best-fit line")
+    parser.add_argument("--name", help="name for the output csv file")
     parser.add_argument("dataFileOrX", nargs='?', default=dataFile)
     parser.add_argument("Y",           nargs='?', default='undef')
 
@@ -197,4 +195,5 @@ if(__name__ == '__main__'):
     if(dataFile == ''):
         CorrectAndPrintDataPoint(x, y, m, c, True)
     else:
-        CorrectAndPrintDataFile(dataFile, m, c)
+        df = CorrectAndPrintDataFile(dataFile, m, c)
+        df.to_csv(f'{args.name}.csv', index=False)
