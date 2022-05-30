@@ -12,7 +12,8 @@ import matplotlib.pyplot as plt
 
 def run_correction():
     for i in range(0, 1):
-        datarot('--name', f'NR2_GBReg_correction_{i}')
+        path_name = os.path.join(args.directory, f'NR2_GBReg_correction_{i}')
+        datarot('--name', path_name)
 
 
 if __name__ == '__main__':
@@ -20,3 +21,4 @@ if __name__ == '__main__':
     
     parser.add_argument('--directory', help='Directory', required=True)
     args = parser.parse_args()
+    run_correction()
