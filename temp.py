@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 def run_correction():
     for i in range(0, 1):
         path_name = os.path.join(args.directory, f'NR2_GBReg_correction_{i}')
-        utils.run_cmd[cmds] 
         cmds = ['./datarot.py', '--name', path_name]
+        utils.run_cmd[cmds] 
 
 
 if __name__ == '__main__':
