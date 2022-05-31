@@ -106,10 +106,11 @@ def RotateDataArray(xData, yData, nData, theta):
 
 def CorrectAndPrintDataFile(dataFile, m, c):
     df = pd.read_csv(dataFile)
-    ndata = df['y'].count()
-    xData = df['x_orig'].tolist()
-    xDataOrig = df['x_orig'].tolist()
-    yData = df['y'].tolist()
+    
+    ndata = df. iloc[:, 0].count()
+    xData = df['angle'].tolist()
+    xDataOrig = df['angle'].tolist()
+    yData = df['predicted'].tolist()
 
     for i in range(ndata):
         print("%f,%f" % (xData[i], yData[i]))
@@ -134,7 +135,7 @@ def CorrectAndPrintDataFile(dataFile, m, c):
     for i in range(ndata):
         # print("%f,%f" % (xDataOrig[i], yData[i]))
         data.append([xDataOrig[i], yData[i]])
-    df2 = pd.DataFrame(data, columns=['x_orig', 'y'])
+    df2 = pd.DataFrame(data, columns=['angle', 'predicted'])
     return df2
 
 # -----------------------------------------------------------------------
