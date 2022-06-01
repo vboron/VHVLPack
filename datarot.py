@@ -112,8 +112,8 @@ def CorrectAndPrintDataFile(dataFile, m, c):
     xDataOrig = df['angle'].tolist()
     yData = df['predicted'].tolist()
 
-    for i in range(ndata):
-        print("%f,%f" % (xData[i], yData[i]))
+    # for i in range(ndata):
+    #     print("%f,%f" % (xData[i], yData[i]))
 
     intersectX, intersectY, ok = FindIntersection(m, c, 1, 0)
     if(ok):
@@ -197,4 +197,5 @@ if(__name__ == '__main__'):
         CorrectAndPrintDataPoint(x, y, m, c, True)
     else:
         df = CorrectAndPrintDataFile(dataFile, m, c)
-        df.to_csv(f'{args.name}.csv', index=False)
+        # df.to_csv(f'{args.name}.csv', index=False)
+        print df
