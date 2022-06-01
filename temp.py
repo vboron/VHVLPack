@@ -11,7 +11,7 @@ import subprocess
 def run_correction():
     for i in range(0, 1):
         path_name = os.path.join(args.directory, f'NR2_GBReg_correction_{i}.csv')
-        with open(path_name) as f:
+        with open(path_name, 'w') as f:
             cmds = ['./datarot.py']
             utils.run_cmd(cmds, False, stdout=f)
         df = pd.read_csv(path_name)
