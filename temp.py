@@ -14,9 +14,9 @@ def run_correction():
         with open(path_name, 'w') as f:
             cmds = ['./datarot.py']
             utils.run_cmd(cmds, False, stdout=f)
-        df = pd.read_csv(path_name, sep=',')
+        df = pd.read_csv(path_name)
         # df['error'] = df['predicted'] - df['angle']
-        print(df['angle'])
+        print(df)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for applying a rotational correction factor recursively')
