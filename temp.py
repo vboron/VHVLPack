@@ -14,7 +14,7 @@ def run_correction():
         with open(path_name, 'w') as f:
             cmds = ['./datarot.py']
             utils.run_cmd(cmds, False, stdout=f)
-        df = pd.read_csv(path_name)
+        df = pd.read_csv(path_name, sep=',')
         # df['error'] = df['predicted'] - df['angle']
         for col in df.columns:
             print(col)
