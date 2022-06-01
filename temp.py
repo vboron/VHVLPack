@@ -3,10 +3,10 @@
 import argparse
 import os
 import pandas as pd
-import numpy as np
-import datarot 
+import numpy as np 
 import utils
 import matplotlib.pyplot as plt
+import subprocess
 
 def run_correction():
     for i in range(0, 1):
