@@ -11,10 +11,10 @@ import subprocess
 def run_correction():
     for i in range(0, 1):
         path_name = os.path.join(args.directory, f'NR2_GBReg_correction_{i}')
-        cmds = ['./datarot.py', '--name', path_name]
-        df=''
-        proc = utils.run_cmd(cmds, False, stdout=subprocess.PIPE)
-        df = proc.stdout.read()
+        with open(path_name) as f:
+            cmds = ['./datarot.py', '--name', path_name]
+            utils.run_cmd(cmds, False, stdout=f)
+        df = pd.read_csv(path_name)
         print(df)
 
 
