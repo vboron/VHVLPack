@@ -196,4 +196,4 @@ if(__name__ == '__main__'):
         CorrectAndPrintDataPoint(x, y, m, c, True)
     else:
         df = CorrectAndPrintDataFile(dataFile, m, c)
-        print(df)
+        print(df.to_string(index=False))
