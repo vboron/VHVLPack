@@ -16,7 +16,7 @@ def run_correction():
             utils.run_cmd(cmds, False, stdout=f)
         df = pd.read_csv(path_name)
         df['error'] = df['predicted'] - df['angle']
-        print(df)
+        print(type(df))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for applying a rotational correction factor recursively')
