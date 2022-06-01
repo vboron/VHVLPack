@@ -15,7 +15,7 @@ def run_correction():
             cmds = ['./datarot.py']
             utils.run_cmd(cmds, False, stdout=f)
         df = pd.read_csv(path_name)
-        print(df['angle'])
+        print(df)
 
 
 if __name__ == '__main__':
