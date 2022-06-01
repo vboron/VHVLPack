@@ -16,7 +16,7 @@ def run_correction():
             utils.run_cmd(cmds, False, stdout=f)
         df = pd.read_csv(path_name)
         # df['error'] = df['predicted'] - df['angle']
-        print(df['angle'])
+        # print(df['angle'])
         df = df.reset_index()
         print(df['angle'])
 
