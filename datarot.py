@@ -198,4 +198,4 @@ if(__name__ == '__main__'):
     else:
         df = CorrectAndPrintDataFile(dataFile, m, c)
         # df.to_csv(f'{args.name}.csv', index=False)
-        print(df)
+        print(df, 'hey')
