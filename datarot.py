@@ -196,4 +196,5 @@ if(__name__ == '__main__'):
         CorrectAndPrintDataPoint(x, y, m, c, True)
     else:
         df = CorrectAndPrintDataFile(dataFile, m, c)
-        print(df.to_string(index=False))
+        s = "\n".join(", ".join(map(str, xs)) for xs in df.itertuples(index=False))
+        print(s)
