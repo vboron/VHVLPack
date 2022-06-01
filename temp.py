@@ -13,7 +13,7 @@ def run_correction():
         path_name = os.path.join(args.directory, f'NR2_GBReg_correction_{i}')
         cmds = ['./datarot.py', '--name', path_name]
         df=''
-        utils.run_cmd(cmds, False, stadout=df)
+        utils.run_cmd(cmds, False, stdout=df)
         print(df)
 
 
