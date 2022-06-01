@@ -172,7 +172,6 @@ if(__name__ == '__main__'):
                         help="Slope of best-fit line")
     parser.add_argument("-c", "--intercept", dest="c", default=c, type=float,
                         help="Y intercept of best-fit line")
-    parser.add_argument("--name", help="name for the output csv file")
     parser.add_argument("dataFileOrX", nargs='?', default=dataFile)
     parser.add_argument("Y",           nargs='?', default='undef')
 
@@ -197,5 +196,4 @@ if(__name__ == '__main__'):
         CorrectAndPrintDataPoint(x, y, m, c, True)
     else:
         df = CorrectAndPrintDataFile(dataFile, m, c)
-        # df.to_csv(f'{args.name}.csv', index=False)
-        print(df, 'hey')
+        print(df)
