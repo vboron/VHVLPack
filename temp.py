@@ -15,7 +15,12 @@ def run_correction():
         utils.run_cmd(cmds, False)
         df = pd.read_csv(path_name)
         df['error'] = df['predicted'] - df['angle']
-        print(df)
+        df['abs_err'] = df['error'].abs()
+        df['sq_err'] = df['error'].pow(2)
+        df['sq_angle'] = df['angle'].pow(2)
+        sum_sqe = df['sq_err'].sum()
+        n = df['angle'].value_counts()
+        print(df, sum_sqe, n)
 
         # TODO: write part which will graph the rotated values and output the slope then run it again
  
