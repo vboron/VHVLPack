@@ -5,6 +5,8 @@ import os
 import pandas as pd
 import numpy as np 
 import utils
+import math
+import statistics
 import matplotlib.pyplot as plt
 import subprocess
 
@@ -20,7 +22,10 @@ def run_correction():
         df['sq_angle'] = df['angle'].pow(2)
         sum_sqe = df['sq_err'].sum()
         n = df['angle'].count()
-        print(df, sum_sqe, n)
+        meanabserror = statistics.mean(df['abs_err'].sum())
+        rmsd = math.sqrt(sum_sqe/n)
+        relrmse = utils.calc_relemse(path_name, rmsd)
+        print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
         # TODO: write part which will graph the rotated values and output the slope then run it again
  
