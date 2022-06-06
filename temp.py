@@ -15,6 +15,7 @@ def run_correction():
         utils.run_cmd(cmds, False)
         df = pd.read_csv(path_name)
         df['error'] = df['predicted'] - df['angle']
+        print(df)
 
         # TODO: write part which will graph the rotated values and output the slope then run it again
  
