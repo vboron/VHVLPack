@@ -14,7 +14,9 @@ def run_correction():
         cmds = ['./datarot.py', '-o', path_name]
         utils.run_cmd(cmds, False)
         df = pd.read_csv(path_name)
-        print(df)
+        df['error'] = df['predicted'] - df['angle']
+
+        # TODO: write part which will graph the rotated values and output the slope then run it again
  
 
 if __name__ == '__main__':
