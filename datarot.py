@@ -172,8 +172,11 @@ if(__name__ == '__main__'):
                         help="Slope of best-fit line")
     parser.add_argument("-c", "--intercept", dest="c", default=c, type=float,
                         help="Y intercept of best-fit line")
-    parser.add_argument("dataFileOrX", nargs='?', default=dataFile)
+    parser.add_argument("dataFile", nargs='?', default=dataFile)
     parser.add_argument("Y",           nargs='?', default='undef')
+    parser.add_argument("-x", type=float,
+                        help='the x value used for the prediction')
+    parser.add_argument("-o", help='dataframe output name')
 
     args = parser.parse_args()
     m = args.m
@@ -182,10 +185,10 @@ if(__name__ == '__main__'):
     y = 0.0
 
     if(args.Y == "undef"):
-        dataFile = args.dataFileOrX
+        dataFile = args.dataFile
     else:
         dataFile = ''
-        x = float(args.dataFileOrX)
+        x = float(args.x)
         y = float(args.Y)
 
 #   print("datafile: " + dataFile)
@@ -195,6 +198,5 @@ if(__name__ == '__main__'):
     if(dataFile == ''):
         CorrectAndPrintDataPoint(x, y, m, c, True)
     else:
-        df = CorrectAndPrintDataFile(dataFile, m, c)
-        for row in df.iterrows():
-            print(row)
+        CorrectAndPrintDataFile(dataFile, m, c).to_csv(args.o, index=False)
+        
