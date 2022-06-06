@@ -6,9 +6,7 @@ import pandas as pd
 import numpy as np 
 import utils
 import math
-import statistics
 import matplotlib.pyplot as plt
-import subprocess
 
 def run_correction():
     for i in range(0, 1):
@@ -22,8 +20,7 @@ def run_correction():
         df['sq_angle'] = df['angle'].pow(2)
         sum_sqe = df['sq_err'].sum()
         n = df['angle'].count()
-        serror = df['abs_err'].sum()
-        meanabserror = statistics.mean(serror)
+        meanabserror = (df['abs_err'].sum())/n
         rmsd = math.sqrt(sum_sqe/n)
         relrmse = utils.calc_relemse(path_name, rmsd)
         print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
