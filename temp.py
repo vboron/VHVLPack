@@ -12,7 +12,7 @@ def run_correction():
     for i in range(0, 1):
         path_name = os.path.join(args.directory, f'NR2_GBReg_correction_{i}.csv')
         cmds = ['./datarot.py', '-o', path_name]
-        utils.run_cmd(cmds)
+        utils.run_cmd(cmds, False)
         df = pd.read_csv(path_name)
         print(df)
  
