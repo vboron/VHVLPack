@@ -19,7 +19,7 @@ def run_correction():
         df['sq_err'] = df['error'].pow(2)
         df['sq_angle'] = df['angle'].pow(2)
         sum_sqe = df['sq_err'].sum()
-        n = df['angle'].value_counts()
+        n = df['angle'].count()
         print(df, sum_sqe, n)
 
         # TODO: write part which will graph the rotated values and output the slope then run it again
