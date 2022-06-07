@@ -13,7 +13,7 @@ import stats2graph
 def run_correction():
     datafile = None
     m, c = None, None
-    for i in range(1, 6):
+    for i in range(0, 6):
         file_name = f'NR2_GBReg_correction_{i}'
         csv_name = f'{file_name}.csv'
         path_name = os.path.join(args.directory, csv_name)
@@ -32,7 +32,7 @@ def run_correction():
         relrmse = utils.calc_relemse(path_name, rmsd)
         print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
-        graphing.error_distribution(path_name, f'error_dist_correction_{i}.jpg')
+        graphing.error_distribution(path_name, f'error_dist_correction_{i}.jpg', f'error distribution of correction {i}')
         m, c = stats2graph.create_stats_and_graph(args.directory, csv_name, file_name, file_name)
         datafile = path_name
         data = [meanabserror, rmsd, relrmse, m, c]
