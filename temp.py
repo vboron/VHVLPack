@@ -32,7 +32,7 @@ def run_correction(directory):
         relrmse = utils.calc_relemse(path_name, rmsd)
         print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
-        graphing.error_distribution(directory, f'error_dist_correction_{i}.jpg', f'error distribution of correction {i}')
+        graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}')
         m, c = stats2graph.create_stats_and_graph(args.directory, csv_name, file_name, file_name)
         datafile = path_name
         data = [meanabserror, rmsd, relrmse, m, c]
