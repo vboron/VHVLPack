@@ -59,6 +59,8 @@ def find_normal_and_outliers(directory, input_csv):
     return df_a, df_n, df_o
 
 # *************************************************************************
+
+
 def find_stats(directory, input_csv, df_a, df_o):
     """ Function calculates and compiles relevant statistical data related to the (ML) run that the data is from.
 
@@ -73,21 +75,22 @@ def find_stats(directory, input_csv, df_a, df_o):
 
     # Calculate the Root Mean Square Error
     df_a_temp['sqerror'] = np.square(df_a_temp['error'])
-    sum_sqerror =  df_a_temp['sqerror'].sum()
+    sum_sqerror = df_a_temp['sqerror'].sum()
     average_error = sum_sqerror / int(df_a_temp['code'].size)
     rmse = math.sqrt(average_error)
 
     os.path.join(directory, input_csv)
 
     # Call the utils.calc_rmse script which converts the RMSE into Relative RMSE
-    getResult = lambda rmse: utils.calc_relemse(os.path.join(directory, input_csv), rmse)
+    def getResult(rmse): return utils.calc_relemse(
+        os.path.join(directory, input_csv), rmse)
     relrmse = getResult(rmse)
 
     # gather all of the relevant run statistics into a single table
     # .corr() returns the correlation between two columns
-    pearson_a =  df_a_temp['angle'].corr( df_a_temp['predicted'])
+    pearson_a = df_a_temp['angle'].corr(df_a_temp['predicted'])
 
-    mean_abs_err_a =  df_a_temp['error'].abs().mean()
+    mean_abs_err_a = df_a_temp['error'].abs().mean()
 
     # everything is done for outliers, if they exist
     num_outliers = int(df_o['code'].size)
@@ -122,6 +125,7 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     """
     plt.figure()
     # Color of outlier points
+    # TODO rename colors to something like "col_bestfit" etc.
     c1 = 'rosybrown'
 
     # Color of normal points
@@ -149,7 +153,7 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
 
     # Sets the maximum and minimum values for the axes
     # axes.autoscale(tight=True)
-    axes.set_xlim([-62, -30])
+    axes.set_xlim([-60, -30])
     axes.set_ylim([-60, -30])
 
     axes.axline((0, 0), (1, 1), color='k')
@@ -161,8 +165,10 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     # Adds graph annotations
     plt.text(s='Line: y=x', x=-61, y=-32, fontsize=8)
 
-    plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m3, b3), x=-61, y=-33, fontsize=8, color=c4)
-    plt.text(s='RELRMSE (all): {:.3}'.format(float(stat_df_all['RELRMSE'])), x=-61, y=-34, fontsize=8)
+    plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m3, b3),
+             x=-61, y=-33, fontsize=8, color=c4)
+    plt.text(s='RELRMSE (all): {:.3}'.format(
+        float(stat_df_all['RELRMSE'])), x=-61, y=-34, fontsize=8)
     plt.text(s='-48 < Normal Values < -42', x=-61, y=-38, fontsize=8, color=c2)
 
     plt.tight_layout()
@@ -185,16 +191,18 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
         m1, b1 = np.polyfit(x1, y1, 1)
         plt.plot(x1, m1 * x1 + b1, color=c3, linestyle='dashed', linewidth=1)
         plt.scatter(x1, y1, s=2, color=c1)
-        plt.text(s='RELRMSE (outliers): {:.3}'.format(float(stat_df_out['RELRMSE'])), x=-61, y=-37, fontsize=8)
-        plt.text(s='Best fit (outliers): y={:.3f}x+{:.3f}'.format(m1, b1), x=-61, y=-36, fontsize=8, color=c3)
+        plt.text(s='RELRMSE (outliers): {:.3}'.format(
+            float(stat_df_out['RELRMSE'])), x=-61, y=-37, fontsize=8)
+        plt.text(s='Best fit (outliers): y={:.3f}x+{:.3f}'.format(
+            m1, b1), x=-61, y=-36, fontsize=8, color=c3)
         plt.text(s='Outliers', x=-61, y=-35, fontsize=8, color=c1)
         best_ft_o = 'y={:.3f}x+{:.3f}'.format(m1, b1)
         stat_df_out['fit'] = best_ft_o
         stat_df_out['slope'] = m1
         stat_df_out['intercept'] = b1
 
-    path_stats_all = os.path.join(directory, (f'{stats_csv_name}_all.csv'))
-    path_stats_out = os.path.join(directory, (f'{stats_csv_name}_out.csv'))
+    path_stats_all = os.path.join(directory, f'{stats_csv_name}_all.csv')
+    path_stats_out = os.path.join(directory, f'{stats_csv_name}_out.csv')
     stat_df_all.to_csv(path_stats_all, index=False)
     stat_df_out.to_csv(path_stats_out, index=False)
 
@@ -203,20 +211,33 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     plt.savefig(path_fig, format='jpg')
     plt.close()
 
+    return m3, b3
+
+
+def create_stats_and_graph(directory, csv_input, name_stats, name_graph):
+    all_df, norm_df, out_df = find_normal_and_outliers(directory, csv_input)
+
+    stat_df_all, stats_df_out = find_stats(
+        directory, csv_input, all_df, out_df)
+
+    m, c = plot_scatter(directory, out_df, norm_df, stat_df_all, stats_df_out, all_df.copy(),
+                 name_stats, name_graph)
+
+    return m, c
+
 # *************************************************************************
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
-    parser.add_argument('--directory', help='Directory where files will', required=True)
-    parser.add_argument('--csv_input', help='File that was the input to the method', required=True)
-    parser.add_argument('--name_normal', help='Name for the output that has the normal values', required=True)
-    parser.add_argument('--name_outliers', help='Name for output with ouliers', required=True)
-    parser.add_argument('--name_stats', help='Name for output with statistics for run', required=True)
-    parser.add_argument('--name_graph', help='Name for graph outputted', required=True)
+    parser = argparse.ArgumentParser(
+        description='Program for extracting VH/VL relevant residues')
+    parser.add_argument(
+        '--directory', help='Directory where files will', required=True)
+    parser.add_argument(
+        '--csv_input', help='File that was the input to the method', required=True)
+    parser.add_argument(
+        '--name_stats', help='Name for output with statistics for run', required=True)
+    parser.add_argument(
+        '--name_graph', help='Name for graph outputted', required=True)
     args = parser.parse_args()
 
-    all_df, norm_df, out_df = find_normal_and_outliers(args.directory, args.csv_input)
-
-    stat_df_all, stats_df_out = find_stats(args.directory, args.csv_input, all_df, out_df)
-
-    plot_scatter(args.directory, out_df, norm_df, stat_df_all, stats_df_out, all_df.copy(),
-                 args.name_stats, args.name_graph)
+    create_stats_and_graph(args.directory, args.csv_input,
+                           args.name_stats, args.name_graph)

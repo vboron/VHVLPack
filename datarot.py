@@ -134,8 +134,9 @@ def CorrectAndPrintDataFile(dataFile, m, c):
     # print("Rotated Y Data (X original):")
     for i in range(ndata):
         # print("%f,%f" % (xDataOrig[i], yData[i]))
-        data.append([xDataOrig[i], yData[i]])
-    df2 = pd.DataFrame(data, columns=['angle', 'predicted'])
+        error = yData[i] - xDataOrig[i]
+        data.append([xDataOrig[i], yData[i], error])
+    df2 = pd.DataFrame(data, columns=['angle', 'predicted', 'error'])
     return df2
 
 # -----------------------------------------------------------------------
@@ -172,8 +173,8 @@ if(__name__ == '__main__'):
                         help="Slope of best-fit line")
     parser.add_argument("-c", "--intercept", dest="c", default=c, type=float,
                         help="Y intercept of best-fit line")
-    parser.add_argument("dataFile", nargs='?', default=dataFile)
-    parser.add_argument("Y",           nargs='?', default='undef')
+    parser.add_argument("--dataFile", nargs='?', default=dataFile)
+    parser.add_argument("-Y",           nargs='?', default='undef')
     parser.add_argument("-x", type=float,
                         help='the x value used for the prediction')
     parser.add_argument("-o", help='dataframe output name')

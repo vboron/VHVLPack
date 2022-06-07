@@ -79,29 +79,26 @@ def error_distribution(directory, csv_input, graph_name):
 
 # *************************************************************************
 def sq_error_vs_actual_angle(directory, csv_input, graph_name):
-    """Plot squared error in predicted packing angle against actual packing angle.
+       """Plot squared error in predicted packing angle against actual packing angle.
 
-    Input: directory    --- directory where the data can be found and where the graph will be saved
-           csv_input    --- the datafile with the predictions for the method
-           csv_columns  --- column file that will be used to read the .csv file
-           graph_name   --- the name that the graph file will be saved under
+       Input: directory    --- directory where the data can be found and where the graph will be saved
+              csv_input    --- the datafile with the predictions for the method
+              csv_columns  --- column file that will be used to read the .csv file
+              graph_name   --- the name that the graph file will be saved under
 
-    By: VAB
-    """
-    plt.figure()
+       By: VAB
+       """
+       plt.figure()
 
-    df = pd.read_csv(os.path.join(directory, csv_input)).copy()
-    df['sqerror'] = np.square(df['error'])
+       df = pd.read_csv(os.path.join(directory, csv_input)).copy()
+       df['sqerror'] = np.square(df['error'])
 
-    x = df['angle']
-    y = df['sqerror']
-    plt.scatter(x, y, s=2, color='mediumturquoise')
+       x = df['angle']
+       y = df['sqerror']
+       plt.scatter(x, y, s=2, color='mediumturquoise')
 
-    plt.xlabel('Actual packing angle')
-    plt.ylabel('Square of error')
+       plt.tight_layout()
 
-    plt.tight_layout()
-
-    path_fig = os.path.join(directory, f'{graph_name}.jpg')
-    plt.savefig(path_fig, format='jpg')
-    plt.close()
+       path_fig = os.path.join(directory, f'{graph_name}.jpg')
+       plt.savefig(path_fig, format='jpg')
+       plt.close()
