@@ -76,7 +76,7 @@ def find_stats(directory, input_csv, df_a, df_o):
     # Calculate the Root Mean Square Error
     df_a_temp['sqerror'] = np.square(df_a_temp['error'])
     sum_sqerror = df_a_temp['sqerror'].sum()
-    average_error = sum_sqerror / int(df_a_temp['code'].size)
+    average_error = sum_sqerror / int(df_a_temp['angle'].size)
     rmse = math.sqrt(average_error)
 
     os.path.join(directory, input_csv)
@@ -93,7 +93,7 @@ def find_stats(directory, input_csv, df_a, df_o):
     mean_abs_err_a = df_a_temp['error'].abs().mean()
 
     # everything is done for outliers, if they exist
-    num_outliers = int(df_o['code'].size)
+    num_outliers = int(df_o['angle'].size)
     df_o['sqerror'] = np.square(df_o['error'])
     sum_sqerror_o = df_o['sqerror'].sum()
     average_error_o = sum_sqerror_o/num_outliers
