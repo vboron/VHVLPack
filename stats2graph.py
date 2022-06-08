@@ -153,8 +153,8 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
 
     # Sets the maximum and minimum values for the axes
     # axes.autoscale(tight=True)
-    axes.set_xlim([-60, -30])
-    axes.set_ylim([-60, -30])
+    axes.set_xlim([-65, -25])
+    axes.set_ylim([-65, -25])
 
     axes.axline((0, 0), (1, 1), color='k')
 
