@@ -3,10 +3,8 @@
 import argparse
 import os
 import pandas as pd
-import numpy as np 
 import utils
 import math
-import matplotlib.pyplot as plt
 import graphing
 import stats2graph
 
