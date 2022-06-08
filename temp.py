@@ -30,14 +30,14 @@ def run_correction(directory):
         meanabserror = (df['abs_err'].sum())/n
         rmsd = math.sqrt(sum_sqe/n)
         relrmse = utils.calc_relemse(path_name, rmsd)
-        print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
+        # print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
         graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}')
         m, c = stats2graph.create_stats_and_graph(args.directory, csv_name, file_name, file_name)
         datafile = path_name
-        data = [meanabserror, rmsd, relrmse, m, c]
-        df2 = pd.DataFrame(data=data, columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
-        print(df2)
+        stats = [meanabserror, rmsd, relrmse, m, c]
+        stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
+        print(stats_df)
  
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for applying a rotational correction factor recursively')
