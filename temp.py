@@ -19,7 +19,7 @@ def run_correction(directory):
         path_name = os.path.join(directory, csv_name)
         cmds = ['./datarot.py', '-o', path_name]
         if m != None and c != None and datafile != None:
-            cmds.extend(['-m', m, '-c', c, '--dataFile', datafile])
+            cmds = cmds + ['-m', m, '-c', c, '--dataFile', datafile]
         utils.run_cmd(cmds, False)
         df = pd.read_csv(path_name)
         df['abs_err'] = df['error'].abs()
