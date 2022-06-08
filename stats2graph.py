@@ -39,11 +39,11 @@ def find_normal_and_outliers(directory, input_csv):
     max_norm = -42
 
     # extract data where the predicted angle is within the normal range into a new dataframe
-    df_n = df_a[df_a['predicted'].between(min_norm, max_norm)]
+    df_n = df_a[df_a['angle'].between(min_norm, max_norm)]
 
     # extract data where predicted angles are outside of the normal range and add into a new dataframe
-    df_o1 = df_a[df_a['predicted'] >= max_norm]
-    df_o2 = df_a[df_a['predicted'] <= min_norm]
+    df_o1 = df_a[df_a['angle'] >= max_norm]
+    df_o2 = df_a[df_a['angle'] <= min_norm]
     df_o = pd.concat([df_o1, df_o2])
 
     # reset the indexes (as the original ones will be kept) and export as .csv files
