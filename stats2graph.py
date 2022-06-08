@@ -181,7 +181,7 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     stat_df_all['slope'] = m3
     stat_df_all['intercept'] = b3
 
-    num_outliers = int(file_o['code'].size)
+    num_outliers = int(file_o['angle'].size)
     if num_outliers != 0:
         # Angle values are designated axis names
         x1 = file_o['angle']
