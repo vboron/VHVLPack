@@ -66,7 +66,7 @@ def run_outlier_correction(directory, df_outliers, first_m, first_c):
     m = first_m
     c = first_c
 
-    df_outliers['predicted'] = df_outliers['predicted'].apply(lambda x: x*m)
+    df_outliers['predicted'] = df_outliers['predicted'].apply(lambda x: float(x)*m)
     df_outliers['predicted'] = df_outliers['predicted'] - c
 
     df_outliers['error'] = df_outliers['predicted'] - df_outliers['angle']
