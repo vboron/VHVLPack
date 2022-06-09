@@ -30,18 +30,18 @@ def find_norms_and_outliers(directory, csv_file):
     return df_normal, df_outliers
 
 def run_norm_correction(directory, df_normal, first_m, first_c):
-    df_normal.to_csv(os.path.join(directory, 'Everything_NR2_GBReg_norm.csv'))
+    df_normal.to_csv(os.path.join(directory, 'Everything_NR2_GBReg_norm_0.csv'), index=False)
     m = first_m
     c = first_c
     for i in range(1, 6):
         # TODO change name here
-        file_name = f'NR2_GBReg_correction_{i}'
-        
+        file_name = f'Everything_NR2_GBReg_norm_{i}'
+
         csv_name = f'{file_name}.csv'
         path_name = os.path.join(directory, csv_name)
 
         # TODO fix this line here to work for this case
-        cmds = ['./datarot.py', '-o', path_name, '-m', str(m), '-c', str(c), '--dataFile', datafile]
+        cmds = ['./datarot.py', '-o', path_name, '-m', str(m), '-c', str(c), '--dataFile', f'Everything_NR2_GBReg_norm_{i-1}']
 
         utils.run_cmd(cmds, False)
         df = pd.read_csv(path_name)
@@ -55,9 +55,67 @@ def run_norm_correction(directory, df_normal, first_m, first_c):
         relrmse = utils.calc_relemse(path_name, rmsd)
         # print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
-        graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}')
-        m, c = stats2graph.create_stats_and_graph(args.directory, csv_name, file_name, file_name)
-        datafile = path_name
+        graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}_norm')
+        m, c = stats2graph.create_stats_and_graph(directory, csv_name, file_name, file_name)
         stats = [meanabserror, rmsd, relrmse, m, c]
         stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
         print(stats_df)
+    return pd.read_csv(os.path.join(directory, 'Everything_NR2_GBReg_norm_5.csv'))
+
+def run_outlier_correction(directory, df_outliers, first_m, first_c):
+    m = first_m
+    c = first_c
+
+    df_outliers['predicted'] = df_outliers['predicted'].apply(lambda x: x*m)
+    df_outliers['predicted'] = df_outliers['predicted'] - c
+
+    df_outliers['error'] = df_outliers['predicted'] - df_outliers['angle']
+
+    file_name = 'Everything_NR2_GBReg_outliers'
+    csv_name = f'{file_name}.csv'
+    path_name = os.path.join(directory, csv_name)
+    df_outliers.to_csv(path_name, index=False)
+
+    df_outliers['abs_err'] = df_outliers['error'].abs()
+    df_outliers['sqerror'] = df_outliers['error'].pow(2)
+    df_outliers['sq_angle'] = df_outliers['angle'].pow(2)
+    sum_sqe = df_outliers['sqerror'].sum()
+    n = df_outliers['angle'].count()
+    meanabserror = (df_outliers['abs_err'].sum())/n
+    rmsd = math.sqrt(sum_sqe/n)
+    relrmse = utils.calc_relemse(path_name, rmsd)
+
+    graphing.error_distribution(directory, csv_name, f'error_dist_correction_outlier')
+    m, c = stats2graph.create_stats_and_graph(directory, csv_name, file_name, file_name)
+    stats = [meanabserror, rmsd, relrmse, m, c]
+    stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
+    print(stats_df)
+    return df_outliers
+
+def plot_entire_corrected_set(directory, norm_df, out_df):
+    df = pd.concat([norm_df, out_df])
+    df = df.reset_index()
+    file_name = 'Everything_NR2_GBReg_corrected_all'
+    csv_name = f'{file_name}.csv'
+    path_name = os.path.join(directory, csv_name)
+    df.to_csv(path_name, index=False)
+    stats2graph.create_stats_and_graph(directory, csv_name, file_name, file_name)
+    graphing.error_distribution(directory, csv_name, f'error_dist_correction_all_data')
+
+def two_fold_correction_and_plot(directory, csv_file, slope_m, intercept_c):
+    df_norm, df_out = find_norms_and_outliers(directory, csv_file)
+    df_norm_full = run_norm_correction(directory, df_norm, slope_m, intercept_c)
+    df_out_full = run_outlier_correction(directory, df_out, slope_m, slope_m)
+    plot_entire_corrected_set(directory, df_norm_full, df_out_full)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Program for applying a rotational correction factor recursively')
+    
+    parser.add_argument('--directory', help='Directory', required=True)
+    parser.add_argument('-m', help='Slope of best fit line before correction', required=True)
+    parser.add_argument('-c', help='Intercept of best fit line before correction', required=True)
+    parser.add_argument('--csv_file', help='Uncorrected csv file', required=True)
+    args = parser.parse_args()
+
+  
+    two_fold_correction_and_plot(args.directory, args.csv_file, args.m, args.c)
