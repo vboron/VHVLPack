@@ -27,6 +27,7 @@ def find_norms_and_outliers(directory, csv_file):
 
     df_outliers.to_csv(os.path.join(directory, 'Everything_NR2_GBReg_out.csv'))
 
+    print(df_normal.dtypes, df_outliers.dtypes)
     return df_normal, df_outliers
 
 def run_norm_correction(directory, df_normal, first_m, first_c):
@@ -34,13 +35,12 @@ def run_norm_correction(directory, df_normal, first_m, first_c):
     m = first_m
     c = first_c
     for i in range(1, 6):
-        # TODO change name here
+
         file_name = f'Everything_NR2_GBReg_norm_{i}'
 
         csv_name = f'{file_name}.csv'
         path_name = os.path.join(directory, csv_name)
 
-        # TODO fix this line here to work for this case
         cmds = ['./datarot.py', '-o', path_name, '-m', str(m), '-c', str(c), '--dataFile', os.path.join(directory, f'Everything_NR2_GBReg_norm_{i-1}.csv')]
 
         utils.run_cmd(cmds, False)
@@ -66,7 +66,7 @@ def run_outlier_correction(directory, df_outliers, first_m, first_c):
     m = first_m
     c = first_c
 
-    df_outliers['predicted'] = df_outliers['predicted'].apply(lambda x: float(x)*m)
+    df_outliers['predicted'] = df_outliers['predicted'].apply(lambda x: x*m)
     df_outliers['predicted'] = df_outliers['predicted'] - c
 
     df_outliers['error'] = df_outliers['predicted'] - df_outliers['angle']
