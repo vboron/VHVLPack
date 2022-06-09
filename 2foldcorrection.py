@@ -41,7 +41,7 @@ def run_norm_correction(directory, df_normal, first_m, first_c):
         path_name = os.path.join(directory, csv_name)
 
         # TODO fix this line here to work for this case
-        cmds = ['./datarot.py', '-o', path_name, '-m', str(m), '-c', str(c), '--dataFile', os.path.join(directory, f'Everything_NR2_GBReg_norm_{i-1}')]
+        cmds = ['./datarot.py', '-o', path_name, '-m', str(m), '-c', str(c), '--dataFile', os.path.join(directory, f'Everything_NR2_GBReg_norm_{i-1}.csv')]
 
         utils.run_cmd(cmds, False)
         df = pd.read_csv(path_name)
