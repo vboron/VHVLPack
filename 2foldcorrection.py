@@ -62,11 +62,10 @@ def run_norm_correction(directory, df_normal, first_m, first_c):
     return pd.read_csv(os.path.join(directory, 'Everything_NR2_GBReg_norm_5.csv'))
 
 def run_outlier_correction(directory, df_outliers, first_m, first_c):
-    m = first_m
-    c = first_c
+    m = float(first_m)
+    c = float(first_c)
     
-    print(type(m))
-    df_outliers['predicted'] = df_outliers['predicted'].apply(lambda x: x* float(m))
+    df_outliers['predicted'] = df_outliers['predicted'].apply(lambda x: x * m)
     df_outliers['predicted'] = df_outliers['predicted'] - c
 
     df_outliers['error'] = df_outliers['predicted'] - df_outliers['angle']
