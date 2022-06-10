@@ -93,8 +93,8 @@ def find_stats(directory, input_csv, df_a, df_o):
     mean_abs_err_a = df_a_temp['error'].abs().mean()
 
     # everything is done for outliers, if they exist
+    num_outliers = int(df_o['angle'].size)
     if num_outliers != 0:
-        num_outliers = int(df_o['angle'].size)
         df_o['sqerror'] = np.square(df_o['error'])
         sum_sqerror_o = df_o['sqerror'].sum()
         average_error_o = sum_sqerror_o/num_outliers
