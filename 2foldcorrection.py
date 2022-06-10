@@ -70,6 +70,8 @@ def run_outlier_correction(directory, df_outliers, first_m, first_c):
 
     df_outliers['error'] = df_outliers['predicted'] - df_outliers['angle']
 
+    df_out_just_ape = df_outliers
+
     file_name = 'Everything_NR2_GBReg_outliers'
     csv_name = f'{file_name}.csv'
     path_name = os.path.join(directory, csv_name)
@@ -89,7 +91,7 @@ def run_outlier_correction(directory, df_outliers, first_m, first_c):
     stats = [meanabserror, rmsd, relrmse, m, c]
     stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
     # print(stats_df)
-    return df_outliers
+    return df_out_just_ape
 
 def plot_entire_corrected_set(directory, norm_df, out_df):
     df = pd.concat([norm_df, out_df])
