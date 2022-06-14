@@ -46,7 +46,7 @@ def run_norm_correction(directory, df_normal, df_out, first_m, first_c):
         df = pd.read_csv(path_name)
 
         # Make table of rotated normal values and the outliers 
-        df_all = df.concat(df_out)
+        df_all = pd.concat([df, df_out])
         corr_norm_out = f'{file_name}_plus_out.csv'
         df_all.to_csv(corr_norm_out, index = False)
 
