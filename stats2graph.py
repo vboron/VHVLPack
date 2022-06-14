@@ -97,7 +97,7 @@ def find_stats(directory, input_csv, df_a, df_o):
     stat_data_all = []
     stat_data_out = []
     stat_col = ['pearson', 'error', 'RMSE', 'RELRMSE']
-    
+
     if num_outliers != 0:
         df_o['sqerror'] = np.square(df_o['error'])
         sum_sqerror_o = df_o['sqerror'].sum()
@@ -107,8 +107,8 @@ def find_stats(directory, input_csv, df_a, df_o):
         pearson_o = df_o['angle'].corr(df_o['predicted'])
         mean_abs_err_o = df_o['error'].abs().mean()
 
-        stat_data_all = [pearson_a, mean_abs_err_a, rmse, relrmse]
-        stat_data_out = [pearson_o, mean_abs_err_o, rmse_o, relrmse_o]
+        stat_data_all.extend([pearson_a, mean_abs_err_a, rmse, relrmse])
+        stat_data_out.extend([pearson_o, mean_abs_err_o, rmse_o, relrmse_o])
         
     stats_all = pd.DataFrame(data=[stat_data_all], columns=stat_col)
     stats_out = pd.DataFrame(data=[stat_data_out], columns=stat_col)
