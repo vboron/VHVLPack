@@ -26,7 +26,7 @@ def find_norms_and_outliers(directory, csv_file):
     df_outliers = pd.concat([outliers_max, outliers_min])
 
     df_outliers.to_csv(os.path.join(directory, 'Everything_NR2_GBReg_out.csv'))
-    print('normal:', df_normal, 'outliers:', df_outliers)
+    # print('normal:', df_normal, 'outliers:', df_outliers)
     return df_normal, df_outliers
 
 def run_norm_correction(directory, df_normal, first_m, first_c):
@@ -58,7 +58,7 @@ def run_norm_correction(directory, df_normal, first_m, first_c):
         m, c = stats2graph.create_stats_and_graph(directory, csv_name, file_name, file_name)
         stats = [meanabserror, rmsd, relrmse, m, c]
         stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
-        print(stats_df)
+        # print(stats_df)
     return pd.read_csv(os.path.join(directory, 'Everything_NR2_GBReg_norm_5.csv'))
 
 def run_outlier_correction(directory, df_outliers, first_m, first_c):
@@ -96,7 +96,7 @@ def run_outlier_correction(directory, df_outliers, first_m, first_c):
 
 def plot_entire_corrected_set(directory, norm_df, out_df):
     df = pd.concat([norm_df, out_df])
-    print(df)
+    # print(df)
     df = df.reset_index()
     file_name = 'Everything_NR2_GBReg_corrected_all'
     csv_name = f'{file_name}.csv'
