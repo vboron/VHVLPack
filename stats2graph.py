@@ -94,8 +94,8 @@ def find_stats(directory, input_csv, df_a, df_o):
 
     # everything is done for outliers, if they exist
     num_outliers = int(df_o['angle'].size)
-    stats_all = None
-    stats_out = None
+    stats_all = ''
+    stats_out = ''
     if num_outliers != 0:
         df_o['sqerror'] = np.square(df_o['error'])
         sum_sqerror_o = df_o['sqerror'].sum()
