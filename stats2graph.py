@@ -97,7 +97,7 @@ def find_stats(directory, input_csv, df_a, df_o):
 
     stat_data_out = []
     stat_col = ['pearson', 'error', 'RMSE', 'RELRMSE']
-
+    print('number of outliers:', num_outliers)
     if num_outliers != 0:
         df_o['sqerror'] = np.square(df_o['error'])
         sum_sqerror_o = df_o['sqerror'].sum()
