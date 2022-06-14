@@ -65,7 +65,8 @@ def run_norm_correction(directory, df_normal, df_out, first_m, first_c):
         stats = [meanabserror, rmsd, relrmse, m, c]
         stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
         # print(stats_df)
-    return pd.read_csv(os.path.join(directory, 'Everything_NR2_GBReg_norm_5.csv')), 
+    
+    return pd.read_csv(os.path.join(directory, 'Everything_NR2_GBReg_norm_5.csv'))
 
 def run_outlier_correction(directory, df_outliers, first_m, first_c):
     m = float(first_m)
@@ -75,8 +76,6 @@ def run_outlier_correction(directory, df_outliers, first_m, first_c):
     df_outliers['predicted'] = df_outliers['predicted'] - c
 
     df_outliers['error'] = df_outliers['predicted'] - df_outliers['angle']
-
-    df_out_just_ape = df_outliers
 
     file_name = 'Everything_NR2_GBReg_outliers'
     csv_name = f'{file_name}.csv'
@@ -98,7 +97,7 @@ def run_outlier_correction(directory, df_outliers, first_m, first_c):
     # stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
     # print(stats_df)
     print(m, c)
-    return df_out_just_ape
+    return df_outliers
 
 def plot_entire_corrected_set(directory, norm_df, out_df):
     df = pd.concat([norm_df, out_df])
