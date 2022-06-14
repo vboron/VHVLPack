@@ -91,10 +91,10 @@ def find_stats(directory, input_csv, df_a, df_o):
     pearson_a = df_a_temp['angle'].corr(df_a_temp['predicted'])
 
     mean_abs_err_a = df_a_temp['error'].abs().mean()
-
+    stat_data_all = [pearson_a, mean_abs_err_a, rmse, relrmse]
     # everything is done for outliers, if they exist
     num_outliers = int(df_o['angle'].size)
-    stat_data_all = []
+
     stat_data_out = []
     stat_col = ['pearson', 'error', 'RMSE', 'RELRMSE']
 
@@ -106,9 +106,9 @@ def find_stats(directory, input_csv, df_a, df_o):
         relrmse_o = getResult(rmse_o)
         pearson_o = df_o['angle'].corr(df_o['predicted'])
         mean_abs_err_o = df_o['error'].abs().mean()
+        stat_data_out.append(pearson_o)
+        stat_data_out.extend([mean_abs_err_o, rmse_o, relrmse_o])
 
-        stat_data_all = [pearson_a, mean_abs_err_a, rmse, relrmse]
-        stat_data_out = [pearson_o, mean_abs_err_o, rmse_o, relrmse_o]
     print(stat_data_all)
     print(stat_data_out)
     stats_all = pd.DataFrame(data=[stat_data_all], columns=stat_col)
@@ -227,9 +227,10 @@ def create_stats_and_graph(directory, csv_input, name_stats, name_graph):
         directory, csv_input, all_df, out_df)
 
     m, c = plot_scatter(directory, out_df, norm_df, stat_df_all, stats_df_out, all_df.copy(),
-                 name_stats, name_graph)
+                        name_stats, name_graph)
 
     return m, c
+
 
 # *************************************************************************
 if __name__ == '__main__':
