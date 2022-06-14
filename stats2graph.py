@@ -108,6 +108,7 @@ def find_stats(directory, input_csv, df_a, df_o):
         mean_abs_err_o = df_o['error'].abs().mean()
         stat_data_out.append(pearson_o)
         stat_data_out.extend([mean_abs_err_o, rmse_o, relrmse_o])
+        print(stat_data_out)
 
     print(stat_data_all)
     print(stat_data_out)
