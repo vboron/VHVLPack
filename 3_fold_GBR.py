@@ -32,7 +32,7 @@ def make_norm_out_dfs(directory, csv_file):
 
 def runGBReg(directory, df, set_name):
     X_train, y_train, _x_ = make_sets_from_df(df)
-    X_test, y_true, df_test = make_sets(df)
+    X_test, y_true, df_test = make_sets_from_df(df)
     print(f'Running GBRegressor on {set_name}')
     df = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, f'gbr_{set_name}')
