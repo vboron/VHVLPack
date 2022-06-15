@@ -10,7 +10,7 @@ import stats2graph
 from sklearn_methods import *
 
 
-def test(directory, csv_file):
+def make_norm_out_dfs(directory, csv_file):
     path_csv_file = os.path.join(directory, csv_file)
     df = pd.read_csv(path_csv_file)
 
@@ -38,10 +38,17 @@ def runGBReg(directory, df, set_name):
         X_train, y_train, X_test, df_test, f'gbr_{set_name}')
     df.to_csv(f'{directory}/Everything_NR2_GBReg_{set}.csv', index=False)
 
+def three_fold_GBR(directory, csv_file):
+    df_norm, df_out_max, df_out_min = make_norm_out_dfs(directory, csv_file)
+    runGBReg(directory, df_norm, 'norm')
+    runGBReg(directory, df_out_max, 'out_max')
+    runGBReg(directory, df_out_min, 'out_min')
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for applying a rotational correction factor recursively')
 
     parser.add_argument('--directory', help='Directory', required=True)
     parser.add_argument('--csv_file', help='Uncorrected csv file', required=True)
     args = parser.parse_args()
-    test(args.directory, args.csv_file)
+
+    three_fold_GBR(args.directory, args.csv_file)
