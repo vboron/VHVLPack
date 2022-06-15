@@ -34,12 +34,13 @@ def runGBReg(directory, df, set_name):
     df = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, f'gbr_{set_name}')
     df = df.reset_index()
-    print(df)
+    # print(df)
     df.to_csv(f'{directory}/Everything_NR2_GBReg_{set_name}.csv', index=False)
 
 def combine_all_post_3fold_data(directory, df_norm, df_out_max, df_out_min):
     file_name = os.path.join(directory, f'Everything_NR2_GBReg_all_3fold.csv')
     df = pd.concat([df_norm, df_out_max, df_out_min])
+    df = df.reset_index()
     df.to_csv(file_name, index=False)
 
 def run_graphs(directory, set_name, csv):
