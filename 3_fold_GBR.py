@@ -7,6 +7,7 @@ import utils
 import math
 import graphing
 import stats2graph
+from sklearn_methods import *
 
 
 def test(directory, csv_file):
@@ -28,6 +29,14 @@ def test(directory, csv_file):
     # df_outliers.to_csv(os.path.join(directory, 'Everything_NR2_GBReg_out.csv'))
     # print('normal:', df_normal, 'outliers:', df_outliers)
     print(df_normal, outliers_max, outliers_min)
+
+def runGBReg(directory, df, set_name):
+    X_train, y_train, _x_ = make_sets_from_df(df)
+    X_test, y_true, df_test = make_sets(df)
+    print(f'Running GBRegressor on {set_name}')
+    df = run_GradientBoostingRegressor(
+        X_train, y_train, X_test, df_test, f'gbr_{set_name}')
+    df.to_csv(f'{directory}/Everything_NR2_GBReg_{set}.csv', index=False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for applying a rotational correction factor recursively')
