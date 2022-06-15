@@ -26,6 +26,7 @@ def make_norm_out_dfs(directory, csv_file):
 
     return df_normal, outliers_max, outliers_min
 
+
 def runGBReg(directory, df, set_name):
     X_train, y_train, _x_ = make_sets_from_df(df)
     X_test, y_true, df_test = make_sets_from_df(df)
@@ -36,10 +37,11 @@ def runGBReg(directory, df, set_name):
     print(df)
     df.to_csv(f'{directory}/Everything_NR2_GBReg_{set_name}.csv', index=False)
 
-def run_graphs(directory, set_name):
+
+def run_graphs(directory, set_name, csv):
     file_name = f'Everything_NR2_GBReg_{set_name}'
     cmd = ['./stats2graph.py',
-           '--directory', ]
+           '--directory', directory, '--csv_input', csv, '--name_stats', f'{file_name}_stats', '--name_graph', file_name]
     utils.run_cmd(cmd, False)
     graphing.sq_error_vs_actual_angle(
         directory, f'{file_name}.csv', f'{file_name}_sqerror_vs_actual')
@@ -50,21 +52,26 @@ def run_graphs(directory, set_name):
     graphing.sq_error_vs_actual_angle(
         directory, f'{file_name}.csv', f'{file_name}_sqerror_vs_actual')
 
-def run_GBR_graph(directory, df, set_name):
+
+def run_GBR_graph(directory, df, set_name, csv):
     runGBReg(directory, df, set_name)
-    run_graphs(directory, set_name)
+    run_graphs(directory, set_name, csv)
+
 
 def three_fold_GBR(directory, csv_file):
     df_norm, df_out_max, df_out_min = make_norm_out_dfs(directory, csv_file)
-    run_GBR_graph(directory, df_norm, 'norm')
-    run_GBR_graph(directory, df_out_max, 'out_max')
-    run_GBR_graph(directory, df_out_min, 'out_min')
+    run_GBR_graph(directory, df_norm, 'norm', csv_file)
+    run_GBR_graph(directory, df_out_max, 'out_max', csv_file)
+    run_GBR_graph(directory, df_out_min, 'out_min', csv_file)
+
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Program for applying a rotational correction factor recursively')
+    parser = argparse.ArgumentParser(
+        description='Program for applying a rotational correction factor recursively')
 
     parser.add_argument('--directory', help='Directory', required=True)
-    parser.add_argument('--csv_file', help='Uncorrected csv file', required=True)
+    parser.add_argument(
+        '--csv_file', help='Uncorrected csv file', required=True)
     args = parser.parse_args()
 
     three_fold_GBR(args.directory, args.csv_file)
