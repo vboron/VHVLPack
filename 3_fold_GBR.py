@@ -28,7 +28,7 @@ def make_norm_out_dfs(directory, csv_file):
 
     # df_outliers.to_csv(os.path.join(directory, 'Everything_NR2_GBReg_out.csv'))
     # print('normal:', df_normal, 'outliers:', df_outliers)
-    print(df_normal, outliers_max, outliers_min)
+    return df_normal, outliers_max, outliers_min
 
 def runGBReg(directory, df, set_name):
     X_train, y_train, _x_ = make_sets_from_df(df)
