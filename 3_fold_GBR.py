@@ -34,13 +34,31 @@ def runGBReg(directory, df, set_name):
         X_train, y_train, X_test, df_test, f'gbr_{set_name}')
     df = df.reset_index()
     print(df)
-    df.to_csv(f'{directory}/Everything_NR2_GBReg_{set}.csv', index=False)
+    df.to_csv(f'{directory}/Everything_NR2_GBReg_{set_name}.csv', index=False)
+
+def run_graphs(directory, set_name):
+    file_name = f'Everything_NR2_GBReg_{set_name}'
+    cmd = ['./stats2graph.py',
+           '--directory', ]
+    utils.run_cmd(cmd, False)
+    graphing.sq_error_vs_actual_angle(
+        directory, f'{file_name}.csv', f'{file_name}_sqerror_vs_actual')
+    graphing.angle_distribution(
+        directory, f'{directory}_ang.csv', f'{file_name}_angledistribution')
+    graphing.error_distribution(
+        directory, f'{file_name}.csv', f'{file_name}_errordistribution')
+    graphing.sq_error_vs_actual_angle(
+        directory, f'{file_name}.csv', f'{file_name}_sqerror_vs_actual')
+
+def run_GBR_graph(directory, df, set_name):
+    runGBReg(directory, df, set_name)
+    run_graphs(directory, set_name)
 
 def three_fold_GBR(directory, csv_file):
     df_norm, df_out_max, df_out_min = make_norm_out_dfs(directory, csv_file)
-    runGBReg(directory, df_norm, 'norm')
-    runGBReg(directory, df_out_max, 'out_max')
-    runGBReg(directory, df_out_min, 'out_min')
+    run_GBR_graph(directory, df_norm, 'norm')
+    run_GBR_graph(directory, df_out_max, 'out_max')
+    run_GBR_graph(directory, df_out_min, 'out_min')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for applying a rotational correction factor recursively')
