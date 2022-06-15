@@ -82,20 +82,9 @@ def run_outlier_correction(directory, df_outliers, first_m, first_c):
     path_name = os.path.join(directory, csv_name)
     df_outliers.to_csv(path_name, index=False)
 
-    # df_outliers['abs_err'] = df_outliers['error'].abs()
-    # df_outliers['sqerror'] = df_outliers['error'].pow(2)
-    # df_outliers['sq_angle'] = df_outliers['angle'].pow(2)
-    # sum_sqe = df_outliers['sqerror'].sum()
-    # n = df_outliers['angle'].count()
-    # meanabserror = (df_outliers['abs_err'].sum())/n
-    # rmsd = math.sqrt(sum_sqe/n)
-    # relrmse = utils.calc_relemse(path_name, rmsd)
-
     graphing.error_distribution(directory, csv_name, f'error_dist_correction_outlier')
     m, c = stats2graph.create_stats_and_graph(directory, csv_name, file_name, file_name)
-    # stats = [meanabserror, rmsd, relrmse, m, c]
-    # stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
-    # print(stats_df)
+
     print(m, c)
     return df_outliers
 
