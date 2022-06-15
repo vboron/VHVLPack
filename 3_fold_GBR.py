@@ -24,10 +24,6 @@ def make_norm_out_dfs(directory, csv_file):
     outliers_max = df[df['angle'] >= max_norm]
     outliers_min = df[df['angle'] <= min_norm]
 
-    # df_outliers = pd.concat([outliers_max, outliers_min])
-
-    # df_outliers.to_csv(os.path.join(directory, 'Everything_NR2_GBReg_out.csv'))
-    # print('normal:', df_normal, 'outliers:', df_outliers)
     return df_normal, outliers_max, outliers_min
 
 def runGBReg(directory, df, set_name):
@@ -36,6 +32,7 @@ def runGBReg(directory, df, set_name):
     print(f'Running GBRegressor on {set_name}')
     df = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, f'gbr_{set_name}')
+    df.reset_index()
     print(df)
     df.to_csv(f'{directory}/Everything_NR2_GBReg_{set}.csv', index=False)
 
