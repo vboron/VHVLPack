@@ -32,7 +32,7 @@ def runGBReg(directory, df, set_name):
     print(f'Running GBRegressor on {set_name}')
     df = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, f'gbr_{set_name}')
-    df.reset_index()
+    df = df.reset_index()
     print(df)
     df.to_csv(f'{directory}/Everything_NR2_GBReg_{set}.csv', index=False)
 
