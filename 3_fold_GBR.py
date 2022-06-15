@@ -37,6 +37,10 @@ def runGBReg(directory, df, set_name):
     print(df)
     df.to_csv(f'{directory}/Everything_NR2_GBReg_{set_name}.csv', index=False)
 
+def combine_all_post_3fold_data(directory, df_norm, df_out_max, df_out_min):
+    file_name = os.path.join(directory, f'Everything_NR2_GBReg_all_3fold.csv')
+    df = pd.concat([df_norm, df_out_max, df_out_min])
+    df.to_csv(file_name, index=False)
 
 def run_graphs(directory, set_name, csv):
     file_name = f'Everything_NR2_GBReg_{set_name}'
@@ -63,6 +67,8 @@ def three_fold_GBR(directory, csv_file):
     run_GBR_graph(directory, df_norm, 'norm', csv_file)
     run_GBR_graph(directory, df_out_max, 'out_max', csv_file)
     run_GBR_graph(directory, df_out_min, 'out_min', csv_file)
+    combine_all_post_3fold_data(directory, df_norm, df_out_max, df_out_min)
+    run_graphs(directory, 'all_3fold', csv_file)
 
 
 if __name__ == '__main__':
