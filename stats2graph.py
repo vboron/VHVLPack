@@ -35,8 +35,8 @@ def find_normal_and_outliers(directory, input_csv):
 
     # define the boundaries for the range of angles that are not outliers
     # -48 and -42 are chosen based on angle population graphs
-    min_norm = -48
-    max_norm = -42
+    min_norm = -52
+    max_norm = -37
 
     # extract data where the predicted angle is within the normal range into a new dataframe
     df_n = df_a[df_a['angle'].between(min_norm, max_norm)]
