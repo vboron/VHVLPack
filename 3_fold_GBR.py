@@ -66,21 +66,16 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
         directory, f'{file_name}.csv', f'{file_name}_sqerror_vs_actual')
 
 
-def run_GBR_graph(directory, df, set_name, csv):
-    runGBReg(directory, df, set_name)
-    run_graphs(directory, set_name, csv)
-
-
 def three_fold_GBR(directory, csv_file):
     df_norm, df_out_max, df_out_min = make_norm_out_dfs(directory, csv_file)
-    run_GBR_graph(directory, df_norm, 'norm', csv_file)
-    run_GBR_graph(directory, df_out_max, 'out_max', csv_file)
-    run_GBR_graph(directory, df_out_min, 'out_min', csv_file)
+    runGBReg(directory, df_norm, 'norm')
+    runGBReg(directory, df_out_max, 'out_max')
+    runGBReg(directory, df_out_min, 'out_min')
     df_alldata = combine_dfs(
         directory, [df_norm, df_out_max, df_out_min], 'all3fold')
     df_outdata = combine_dfs(
         directory, [df_out_max, df_out_min], 'outliers3fold')
-    run_graphs(directory, 'all_3fold', df_alldata, df_outdata)
+    run_graphs(directory, 'all_3fold', df_alldata, df_outdata, df_norm)
 
 
 if __name__ == '__main__':
