@@ -14,8 +14,8 @@ def make_norm_out_dfs(directory, csv_file):
     path_csv_file = os.path.join(directory, csv_file)
     df = pd.read_csv(path_csv_file)
 
-    min_norm = -48
-    max_norm = -42
+    min_norm = -53
+    max_norm = -37
 
     # extract data where the predicted angle is within the normal range into a new dataframe
     df_normal = df[df['angle'].between(min_norm, max_norm)]
