@@ -75,7 +75,7 @@ def three_fold_GBR(directory, csv_file):
         directory, [df_norm, df_out_max, df_out_min], 'all3fold')
     df_outdata = combine_dfs(
         directory, [df_out_max, df_out_min], 'outliers3fold')
-    run_graphs(directory, 'all_3fold', df_alldata, df_outdata, df_norm)
+    run_graphs(directory, 'all3fold', df_alldata, df_outdata, df_norm)
 
 
 if __name__ == '__main__':
