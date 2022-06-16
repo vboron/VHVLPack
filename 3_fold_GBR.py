@@ -37,17 +37,25 @@ def runGBReg(directory, df, set_name):
     # print(df)
     df.to_csv(f'{directory}/Everything_NR2_GBReg_{set_name}.csv', index=False)
 
-def combine_all_post_3fold_data(directory, df_norm, df_out_max, df_out_min):
-    file_name = os.path.join(directory, f'Everything_NR2_GBReg_all_3fold.csv')
-    df = pd.concat([df_norm, df_out_max, df_out_min])
+
+def combine_dfs(directory, list_of_dfs, df2csv_name):
+    file_name = os.path.join(
+        directory, f'Everything_NR2_GBReg_{df2csv_name}.csv')
+    df = pd.concat(list_of_dfs)
     df = df.reset_index()
     df.to_csv(file_name, index=False)
+    return df
 
-def run_graphs(directory, set_name, csv):
+
+def run_graphs(directory, set_name, df_all, df_out, df_norm):
     file_name = f'Everything_NR2_GBReg_{set_name}'
-    cmd = ['./stats2graph.py',
-           '--directory', directory, '--csv_input', csv, '--name_stats', f'{file_name}_stats', '--name_graph', file_name]
-    utils.run_cmd(cmd, False)
+    # cmd = ['./stats2graph.py',
+    #        '--directory', directory, '--csv_input', csv, '--name_stats', f'{file_name}_stats', '--name_graph', file_name]
+    # utils.run_cmd(cmd, False)
+    stats_all, stats_out = stats2graph.find_stats(
+        directory, f'{file_name}.csv', df_all, df_out)
+    stats2graph.plot_scatter(directory, df_out, df_norm,
+                             stats_all, stats_out, df_all, file_name)
     graphing.sq_error_vs_actual_angle(
         directory, f'{file_name}.csv', f'{file_name}_sqerror_vs_actual')
     graphing.angle_distribution(
@@ -68,8 +76,11 @@ def three_fold_GBR(directory, csv_file):
     run_GBR_graph(directory, df_norm, 'norm', csv_file)
     run_GBR_graph(directory, df_out_max, 'out_max', csv_file)
     run_GBR_graph(directory, df_out_min, 'out_min', csv_file)
-    combine_all_post_3fold_data(directory, df_norm, df_out_max, df_out_min)
-    run_graphs(directory, 'all_3fold', csv_file)
+    df_alldata = combine_dfs(
+        directory, [df_norm, df_out_max, df_out_min], 'all3fold')
+    df_outdata = combine_dfs(
+        directory, [df_out_max, df_out_min], 'outliers3fold')
+    run_graphs(directory, 'all_3fold', df_alldata, df_outdata)
 
 
 if __name__ == '__main__':
