@@ -55,7 +55,7 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
     stats_all, stats_out = stats2graph.find_stats(
         directory, f'{file_name}.csv', df_all, df_out)
     stats2graph.plot_scatter(directory, df_out, df_norm,
-                             stats_all, stats_out, df_all, file_name)
+                             stats_all, stats_out, df_all, file_name, file_name)
     graphing.sq_error_vs_actual_angle(
         directory, f'{file_name}.csv', f'{file_name}_sqerror_vs_actual')
     graphing.angle_distribution(
