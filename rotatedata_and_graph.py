@@ -37,7 +37,7 @@ def run_correction(directory):
         stats = [meanabserror, rmsd, relrmse, m, c]
         summary_stats.append(stats)
 
-    stats_df = pd.DataFrame(data=[summary_stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
+    stats_df = pd.DataFrame(data=summary_stats, columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
     stats_df.to_csv(os.path.join(directory, f'{file}_stats_summary.csv'), index=False)
     print(stats_df)
 
