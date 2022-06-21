@@ -129,16 +129,16 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     plt.figure()
     # Color of outlier points
     # TODO rename colors to something like "col_bestfit" etc.
-    c1 = 'rosybrown'
+    color_outliers = 'rosybrown'
 
     # Color of normal points
-    c2 = 'mediumturquoise'
+    color_norm_values = 'mediumturquoise'
 
     # Color of outlier best fit line
-    c3 = 'firebrick'
+    color_bf_outliers = 'firebrick'
 
     # Color of best fit line for full set
-    c4 = 'teal'
+    color_bf_all = 'teal'
 
     x2 = file_n['angle']
     y2 = file_n['predicted']
@@ -147,10 +147,10 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     y3 = file_a['predicted']
 
     m3, b3 = np.polyfit(x3, y3, 1)
-    plt.plot(x3, m3 * x3 + b3, color=c4, linestyle='dashed', linewidth=1)
+    plt.plot(x3, m3 * x3 + b3, color=color_bf_all, linestyle='dashed', linewidth=1)
 
     # Plot the outliers and normal values as scatter plots
-    plt.scatter(x2, y2, s=2, color=c2)
+    plt.scatter(x2, y2, s=2, color=color_norm_values)
 
     axes = plt.gca()
 
@@ -169,10 +169,10 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     plt.text(s='Line: y=x', x=-61, y=-32, fontsize=8)
 
     plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m3, b3),
-             x=-61, y=-33, fontsize=8, color=c4)
+             x=-61, y=-33, fontsize=8, color=color_bf_all)
     plt.text(s='RELRMSE (all): {:.3}'.format(
         float(stat_df_all['RELRMSE'])), x=-61, y=-34, fontsize=8)
-    plt.text(s='-48 < Normal Values < -42', x=-61, y=-38, fontsize=8, color=c2)
+    plt.text(s='-48 < Normal Values < -42', x=-61, y=-38, fontsize=8, color=color_norm_values)
 
     plt.tight_layout()
 
@@ -192,13 +192,13 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
 
         # Line of best fit is calculated
         m1, b1 = np.polyfit(x1, y1, 1)
-        plt.plot(x1, m1 * x1 + b1, color=c3, linestyle='dashed', linewidth=1)
-        plt.scatter(x1, y1, s=2, color=c1)
+        plt.plot(x1, m1 * x1 + b1, color=color_bf_outliers, linestyle='dashed', linewidth=1)
+        plt.scatter(x1, y1, s=2, color=color_outliers)
         plt.text(s='RELRMSE (outliers): {:.3}'.format(
             float(stat_df_out['RELRMSE'])), x=-61, y=-37, fontsize=8)
         plt.text(s='Best fit (outliers): y={:.3f}x+{:.3f}'.format(
-            m1, b1), x=-61, y=-36, fontsize=8, color=c3)
-        plt.text(s='Outliers', x=-61, y=-35, fontsize=8, color=c1)
+            m1, b1), x=-61, y=-36, fontsize=8, color=color_bf_outliers)
+        plt.text(s='Outliers', x=-61, y=-35, fontsize=8, color=color_outliers)
         best_ft_o = 'y={:.3f}x+{:.3f}'.format(m1, b1)
         stat_df_out['fit'] = best_ft_o
         stat_df_out['slope'] = m1
