@@ -28,7 +28,7 @@ def run_correction(directory):
         n = df['angle'].count()
         meanabserror = (df['abs_err'].sum())/n
         rmsd = math.sqrt(sum_sqe/n)
-        relrmse = utils.calc_relemse_from_df(df, rmsd)
+        relrmse = utils.calc_relrmse_from_df(df, rmsd)
         # print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
         graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}')
