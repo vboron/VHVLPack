@@ -25,6 +25,7 @@ def run_correction(directory):
         df['sqerror'] = df['error'].pow(2)
         df['sq_angle'] = df['angle'].pow(2)
         sum_sqe = df['sqerror'].sum()
+        print(df['angle'])
         n = df['angle'].count()
         meanabserror = (df['abs_err'].sum())/n
         rmsd = math.sqrt(sum_sqe/n)
