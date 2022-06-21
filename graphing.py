@@ -114,7 +114,7 @@ def actual_vs_predicted_from_df(df, directory, stats_csv_name, pa_graph_name):
        average_error = sum_sqerror / int(df['angle'].size)
        rmse = math.sqrt(average_error)
 
-       relrmse = utils.calc_relemse_from_df(df, rmse)
+       relrmse = utils.relrmse_from_df(df, rmse)
 
        # .corr() returns the correlation between two columns
        pearson_a = df['angle'].corr(df['predicted'])
