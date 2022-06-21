@@ -38,7 +38,7 @@ def run_cmd(cmd_list, is_dry_run: bool, stdout=None, env=None, cwd=None, stderr=
         comp_process.check_returncode()
 
 # *************************************************************************
-def calc_relemse(results_csv, rmse):
+def calc_relemse_from_csv(results_csv, rmse):
     """Read the .csv for angles and take the RMSE from the commandline to calculate the relative RMSE.
     Equation used: RELRMSE = (RMSE*(n**(1/2)))/((sum (angle**2))**(1/2))
 
@@ -80,3 +80,31 @@ def calc_relemse(results_csv, rmse):
     return relrmse
 
 # *************************************************************************
+def calc_relrmse_from_df(df):
+    rmse = float(rmse)
+
+    # Count the number of angles in the dataframe
+    n = df['angle'].count()
+
+    # Take the square root of the number of angles
+    rn = float(n)**(1/2)
+
+    # Makes a list of all the angles squared
+    sq_angle = []
+    for angle in df['angle']:
+        angle_2 = float(angle)**2
+        sq_angle.append(angle_2)
+
+    col2 = ['sqangle']
+
+    # Create a dataframe of all angles squared
+    df2 = pd.DataFrame(data=sq_angle, columns=col2)
+
+    # Take the sum of all the square angles
+    c_sangles = df2['sqangle'].sum()
+
+    # Take the sqroot of summed square angles
+    rc_sangles = float(c_sangles)**(1/2)
+
+    relrmse = (rmse*rn)/rc_sangles
+    return relrmse
