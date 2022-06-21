@@ -34,27 +34,18 @@ def find_normal_and_outliers(directory, input_csv):
     df_a = pd.read_csv(os.path.join(directory, input_csv))
 
     # define the boundaries for the range of angles that are not outliers
-    # -48 and -42 are chosen based on angle population graphs
     min_norm = -52
     max_norm = -37
 
-    # extract data where the predicted angle is within the normal range into a new dataframe
     df_n = df_a[df_a['angle'].between(min_norm, max_norm)]
-
-    # extract data where predicted angles are outside of the normal range and add into a new dataframe
-    df_o1 = df_a[df_a['angle'] >= max_norm]
-    df_o2 = df_a[df_a['angle'] <= min_norm]
-    df_o = pd.concat([df_o1, df_o2])
+    df_o_max = df_a[df_a['angle'] >= max_norm]
+    df_o_min = df_a[df_a['angle'] <= min_norm]
+    df_o = pd.concat([df_o_max, df_o_min])
 
     # reset the indexes (as the original ones will be kept) and export as .csv files
 
     df_n = df_n.reset_index()
-    # path_n = os.path.join(directory, (f'{norm_name}.csv'))
-    # df_n.to_csv(path_n, index=False)
-
     df_o = df_o.reset_index()
-    # path_o = os.path.join(directory, (f'{out_name}.csv'))
-    # df_o.to_csv(path_o, index=False)
 
     return df_a, df_n, df_o
 
@@ -114,7 +105,7 @@ def find_stats(directory, input_csv, df_a, df_o):
 
 
 # *************************************************************************
-def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, stats_csv_name, graph_name):
+def plot_scatter_normal_and_outliers(directory, df_o, df_n, stat_df_all, stat_df_out, df_a, stats_csv_name, graph_name):
     """ Create a scatter plot where outliers and normal range values are different colors. There is also a best fit
         line for outliers and for the whole dataset, as well as a y=x line for comparisons. Axis titles and max/mins
         are set. Text displays the legend, equation of best fit lines, and the RELRMSE for the whole set and the
@@ -133,11 +124,11 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     color_bf_outliers = 'firebrick'
     color_bf_all = 'teal'
 
-    x_norm = file_n['angle']
-    y_norm = file_n['predicted']
+    x_norm = df_n['angle']
+    y_norm = df_n['predicted']
 
-    x_all = file_a['angle']
-    y_all = file_a['predicted']
+    x_all = df_a['angle']
+    y_all = df_a['predicted']
 
     m_all, b_all = np.polyfit(x_all, y_all, 1)
     plt.plot(x_all, m_all * x_all + b_all, color=color_bf_all, linestyle='dashed', linewidth=1)
@@ -177,11 +168,11 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     stat_df_all['slope'] = m_all
     stat_df_all['intercept'] = b_all
 
-    num_outliers = int(file_o['angle'].size)
+    num_outliers = int(df_o['angle'].size)
     if num_outliers != 0:
         # Angle values are designated axis names
-        x_out = file_o['angle']
-        y_out = file_o['predicted']
+        x_out = df_o['angle']
+        y_out = df_o['predicted']
 
         # Line of best fit is calculated
         m_out, b_out = np.polyfit(x_out, y_out, 1)
@@ -210,13 +201,13 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     return m_all, b_all
 
 
-def create_stats_and_graph(directory, csv_input, name_stats, name_graph):
+def create_stats_and_colorcoded_graph(directory, csv_input, name_stats, name_graph):
     all_df, norm_df, out_df = find_normal_and_outliers(directory, csv_input)
 
     stat_df_all, stats_df_out = find_stats(
         directory, csv_input, all_df, out_df)
 
-    m, c = plot_scatter(directory, out_df, norm_df, stat_df_all, stats_df_out, all_df.copy(),
+    m, c = plot_scatter_normal_and_outliers(directory, out_df, norm_df, stat_df_all, stats_df_out, all_df.copy(),
                         name_stats, name_graph)
 
     return m, c
@@ -236,5 +227,5 @@ if __name__ == '__main__':
         '--name_graph', help='Name for graph outputted', required=True)
     args = parser.parse_args()
 
-    create_stats_and_graph(args.directory, args.csv_input,
+    create_stats_and_colorcoded_graph(args.directory, args.csv_input,
                            args.name_stats, args.name_graph)
