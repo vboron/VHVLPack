@@ -168,7 +168,7 @@ def actual_vs_predicted_from_df(df, directory, stats_csv_name, pa_graph_name):
        stats['slope'] = m
        stats['intercept'] = b
 
-       path_stats = os.path.join(directory, f'{stats_csv_name}.csv')
+       path_stats = os.path.join(directory, f'{stats_csv_name}_stats.csv')
        stats.to_csv(path_stats, index=False)
 
        # Exports the figure as a .jpg file

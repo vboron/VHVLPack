@@ -25,7 +25,6 @@ def run_correction(directory):
         df['sqerror'] = df['error'].pow(2)
         df['sq_angle'] = df['angle'].pow(2)
         sum_sqe = df['sqerror'].sum()
-        print(df)
         n = df['angle'].count()
         meanabserror = (df['abs_err'].sum())/n
         rmsd = math.sqrt(sum_sqe/n)
@@ -35,7 +34,6 @@ def run_correction(directory):
         graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}')
         m, c = graphing.actual_vs_predicted_from_df(df, directory, file_name, file_name)
         datafile = path_name
-        print(datafile)
         stats = [meanabserror, rmsd, relrmse, m, c]
         summary_stats.append(stats)
 
