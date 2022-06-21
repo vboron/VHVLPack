@@ -1,11 +1,11 @@
 #!/usr/bin/python3
-import os
 import subprocess
 import pandas as pd
 
 # *************************************************************************
-def one_letter_code(pdb, res):
 
+
+def one_letter_code(pdb, res):
     """
     Go from the three-letter code to the one-letter code.
 
@@ -25,6 +25,8 @@ def one_letter_code(pdb, res):
     return one_letter
 
 # *************************************************************************
+
+
 def run_cmd(cmd_list, is_dry_run: bool, stdout=None, env=None, cwd=None, stderr=None):
     log_msg = f"Running {cmd_list}"
     # if env is not None:
@@ -34,10 +36,13 @@ def run_cmd(cmd_list, is_dry_run: bool, stdout=None, env=None, cwd=None, stderr=
         log_msg += f'; cwd={cwd}'
     print(log_msg)
     if not is_dry_run:
-        comp_process = subprocess.run(cmd_list, stdout=stdout, env=env, cwd=cwd, stderr=stderr)
+        comp_process = subprocess.run(
+            cmd_list, stdout=stdout, env=env, cwd=cwd, stderr=stderr)
         comp_process.check_returncode()
 
 # *************************************************************************
+
+
 def calc_relemse_from_csv(results_csv, rmse):
     """Read the .csv for angles and take the RMSE from the commandline to calculate the relative RMSE.
     Equation used: RELRMSE = (RMSE*(n**(1/2)))/((sum (angle**2))**(1/2))
@@ -80,6 +85,8 @@ def calc_relemse_from_csv(results_csv, rmse):
     return relrmse
 
 # *************************************************************************
+
+
 def calc_relrmse_from_df(df, rmse):
     rmse = float(rmse)
 
