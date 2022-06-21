@@ -80,7 +80,7 @@ def calc_relemse_from_csv(results_csv, rmse):
     return relrmse
 
 # *************************************************************************
-def calc_relrmse_from_df(df):
+def calc_relrmse_from_df(df, rmse):
     rmse = float(rmse)
 
     # Count the number of angles in the dataframe
