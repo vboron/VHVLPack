@@ -127,30 +127,23 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
         14.07.2021  Original   By: VAB
     """
     plt.figure()
-    # Color of outlier points
-    # TODO rename colors to something like "col_bestfit" etc.
+
     color_outliers = 'rosybrown'
-
-    # Color of normal points
     color_norm_values = 'mediumturquoise'
-
-    # Color of outlier best fit line
     color_bf_outliers = 'firebrick'
-
-    # Color of best fit line for full set
     color_bf_all = 'teal'
 
-    x2 = file_n['angle']
-    y2 = file_n['predicted']
+    x_norm = file_n['angle']
+    y_norm = file_n['predicted']
 
-    x3 = file_a['angle']
-    y3 = file_a['predicted']
+    x_all = file_a['angle']
+    y_all = file_a['predicted']
 
-    m3, b3 = np.polyfit(x3, y3, 1)
-    plt.plot(x3, m3 * x3 + b3, color=color_bf_all, linestyle='dashed', linewidth=1)
+    m_all, b_all = np.polyfit(x_all, y_all, 1)
+    plt.plot(x_all, m_all * x_all + b_all, color=color_bf_all, linestyle='dashed', linewidth=1)
 
     # Plot the outliers and normal values as scatter plots
-    plt.scatter(x2, y2, s=2, color=color_norm_values)
+    plt.scatter(x_norm, y_norm, s=2, color=color_norm_values)
 
     axes = plt.gca()
 
@@ -168,7 +161,7 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     # Adds graph annotations
     plt.text(s='Line: y=x', x=-61, y=-32, fontsize=8)
 
-    plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m3, b3),
+    plt.text(s='Best fit (all): y={:.3f}x+{:.3f}'.format(m_all, b_all),
              x=-61, y=-33, fontsize=8, color=color_bf_all)
     plt.text(s='RELRMSE (all): {:.3}'.format(
         float(stat_df_all['RELRMSE'])), x=-61, y=-34, fontsize=8)
@@ -178,31 +171,31 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
 
     # add best fit data to dataframe and export the dataframe
     # add best fit lines to statistics dataframe
-    best_ft_a = 'y={:.3f}x+{:.3f}'.format(m3, b3)
+    best_ft_a = 'y={:.3f}x+{:.3f}'.format(m_all, b_all)
 
     stat_df_all['fit'] = best_ft_a
-    stat_df_all['slope'] = m3
-    stat_df_all['intercept'] = b3
+    stat_df_all['slope'] = m_all
+    stat_df_all['intercept'] = b_all
 
     num_outliers = int(file_o['angle'].size)
     if num_outliers != 0:
         # Angle values are designated axis names
-        x1 = file_o['angle']
-        y1 = file_o['predicted']
+        x_out = file_o['angle']
+        y_out = file_o['predicted']
 
         # Line of best fit is calculated
-        m1, b1 = np.polyfit(x1, y1, 1)
-        plt.plot(x1, m1 * x1 + b1, color=color_bf_outliers, linestyle='dashed', linewidth=1)
-        plt.scatter(x1, y1, s=2, color=color_outliers)
+        m_out, b_out = np.polyfit(x_out, y_out, 1)
+        plt.plot(x_out, m_out * x_out + b_out, color=color_bf_outliers, linestyle='dashed', linewidth=1)
+        plt.scatter(x_out, y_out, s=2, color=color_outliers)
         plt.text(s='RELRMSE (outliers): {:.3}'.format(
             float(stat_df_out['RELRMSE'])), x=-61, y=-37, fontsize=8)
         plt.text(s='Best fit (outliers): y={:.3f}x+{:.3f}'.format(
-            m1, b1), x=-61, y=-36, fontsize=8, color=color_bf_outliers)
+            m_out, b_out), x=-61, y=-36, fontsize=8, color=color_bf_outliers)
         plt.text(s='Outliers', x=-61, y=-35, fontsize=8, color=color_outliers)
-        best_ft_o = 'y={:.3f}x+{:.3f}'.format(m1, b1)
+        best_ft_o = 'y={:.3f}x+{:.3f}'.format(m_out, b_out)
         stat_df_out['fit'] = best_ft_o
-        stat_df_out['slope'] = m1
-        stat_df_out['intercept'] = b1
+        stat_df_out['slope'] = m_out
+        stat_df_out['intercept'] = b_out
 
     path_stats_all = os.path.join(directory, f'{stats_csv_name}_all.csv')
     path_stats_out = os.path.join(directory, f'{stats_csv_name}_out.csv')
@@ -214,7 +207,7 @@ def plot_scatter(directory, file_o, file_n, stat_df_all, stat_df_out, file_a, st
     plt.savefig(path_fig, format='jpg')
     plt.close()
 
-    return m3, b3
+    return m_all, b_all
 
 
 def create_stats_and_graph(directory, csv_input, name_stats, name_graph):
