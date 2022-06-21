@@ -86,6 +86,15 @@ def calc_relemse_from_csv(results_csv, rmse):
 
 # *************************************************************************
 def calc_relrmse_from_df(df, rmse):
+    
+    """Read the df for angles and take the RMSE from the commandline to calculate the relative RMSE.
+    Equation used: RELRMSE = (RMSE*(n**(1/2)))/((sum (angle**2))**(1/2))
+
+    Inputs: df           --- The dataframe containing the predictions and errors
+            rmse         --- Input numerical rmse
+    Return: relrmse      --- The relative RMSE
+    """
+
     rmse = float(rmse)
 
     # Count the number of angles in the dataframe
