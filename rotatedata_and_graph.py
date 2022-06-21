@@ -3,7 +3,7 @@
 import argparse
 import os
 import pandas as pd
-from utils import run_cmd, calc_relrmse_from_df
+import utils
 import math
 import graphing
 
@@ -19,7 +19,7 @@ def run_correction(directory):
         cmds = ['./datarot.py', '-o', path_name]
         if m != None and c != None and datafile != None:
             cmds = cmds + ['-m', str(m), '-c', str(c), '--dataFile', datafile]
-        run_cmd(cmds, False)
+        utils.run_cmd(cmds, False)
         df = pd.read_csv(path_name)
         df['abs_err'] = df['error'].abs()
         df['sqerror'] = df['error'].pow(2)
@@ -28,7 +28,7 @@ def run_correction(directory):
         n = df['angle'].count()
         meanabserror = (df['abs_err'].sum())/n
         rmsd = math.sqrt(sum_sqe/n)
-        relrmse = calc_relrmse_from_df(df, rmsd)
+        relrmse = utils.relrmse_from_df(df, rmsd)
         # print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
         graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}')
