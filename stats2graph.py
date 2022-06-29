@@ -70,10 +70,8 @@ def find_stats(directory, input_csv, df_a, df_o):
     average_error = sum_sqerror / int(df_a_temp['angle'].size)
     rmse = math.sqrt(average_error)
 
-    os.path.join(directory, input_csv)
-
     # Call the utils.calc_rmse script which converts the RMSE into Relative RMSE
-    def getResult(rmse): return utils.calc_relrmse(
+    def getResult(rmse): return utils.calc_relemse_from_csv(
         os.path.join(directory, input_csv), rmse)
     relrmse = getResult(rmse)
 
