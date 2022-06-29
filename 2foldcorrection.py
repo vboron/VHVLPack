@@ -76,7 +76,7 @@ def plot_entire_corrected_set(directory, norm_df, out_df):
     csv_name = f'{file_name}.csv'
     path_name = os.path.join(directory, csv_name)
     df.to_csv(path_name, index=False)
-    stats2graph.create_stats_and_graph(directory, csv_name, file_name, file_name)
+    stats2graph.create_stats_and_colorcoded_graph(directory, csv_name, file_name, file_name)
     graphing.error_distribution(directory, csv_name, f'error_dist_correction_all_data')
 
 def two_fold_correction_and_plot(directory, csv_file, slope_m, intercept_c):
