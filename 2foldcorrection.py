@@ -81,7 +81,7 @@ def plot_entire_corrected_set(directory, norm_df, out_df):
 
 def two_fold_correction_and_plot(directory, csv_file, slope_m, intercept_c):
     df_norm, df_out = find_norms_and_outliers(directory, csv_file)
-    df_out_full = run_outlier_correction(directory, df_out, slope_m, slope_m)
+    df_out_full = run_outlier_correction(directory, df_norm, df_out, slope_m, intercept_c)
     plot_entire_corrected_set(directory, df_norm, df_out_full)
 
 if __name__ == '__main__':
