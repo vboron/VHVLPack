@@ -57,7 +57,7 @@ def run_outlier_correction(directory, df_normal, df_out, first_m, first_c):
         n = df['angle'].count()
         meanabserror = (df['abs_err'].sum())/n
         rmsd = math.sqrt(sum_sqe/n)
-        relrmse = utils.relrmse_from_df(path_name, rmsd)
+        relrmse = utils.relrmse_from_df(df, rmsd)
         # print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
         graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}_out')
