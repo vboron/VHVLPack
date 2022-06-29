@@ -97,8 +97,8 @@ def find_stats(directory, input_csv, df_a, df_o):
         stat_data_out.append(pearson_o)
         stat_data_out.extend([mean_abs_err_o, rmse_o, relrmse_o])
 
-    stats_all = pd.DataFrame(data=[stat_data_all], columns=stat_col)
-    stats_out = pd.DataFrame(data=[stat_data_out], columns=stat_col)
+    stats_all = pd.DataFrame(data=stat_data_all, columns=stat_col)
+    stats_out = pd.DataFrame(data=stat_data_out, columns=stat_col)
     return stats_all, stats_out
 
 
