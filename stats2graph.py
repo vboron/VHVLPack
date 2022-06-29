@@ -73,7 +73,7 @@ def find_stats(directory, input_csv, df_a, df_o):
     os.path.join(directory, input_csv)
 
     # Call the utils.calc_rmse script which converts the RMSE into Relative RMSE
-    def getResult(rmse): return utils.calc_relemse(
+    def getResult(rmse): return utils.calc_relrmse(
         os.path.join(directory, input_csv), rmse)
     relrmse = getResult(rmse)
 
