@@ -29,25 +29,25 @@ def find_norms_and_outliers(directory, csv_file):
     # print('normal:', df_normal, 'outliers:', df_outliers)
     return df_normal, df_outliers
 
-def run_norm_correction(directory, df_normal, df_out, first_m, first_c):
-    df_normal.to_csv(os.path.join(directory, 'Everything_NR2_GBReg_norm_0.csv'), index=False)
+def run_outlier_correction(directory, df_normal, df_out, first_m, first_c):
+    df_normal.to_csv(os.path.join(directory, 'Everything_NR2_GBReg_out_0.csv'), index=False)
     m = first_m
     c = first_c
     for i in range(1, 6):
 
-        file_name = f'Everything_NR2_GBReg_norm_{i}'
+        file_name = f'Everything_NR2_GBReg_out_{i}'
 
         csv_name = f'{file_name}.csv'
         path_name = os.path.join(directory, csv_name)
 
-        cmds = ['./datarot.py', '-o', path_name, '-m', str(m), '-c', str(c), '--dataFile', os.path.join(directory, f'Everything_NR2_GBReg_norm_{i-1}.csv')]
+        cmds = ['./datarot.py', '-o', path_name, '-m', str(m), '-c', str(c), '--dataFile', os.path.join(directory, f'Everything_NR2_GBReg_out_{i-1}.csv')]
 
         utils.run_cmd(cmds, False)
         df = pd.read_csv(path_name)
 
         # Make table of rotated normal values and the outliers 
         df_all = pd.concat([df, df_out])
-        corr_norm_out = f'{file_name}_plus_out.csv'
+        corr_norm_out = f'{file_name}_plus_norm.csv'
         df_all.to_csv(os.path.join(directory, corr_norm_out), index = False)
 
         df['abs_err'] = df['error'].abs()
@@ -57,36 +57,16 @@ def run_norm_correction(directory, df_normal, df_out, first_m, first_c):
         n = df['angle'].count()
         meanabserror = (df['abs_err'].sum())/n
         rmsd = math.sqrt(sum_sqe/n)
-        relrmse = utils.calc_relemse(path_name, rmsd)
+        relrmse = utils.relemse_from_df(path_name, rmsd)
         # print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
-        graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}_norm')
+        graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}_out')
         m, c = stats2graph.create_stats_and_graph(directory, corr_norm_out, file_name, file_name)
         stats = [meanabserror, rmsd, relrmse, m, c]
         stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
         # print(stats_df)
     
     return pd.read_csv(os.path.join(directory, 'Everything_NR2_GBReg_norm_5.csv'))
-
-def run_outlier_correction(directory, df_outliers, first_m, first_c):
-    m = float(first_m)
-    c = float(first_c)
-    
-    df_outliers['predicted'] = df_outliers['predicted'].apply(lambda x: x * m)
-    df_outliers['predicted'] = df_outliers['predicted'] - c
-
-    df_outliers['error'] = df_outliers['predicted'] - df_outliers['angle']
-
-    file_name = 'Everything_NR2_GBReg_outliers'
-    csv_name = f'{file_name}.csv'
-    path_name = os.path.join(directory, csv_name)
-    df_outliers.to_csv(path_name, index=False)
-
-    graphing.error_distribution(directory, csv_name, f'error_dist_correction_outlier')
-    m, c = stats2graph.create_stats_and_graph(directory, csv_name, file_name, file_name)
-
-    print(m, c)
-    return df_outliers
 
 def plot_entire_corrected_set(directory, norm_df, out_df):
     df = pd.concat([norm_df, out_df])
@@ -101,9 +81,8 @@ def plot_entire_corrected_set(directory, norm_df, out_df):
 
 def two_fold_correction_and_plot(directory, csv_file, slope_m, intercept_c):
     df_norm, df_out = find_norms_and_outliers(directory, csv_file)
-    df_norm_full = run_norm_correction(directory, df_norm, df_out, slope_m, intercept_c)
     df_out_full = run_outlier_correction(directory, df_out, slope_m, slope_m)
-    plot_entire_corrected_set(directory, df_norm_full, df_out_full)
+    plot_entire_corrected_set(directory, df_norm, df_out_full)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Program for applying a rotational correction factor recursively')
