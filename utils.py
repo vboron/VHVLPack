@@ -145,4 +145,4 @@ def stats_for_pred_vs_actual_graph(df):
     stat_data = [pearson_a, mean_abs_err, rmse, relrmse]
     stat_col = ['pearson', 'error', 'RMSE', 'RELRMSE']
     stats_df = pd.DataFrame(data=[stat_data], columns=stat_col)
-    return stats_df
+    return stats_df, stat_data
