@@ -61,7 +61,7 @@ def run_outlier_correction(directory, df_normal, df_out, first_m, first_c):
         # print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
 
         graphing.error_distribution(directory, csv_name, f'error_dist_correction_{i}_out')
-        m, c = stats2graph.create_stats_and_graph(directory, corr_norm_out, file_name, file_name)
+        m, c = stats2graph.create_stats_and_colorcoded_graph(directory, corr_norm_out, file_name, file_name)
         stats = [meanabserror, rmsd, relrmse, m, c]
         stats_df = pd.DataFrame(data=[stats], columns=['meanabserror', 'rmsd', 'relrmse', 'm', 'c'])
         # print(stats_df)
