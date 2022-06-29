@@ -1,6 +1,8 @@
 #!/usr/bin/python3
+import math
 import subprocess
 import pandas as pd
+import numpy as np
 
 # *************************************************************************
 
@@ -85,8 +87,9 @@ def calc_relemse_from_csv(results_csv, rmse):
     return relrmse
 
 # *************************************************************************
+
+
 def relrmse_from_df(df, rmse):
-    
     """Read the df for angles and take the RMSE from the commandline to calculate the relative RMSE.
     Equation used: RELRMSE = (RMSE*(n**(1/2)))/((sum (angle**2))**(1/2))
 
@@ -122,3 +125,24 @@ def relrmse_from_df(df, rmse):
 
     relrmse = (rmse*rn)/rc_sangles
     return relrmse
+
+# *************************************************************************
+
+
+def stats_for_pred_vs_actual_graph(df):
+
+    df['sqerror'] = np.square(df['error'])
+    sum_sqerror = df['sqerror'].sum()
+    average_error = sum_sqerror / int(df['angle'].size)
+    rmse = math.sqrt(average_error)
+
+    relrmse = relrmse_from_df(df, rmse)
+
+    # .corr() returns the correlation between two columns
+    pearson_a = df['angle'].corr(df['predicted'])
+
+    mean_abs_err = df['error'].abs().mean()
+    stat_data = [pearson_a, mean_abs_err, rmse, relrmse]
+    stat_col = ['pearson', 'error', 'RMSE', 'RELRMSE']
+    stats_df = pd.DataFrame(data=[stat_data], columns=stat_col)
+    return stats_df
