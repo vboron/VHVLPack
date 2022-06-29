@@ -206,7 +206,7 @@ def export_graph_stats(df, m, b, directory, stat_csv):
 
 def normandout_actual_vs_predicted_from_df(df_norm, df_out, directory, stats_csv_name, pa_graph_name):
        
-       df_all = pd.concat[df_norm, df_out]
+       df_all = pd.concat([df_norm, df_out])
 
        plt.figure()
 
