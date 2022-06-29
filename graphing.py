@@ -215,10 +215,10 @@ def normandout_actual_vs_predicted_from_df(df_norm, df_out, directory, stats_csv
        x_norm, y_norm = x_y_values(df_norm)
 
        # best fit line for entire dataset
-       m_all, b_all = best_fit_line(x_all, y_all, 'rebeccapurple')
+       m_all, b_all = best_fit_line(x_all, y_all, 'rebeccapurple', 'all')
 
        # best fir for outliers
-       m_out, b_out = best_fit_line(x_out, y_out, 'lightsalmon')
+       m_out, b_out = best_fit_line(x_out, y_out, 'lightsalmon', 'out')
 
        plt.scatter(x_norm, y_norm, s=2, color='mediumpurple')
        plt.scatter(x_out, y_norm, s=2, color='peachpuff')
