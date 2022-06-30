@@ -184,17 +184,17 @@ def x_y_values(df):
        y = df['predicted']
        return x, y
 
-def best_fit_line(x, y, color_bf, data_label):
+def best_fit_line(x, y, color_bf, data_label, label_x, label_y):
        m, b = np.polyfit(x, y, 1)
        plt.plot(x, m * x + b, color=color_bf, linestyle='dashed', linewidth=1)
        plt.text(s=f'Best fit ({data_label}): y={m:.{3}f}x+{b:.{3}f}',
-              x=-61, y=-33, fontsize=8, color=color_bf)
+              x=label_x, y=label_y, fontsize=8, color=color_bf)
        return m, b
 
-def export_graph_stats(df, m, b, directory, stat_csv):
+def export_graph_stats(df, m, b, directory, stat_csv, relrmse_x, relrmse_y):
        stats_df, _x_ = utils.stats_for_pred_vs_actual_graph(df)
        plt.text(s='RELRMSE: {:.3}'.format(
-              float(stats_df['RELRMSE'])), x=-61, y=-34, fontsize=8)
+              float(stats_df['RELRMSE'])), x=relrmse_x, y=relrmse_y, fontsize=8)
        bf_line = 'y={:.3f}x+{:.3f}'.format(m, b)
        stats_df['fit'] = bf_line
        stats_df['slope'] = m
@@ -215,10 +215,10 @@ def normandout_actual_vs_predicted_from_df(df_norm, df_out, directory, stats_csv
        x_norm, y_norm = x_y_values(df_norm)
 
        # best fit line for entire dataset
-       m_all, b_all = best_fit_line(x_all, y_all, 'rebeccapurple', 'all')
+       m_all, b_all = best_fit_line(x_all, y_all, 'rebeccapurple', 'all', -61, -33)
 
        # best fir for outliers
-       m_out, b_out = best_fit_line(x_out, y_out, 'lightsalmon', 'out')
+       m_out, b_out = best_fit_line(x_out, y_out, 'lightsalmon', 'out', -61, -35)
 
        plt.scatter(x_norm, y_norm, s=2, color='mediumpurple')
        plt.scatter(x_out, y_norm, s=2, color='peachpuff')
@@ -241,8 +241,8 @@ def normandout_actual_vs_predicted_from_df(df_norm, df_out, directory, stats_csv
 
        plt.tight_layout()
        
-       export_graph_stats(df_all, m_all, b_all, directory, f'{stats_csv_name}_all')
-       export_graph_stats(df_out, m_out, b_out, directory, f'{stats_csv_name}_out')
+       export_graph_stats(df_all, m_all, b_all, directory, f'{stats_csv_name}_all', -61, -34)
+       export_graph_stats(df_out, m_out, b_out, directory, f'{stats_csv_name}_out', -61, -36)
        
        # Exports the figure as a .jpg file
        path_fig = os.path.join(directory, f'{pa_graph_name}.jpg')
