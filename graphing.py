@@ -221,7 +221,7 @@ def normandout_actual_vs_predicted_from_df(df_norm, df_out, directory, stats_csv
        m_out, b_out = best_fit_line(x_out, y_out, 'lightsalmon', 'out', -61, -35)
 
        plt.scatter(x_norm, y_norm, s=2, color='mediumpurple')
-       plt.scatter(x_out, y_norm, s=2, color='peachpuff')
+       plt.scatter(x_out, y_out, s=2, color='peachpuff')
 
        axes = plt.gca()
 
