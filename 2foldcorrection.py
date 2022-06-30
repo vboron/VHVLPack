@@ -28,7 +28,7 @@ def find_norms_and_outliers(directory, csv_file):
 
 
 def run_outlier_correction(directory, df_normal, df_out, first_m, first_c):
-    df_normal.to_csv(os.path.join(
+    df_out.to_csv(os.path.join(
         directory, 'Everything_NR2_GBReg_out_0.csv'), index=False)
     m = first_m
     c = first_c
