@@ -117,7 +117,7 @@ def CorrectAndPrintDataFile(dataFile, m, c):
 
     intersectX, intersectY, ok = FindIntersection(m, c, 1, 0)
     if(ok):
-        xData, yData = TranslateDataArrays(yData, yData, ndata,
+        xData, yData = TranslateDataArrays(xData, yData, ndata,
                                             -intersectX, -intersectY)
         angle = FindAngle(m, 1)
         xData, yData = RotateDataArray(xData, yData, ndata, -angle)
