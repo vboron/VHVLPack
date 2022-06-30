@@ -65,7 +65,7 @@ def run_outlier_correction(directory, df_out, first_m, first_c):
         graphing.actual_vs_predicted_from_df(
             df, directory, file_name, file_name)
 
-    return pd.read_csv(os.path.join(directory, 'Everything_NR2_GBReg_out_2.csv'))
+    return pd.read_csv(os.path.join(directory, 'Everything_NR2_GBReg_out_1.csv'))
 
 
 def plot_entire_corrected_set(directory, norm_df, out_df):
