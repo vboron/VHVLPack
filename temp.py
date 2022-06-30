@@ -12,4 +12,5 @@ if __name__ == '__main__':
     df = pd.read_csv(path)
     pdb_codes = df['code'].to_list()
     with open(os.path.join('Everything', 'pdb_list.txt'), 'w') as f:
-        f.write(pdb_codes)
+        for item in pdb_codes:
+            f.write(item + '\n')
