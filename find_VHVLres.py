@@ -22,6 +22,8 @@ from utils import one_letter_code
 import argparse
 
 # *************************************************************************
+
+
 def read_pdbfiles_as_lines(directory):
     """Read PDB files as lines, then make a dictionary of the PDB code and all the lines that start with 'ATOM'
 
@@ -112,7 +114,7 @@ def prep_table(dictionary):
 
 
 # *************************************************************************
-def vh_vl_relevant_residues(vtable):
+def vh_vl_relevant_residues(vtable, residue_list_file):
     """Filter table for residues relevant for VH-VL packing
 
     Input:  vtable        --- Sorted table that contains information about the chain, residues, positions of all atoms
@@ -122,7 +124,8 @@ def vh_vl_relevant_residues(vtable):
     """
 
     # Look for rows that contain the specified residue locations
-    good_positions = ['L38', 'L40', 'L41', 'L44', 'L46', 'L87', 'H33', 'H42', 'H45', 'H60', 'H62', 'H91', 'H105']
+    good_positions = [i.strip('\n')
+                      for i in open(residue_list_file).readlines()]
     vtable = vtable[vtable['L/H position'].isin(good_positions)]
 
     # Create a table of the residue data for the specific locations
@@ -130,21 +133,27 @@ def vh_vl_relevant_residues(vtable):
     return out_table
 
 
+def extract_and_export_packing_residues(directory, csv_output, residue_positions):
+    csv_path = os.path.join(directory, (csv_output + '.csv'))
+    pdb_lines = read_pdbfiles_as_lines(directory)
+    init_table = prep_table(pdb_lines)
+    VHVLtable = vh_vl_relevant_residues(init_table, residue_positions)
+    VHVLtable.to_csv(csv_path, index=False)
+
+
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
-parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
-parser.add_argument('--directory', help='Directory of pdb files', required=True)
-parser.add_argument('--csv_output', help='Name of the csv file that will be the output', required=True)
-args = parser.parse_args()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Program for extracting VH/VL relevant residues')
+    parser.add_argument(
+        '--directory', help='Directory of pdb files', required=True)
+    parser.add_argument(
+        '--csv_output', help='Name of the csv file that will be the output', required=True)
+    parser.add_argument('--residue_positions',
+                        help='File containing a list of the residues to be used as features', required=True)
+    args = parser.parse_args()
 
-csv_path = os.path.join(args.directory, (args.csv_output + '.csv'))
-
-pdb_lines = read_pdbfiles_as_lines(args.directory)
-
-init_table = prep_table(pdb_lines)
-
-VHVLtable = vh_vl_relevant_residues(init_table)
-
-# index= FALSE removes indexing column from the dataframe
-VHVLtable.to_csv(csv_path, index=False)
+    extract_and_export_packing_residues(
+        args.directory, args.csv_output, args.residue_positions)
