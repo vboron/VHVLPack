@@ -59,7 +59,6 @@ def prep_table(df, residue_list_file):
 def pivot_df(df, directory, csv_output):
     df = df.pivot(index='code', columns='L/H position', values='residue')
     # df.reset_index()
-    print(df)
     csv_path = os.path.join(directory, f'{csv_output}.csv')
     df.to_csv(csv_path, index=True)
     return df
