@@ -66,62 +66,22 @@ def read_pdbfiles_as_lines(directory):
 
             # pdb_dict[structure_file] = atom_lines
             text_file.close()
+    
     df = pd.DataFrame(data = atom_lines, columns=col)
-    # df = df.drop_duplicates()
-    print(df)
     return df
 
 
 # *************************************************************************
-def prep_table(dictionary, residue_list_file, csv_output, directory):
-    """Build table for atom information using pandas dataframes
-
-    Input:  dict_list      --- Dictionary of PDB codes associated with 'ATOM' lines
-    Return: ftable         --- Sorted table that contains the details needed to search for the relevant residues:
-    e.g.
-      PDB Code chain residue number L/H position
-0       5DMG_2     L       Q      2           L2
-9       5DMG_2     L       V      3           L3
-16      5DMG_2     L       L      4           L4
-
-    10.03.2021  Original   By: VAB
-    26.03.2021  V2.0       By: VAB
-    """
-
-    table = []
-
-    # Assign column names for residue table
-    c = ['code', 'L/H position', 'residue']
+def prep_table(df, residue_list_file, csv_output, directory):
 
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
 
-    # Locate specific residue information
-    for key, value in dictionary.items():
-        print(value)
-        pdb_code = key
-        items = value.split()
-        res_num = items[5]
-        chain = items[4]
-        residue = items[3]
-        lhposition = str(f'{chain}{res_num}')
-        if lhposition in good_positions:
-            # Use defined dictionary to convert 3-letter res code to 1-letter
-            try:
-                res_one = str(one_letter_code(key, residue))
-            except ValueError:
-                continue
 
-            # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
-            
-            res_info = [pdb_code, lhposition, res_one]
-            table.append(res_info)
-
-    # Use pandas to build a data table from compiled residue info and column headers:
-    ftable = pd.DataFrame(data=table, columns=c)
-    print(ftable)
-    # Remove all row duplicates
+    df = df[df['L/H position'].isin(good_positions)]
+    print(df)
     ftable = ftable.drop_duplicates()
+
     csv_path = os.path.join(directory, (csv_output + '.csv'))
     ftable.to_csv(csv_path, index=False)
     return ftable
@@ -129,7 +89,7 @@ def prep_table(dictionary, residue_list_file, csv_output, directory):
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
-    # VHVLtable = prep_table(pdb_lines, residue_positions, csv_output, directory)
+    VHVLtable = prep_table(pdb_lines, residue_positions, csv_output, directory)
     # return VHVLtable
     
     
