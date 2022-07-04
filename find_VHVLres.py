@@ -53,16 +53,16 @@ def read_pdbfiles_as_lines(directory):
             pdb_code = structure_file[:-4]
 
             for line in text_file.read().split('\n'):
-                print(line)
                 if str(line).strip().startswith('ATOM'):
                     # atom_lines.append(line)
                     items = line.split()
-                    res_num = items[5]
-                    chain = items[4]
-                    residue = items[3]
-                    lhposition = str(f'{chain}{res_num}')
-                    data = [pdb_code, lhposition, residue]
-                    atom_lines.append(data)
+                    if items[2] == 'CA':
+                        res_num = items[5]
+                        chain = items[4]
+                        residue = items[3]
+                        lhposition = str(f'{chain}{res_num}')
+                        data = [pdb_code, lhposition, residue]
+                        atom_lines.append(data)
 
             # pdb_dict[structure_file] = atom_lines
             text_file.close()
