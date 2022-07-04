@@ -124,10 +124,12 @@ def vh_vl_relevant_residues(vtable, residue_list_file):
     # Look for rows that contain the specified residue locations
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
+
     vtable = vtable[vtable['L/H position'].isin(good_positions)]
 
     # Create a table of the residue data for the specific locations
     out_table = vtable.loc[:, ('code', 'L/H position', 'residue')]
+    out_table.pivot(index=out_table.index, columns='L/H position')['residue']
     return out_table
 
 
