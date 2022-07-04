@@ -79,9 +79,10 @@ def prep_table(df, residue_list_file, csv_output, directory):
 
 
     df = df[df['L/H position'].isin(good_positions)]
-    for row in df.iterrows():
-        row['residue'] = one_letter_code(row['code'], row['residue'])
-        print(df)
+    def apply_one_letter_code(row):
+        one_letter_code(row[0], row[2])
+    df['residue'] = df.apply(apply_one_letter_code, axis=1)
+    print(df)
     # ftable = ftable.drop_duplicates()
 
     # csv_path = os.path.join(directory, (csv_output + '.csv'))
