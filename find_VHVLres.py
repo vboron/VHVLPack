@@ -63,7 +63,7 @@ def read_pdbfiles_as_lines(directory):
 
 
 # *************************************************************************
-def prep_table(dictionary):
+def prep_table(dictionary, residue_list_file):
     """Build table for atom information using pandas dataframes
 
     Input:  dict_list      --- Dictionary of PDB codes associated with 'ATOM' lines
@@ -83,6 +83,9 @@ def prep_table(dictionary):
     # Assign column names for residue table
     c = ['code', 'chain', 'residue', 'number', 'L/H position']
 
+    good_positions = [i.strip('\n')
+                      for i in open(residue_list_file).readlines()]
+
     # Locate specific residue information
     for key, value in dictionary.items():
         pdb_code = key
@@ -91,28 +94,29 @@ def prep_table(dictionary):
             res_num = items[5]
             chain = items[4]
             residue = items[3]
-
-            # Use defined dictionary to convert 3-letter res code to 1-letter
-            try:
-                res_one = str(one_letter_code(key, residue))
-            except ValueError:
-                continue
-
-            # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
             lhposition = str(f'{chain}{res_num}')
-            res_info = [pdb_code, chain, res_one, res_num, lhposition]
-            table.append(res_info)
+            if lhposition in good_positions:
+                # Use defined dictionary to convert 3-letter res code to 1-letter
+                try:
+                    res_one = str(one_letter_code(key, residue))
+                except ValueError:
+                    continue
+
+                # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
+                
+                res_info = [pdb_code, chain, res_one, res_num, lhposition]
+                table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(data=table, columns=c)
-
+    print(ftable)
     # Remove all row duplicates
     ftable = ftable.drop_duplicates()
     return ftable
 
 
 # *************************************************************************
-def vh_vl_relevant_residues(vtable, residue_list_file):
+def vh_vl_relevant_residues(vtable):
     """Filter table for residues relevant for VH-VL packing
 
     Input:  vtable        --- Sorted table that contains information about the chain, residues, positions of all atoms
@@ -121,11 +125,11 @@ def vh_vl_relevant_residues(vtable, residue_list_file):
     26.03.2021  Original   By: VAB
     """
 
-    # Look for rows that contain the specified residue locations
-    good_positions = [i.strip('\n')
-                      for i in open(residue_list_file).readlines()]
+    # # Look for rows that contain the specified residue locations
+    # good_positions = [i.strip('\n')
+    #                   for i in open(residue_list_file).readlines()]
 
-    vtable = vtable[vtable['L/H position'].isin(good_positions)]
+    # vtable = vtable[vtable['L/H position'].isin(good_positions)]
 
     # Create a table of the residue data for the specific locations
     out_table = vtable.loc[:, ('code', 'L/H position', 'residue')]
@@ -137,7 +141,7 @@ def vh_vl_relevant_residues(vtable, residue_list_file):
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     csv_path = os.path.join(directory, (csv_output + '.csv'))
     pdb_lines = read_pdbfiles_as_lines(directory)
-    init_table = prep_table(pdb_lines)
+    init_table = prep_table(pdb_lines, residue_positions)
     VHVLtable = vh_vl_relevant_residues(init_table, residue_positions)
     VHVLtable.to_csv(csv_path, index=False)
 
