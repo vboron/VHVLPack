@@ -58,10 +58,10 @@ def prep_table(df, residue_list_file):
 # *************************************************************************
 def pivot_df(df, directory, csv_output):
     df = df.pivot(index='code', columns='L/H position', values='residue')
+    # df.reset_index()
+    print(df)
     csv_path = os.path.join(directory, (csv_output + '.csv'))
     df.to_csv(csv_path, index=True)
-    df.reset_index()
-    print(df)
     return df
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
