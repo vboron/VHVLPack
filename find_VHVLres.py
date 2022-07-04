@@ -65,6 +65,8 @@ def pivot_df(df, directory, csv_output):
     return df
 
 def encode_4d(df):
+
+    test = df.apply(encode_rows, axis=1)
     def encode_rows(row):
         print(row)
 
