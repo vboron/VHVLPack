@@ -66,6 +66,7 @@ def pivot_df(df, directory, csv_output):
 def encode_4d(df):
     def encode_rows(row):
         print(row)
+        # TODO write a function that will encode each residue
     test = df.apply(encode_rows, axis=1)
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
