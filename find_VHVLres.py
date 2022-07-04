@@ -25,22 +25,10 @@ import argparse
 
 
 def read_pdbfiles_as_lines(directory):
-    """Read PDB files as lines, then make a dictionary of the PDB code and all the lines that start with 'ATOM'
-
-    Return: pdb_dict    --- Dictionary of PDB names with all of the lines containing atom details
-    e.g.
-    {'5DMG_2': ['ATOM   4615  N   GLN L   2     -34.713  12.044 -12.438  1.00 44.10         N  ',...'], '5DQ9_3':...'}
-
-    10.03.2021  Original   By: VAB
-    """
-    # Creates an empty list, then iterates over all files in the directory called from the
-    # commandline. Adds all these .pdb  and .ent files to the list.
     files = []
 
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
-
-            # Prepends the directory path to the front of the file name to create full filepath
             files.append(os.path.join(directory, file))
 
     atom_lines = []
@@ -54,7 +42,6 @@ def read_pdbfiles_as_lines(directory):
 
             for line in text_file.read().split('\n'):
                 if str(line).strip().startswith('ATOM'):
-                    # atom_lines.append(line)
                     items = line.split()
                     if items[2] == 'CA':
                         res_num = items[5]
@@ -63,8 +50,6 @@ def read_pdbfiles_as_lines(directory):
                         lhposition = str(f'{chain}{res_num}')
                         data = [pdb_code, lhposition, residue]
                         atom_lines.append(data)
-
-            # pdb_dict[structure_file] = atom_lines
             text_file.close()
 
     df = pd.DataFrame(data=atom_lines, columns=col)
@@ -87,14 +72,19 @@ def prep_table(df, residue_list_file, csv_output, directory):
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
 
     csv_path = os.path.join(directory, (csv_output + '.csv'))
-    df.to_csv(csv_path, index=False)
+    # df.to_csv(csv_path, index=False)
     return df
 
+# *************************************************************************
+def pivot_df(df):
+    df.pivot(index=df.index, columns='L/H position')['residue']
+    print(df)
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
     VHVLtable = prep_table(pdb_lines, residue_positions, csv_output, directory)
-    return VHVLtable
+    pivot_df(VHVLtable)
+    # return VHVLtable
 
 
 # *************************************************************************
