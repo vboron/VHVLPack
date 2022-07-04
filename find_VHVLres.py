@@ -79,12 +79,13 @@ def prep_table(df, residue_list_file, csv_output, directory):
 
 
     df = df[df['L/H position'].isin(good_positions)]
+    df['residue'] = one_letter_code(df['code'], df['residue'])
     print(df)
     ftable = ftable.drop_duplicates()
 
     csv_path = os.path.join(directory, (csv_output + '.csv'))
-    ftable.to_csv(csv_path, index=False)
-    return ftable
+    # ftable.to_csv(csv_path, index=False)
+    # return ftable
 
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
