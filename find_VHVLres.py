@@ -88,6 +88,7 @@ def prep_table(dictionary, residue_list_file):
 
     # Locate specific residue information
     for key, value in dictionary.items():
+        print(value)
         pdb_code = key
         items = value.split()
         res_num = items[5]
