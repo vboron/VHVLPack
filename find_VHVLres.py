@@ -117,6 +117,7 @@ def prep_table(dictionary, residue_list_file):
             table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
+    print(table)
     ftable = pd.DataFrame(data=[table], columns=c)
     print(ftable)
     # Remove all row duplicates
