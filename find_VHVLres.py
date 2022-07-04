@@ -62,6 +62,7 @@ def read_pdbfiles_as_lines(directory):
 
             # Associate the name of the file with the relevant lines in a dictionary
             pdb_dict[structure_file] = atom_lines
+            text_file.close()
 
     return pdb_dict
 
