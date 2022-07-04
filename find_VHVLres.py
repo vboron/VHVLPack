@@ -57,11 +57,10 @@ def read_pdbfiles_as_lines(directory):
 
 
 # *************************************************************************
-def prep_table(df, residue_list_file, csv_output, directory):
+def prep_table(df, residue_list_file):
 
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
-
     df = df[df['L/H position'].isin(good_positions)]
 
     def apply_one_letter_code(row):
@@ -70,20 +69,19 @@ def prep_table(df, residue_list_file, csv_output, directory):
         return res_one_letter
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
-
-    csv_path = os.path.join(directory, (csv_output + '.csv'))
-    # df.to_csv(csv_path, index=False)
     return df
 
 # *************************************************************************
-def pivot_df(df):
+def pivot_df(df, directory, csv_output):
     df = df.pivot(index='code', columns='L/H position', values='residue')
-    print(df)
+    csv_path = os.path.join(directory, (csv_output + '.csv'))
+    df.to_csv(csv_path, index=False)
+    return df
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
-    VHVLtable = prep_table(pdb_lines, residue_positions, csv_output, directory)
-    pivot_df(VHVLtable)
+    VHVLtable = prep_table(pdb_lines, residue_positions)
+    pivot_df(VHVLtable, directory, csv_output)
     # return VHVLtable
 
 
