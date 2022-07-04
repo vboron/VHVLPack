@@ -81,7 +81,7 @@ def prep_table(dictionary, residue_list_file):
     table = []
 
     # Assign column names for residue table
-    c = ['code', 'chain', 'residue', 'number', 'L/H position']
+    c = ['code', 'L/H position', 'residue']
 
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
@@ -104,7 +104,7 @@ def prep_table(dictionary, residue_list_file):
 
                 # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
                 
-                res_info = [pdb_code, chain, res_one, res_num, lhposition]
+                res_info = [pdb_code, lhposition, res_one]
                 table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
@@ -115,34 +115,10 @@ def prep_table(dictionary, residue_list_file):
     return ftable
 
 
-# *************************************************************************
-def vh_vl_relevant_residues(vtable):
-    """Filter table for residues relevant for VH-VL packing
-
-    Input:  vtable        --- Sorted table that contains information about the chain, residues, positions of all atoms
-    Return: out_table     --- Sorted table that contains the residue identities of the specified VH/L positions
-
-    26.03.2021  Original   By: VAB
-    """
-
-    # # Look for rows that contain the specified residue locations
-    # good_positions = [i.strip('\n')
-    #                   for i in open(residue_list_file).readlines()]
-
-    # vtable = vtable[vtable['L/H position'].isin(good_positions)]
-
-    # Create a table of the residue data for the specific locations
-    out_table = vtable.loc[:, ('code', 'L/H position', 'residue')]
-    # out_table.pivot(index=out_table.index, columns='L/H position')['residue']
-    print(out_table)
-    return out_table
-
-
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     csv_path = os.path.join(directory, (csv_output + '.csv'))
     pdb_lines = read_pdbfiles_as_lines(directory)
-    init_table = prep_table(pdb_lines, residue_positions)
-    VHVLtable = vh_vl_relevant_residues(init_table, residue_positions)
+    VHVLtable = prep_table(pdb_lines, residue_positions)
     VHVLtable.to_csv(csv_path, index=False)
 
 
