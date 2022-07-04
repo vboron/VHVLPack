@@ -2,7 +2,7 @@
 
 import os
 import pandas as pd
-from utils import one_letter_code
+import utils
 import argparse
 
 # *************************************************************************
@@ -48,7 +48,7 @@ def prep_table(df, residue_list_file):
     df = df[df['L/H position'].isin(good_positions)]
 
     def apply_one_letter_code(row):
-        res_one_letter = one_letter_code(row[0], row[2])
+        res_one_letter = utils.one_letter_code(row[0], row[2])
         # print(res_one_letter)
         return res_one_letter
 
@@ -60,15 +60,20 @@ def pivot_df(df, directory, csv_output):
     df = df.pivot(index='code', columns='L/H position', values='residue')
     # df.reset_index()
     print(df)
-    csv_path = os.path.join(directory, (csv_output + '.csv'))
+    csv_path = os.path.join(directory, f'{csv_output}.csv')
     df.to_csv(csv_path, index=True)
     return df
+
+def encode_4d(df):
+    def encode_rows(row):
+        print(row)
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
     VHVLtable = prep_table(pdb_lines, residue_positions)
-    pivot_df(VHVLtable, directory, csv_output)
+    pivotted_table = pivot_df(VHVLtable, directory, csv_output)
     # return VHVLtable
+    encode_4d(pivotted_table)
 
 
 # *************************************************************************
