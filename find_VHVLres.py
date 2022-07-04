@@ -46,7 +46,7 @@ def read_pdbfiles_as_lines(directory):
     atom_lines = []
     col = ['code', 'L/H position', 'residue']
     for structure_file in files:
-        
+
         with open(structure_file, "r") as text_file:
 
             structure_file = structure_file.replace(directory, '')
@@ -66,8 +66,8 @@ def read_pdbfiles_as_lines(directory):
 
             # pdb_dict[structure_file] = atom_lines
             text_file.close()
-    
-    df = pd.DataFrame(data = atom_lines, columns=col)
+
+    df = pd.DataFrame(data=atom_lines, columns=col)
     return df
 
 
@@ -85,20 +85,16 @@ def prep_table(df, residue_list_file, csv_output, directory):
         return res_one_letter
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
-    print(df)
-    # ftable = ftable.drop_duplicates()
 
-    # csv_path = os.path.join(directory, (csv_output + '.csv'))
-    # ftable.to_csv(csv_path, index=False)
-    # return ftable
+    csv_path = os.path.join(directory, (csv_output + '.csv'))
+    df.to_csv(csv_path, index=False)
+    return df
 
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
     VHVLtable = prep_table(pdb_lines, residue_positions, csv_output, directory)
-    # return VHVLtable
-    
-    
+    return VHVLtable
 
 
 # *************************************************************************
