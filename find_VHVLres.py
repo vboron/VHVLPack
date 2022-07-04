@@ -51,9 +51,10 @@ def read_pdbfiles_as_lines(directory):
 
             # Remove the path and the extension from the name of the PDB file
             print(structure_file)
-            structure_file = structure_file.replace(f'{directory}/', '')
+            structure_file.replace(directory, '')
             print(structure_file)
             structure_file = structure_file[:-4]
+            print(structure_file)
 
             # Search for lines that contain 'ATOM' and add to atom_lines list
             for line in text_file.read().split('\n'):
