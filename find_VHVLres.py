@@ -81,6 +81,7 @@ def prep_table(df, residue_list_file, csv_output, directory):
 
     def apply_one_letter_code(row):
         res_one_letter = one_letter_code(row[1], row[3])
+        print(res_one_letter)
         return res_one_letter
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
