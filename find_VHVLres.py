@@ -80,7 +80,7 @@ def prep_table(df, residue_list_file, csv_output, directory):
 
     df = df[df['L/H position'].isin(good_positions)]
     def apply_one_letter_code(row):
-        print(row)
+        print(row[0], row[1], row[2])
         # one_letter_code(row[1], row[3])
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
     print(df)
