@@ -1,21 +1,5 @@
 #!/usr/bin/env python3
-"""
-Function:   Find the residue identities corresponding to the numbering for VH-VL-packing relevant residues
 
-Description:
-============
-The program will take PDB files and extract a string of one letter residue codes for the VH-VL-Packing relevant region
-and deposits into csv file
-e.g.
-      code L/H position residue
-    5DMG_2          L38       Q
-    5DMG_2          L40       P
-    5DMG_2          L41       G
-    5DMG_2          L44       P
-
---------------------------------------------------------------------------
-"""
-# *************************************************************************
 import os
 import pandas as pd
 from utils import one_letter_code
@@ -76,6 +60,7 @@ def pivot_df(df, directory, csv_output):
     df = df.pivot(index='code', columns='L/H position', values='residue')
     csv_path = os.path.join(directory, (csv_output + '.csv'))
     df.to_csv(csv_path, index=False)
+    df.reset_index()
     return df
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
