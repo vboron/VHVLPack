@@ -66,7 +66,7 @@ def read_pdbfiles_as_lines(directory):
 
             # pdb_dict[structure_file] = atom_lines
             text_file.close()
-    df = pd.DataFrame(data = (data), columns=col)
+    df = pd.DataFrame(data = atom_lines, columns=col)
     print(df)
     return df
 
@@ -117,8 +117,7 @@ def prep_table(dictionary, residue_list_file):
             table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
-    print(table)
-    ftable = pd.DataFrame(data=[table], columns=c)
+    ftable = pd.DataFrame(data=table, columns=c)
     print(ftable)
     # Remove all row duplicates
     ftable = ftable.drop_duplicates()
