@@ -151,8 +151,8 @@ if __name__ == '__main__':
         '--directory', help='Directory of pdb files', required=True)
     parser.add_argument(
         '--csv_output', help='Name of the csv file that will be the output', required=True)
-    parser.add_argument('--residue_positions',
-                        help='File containing a list of the residues to be used as features', required=True)
+    parser.add_argument(
+        '--residue_positions', help='File containing a list of the residues to be used as features', required=True)
     args = parser.parse_args()
 
     extract_and_export_packing_residues(
