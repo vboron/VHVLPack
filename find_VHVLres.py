@@ -43,7 +43,6 @@ def read_pdbfiles_as_lines(directory):
             # Prepends the directory path to the front of the file name to create full filepath
             files.append(os.path.join(directory, file))
 
-    # pdb_dict = {}
     atom_lines = []
     col = ['code', 'L/H position', 'residue']
     for structure_file in files:
@@ -54,6 +53,7 @@ def read_pdbfiles_as_lines(directory):
             pdb_code = structure_file[:-4]
 
             for line in text_file.read().split('\n'):
+                print(line)
                 if str(line).strip().startswith('ATOM'):
                     # atom_lines.append(line)
                     items = line.split()
@@ -67,12 +67,13 @@ def read_pdbfiles_as_lines(directory):
             # pdb_dict[structure_file] = atom_lines
             text_file.close()
     df = pd.DataFrame(data = atom_lines, columns=col)
+    # df = df.drop_duplicates()
     print(df)
     return df
 
 
 # *************************************************************************
-def prep_table(dictionary, residue_list_file):
+def prep_table(dictionary, residue_list_file, csv_output, directory):
     """Build table for atom information using pandas dataframes
 
     Input:  dict_list      --- Dictionary of PDB codes associated with 'ATOM' lines
@@ -121,14 +122,17 @@ def prep_table(dictionary, residue_list_file):
     print(ftable)
     # Remove all row duplicates
     ftable = ftable.drop_duplicates()
+    csv_path = os.path.join(directory, (csv_output + '.csv'))
+    ftable.to_csv(csv_path, index=False)
     return ftable
 
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
-    csv_path = os.path.join(directory, (csv_output + '.csv'))
     pdb_lines = read_pdbfiles_as_lines(directory)
-    VHVLtable = prep_table(pdb_lines, residue_positions)
-    VHVLtable.to_csv(csv_path, index=False)
+    # VHVLtable = prep_table(pdb_lines, residue_positions, csv_output, directory)
+    # return VHVLtable
+    
+    
 
 
 # *************************************************************************
