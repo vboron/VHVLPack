@@ -61,6 +61,7 @@ def pivot_df(df, directory, csv_output):
     csv_path = os.path.join(directory, (csv_output + '.csv'))
     df.to_csv(csv_path, index=False)
     df.reset_index()
+    print(df)
     return df
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
