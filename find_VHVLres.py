@@ -129,7 +129,7 @@ def vh_vl_relevant_residues(vtable, residue_list_file):
 
     # Create a table of the residue data for the specific locations
     out_table = vtable.loc[:, ('code', 'L/H position', 'residue')]
-    out_table.pivot(index=out_table.index, columns='L/H position')['residue']
+    # out_table.pivot(index=out_table.index, columns='L/H position')['residue']
     print(out_table)
     return out_table
 
