@@ -64,10 +64,9 @@ def pivot_df(df, directory, csv_output):
     return df
 
 def encode_4d(df):
-
-    test = df.apply(encode_rows, axis=1)
     def encode_rows(row):
         print(row)
+    test = df.apply(encode_rows, axis=1)
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
