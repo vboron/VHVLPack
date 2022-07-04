@@ -89,23 +89,22 @@ def prep_table(dictionary, residue_list_file):
     # Locate specific residue information
     for key, value in dictionary.items():
         pdb_code = key
-        for data in value:
-            items = data.split()
-            res_num = items[5]
-            chain = items[4]
-            residue = items[3]
-            lhposition = str(f'{chain}{res_num}')
-            if lhposition in good_positions:
-                # Use defined dictionary to convert 3-letter res code to 1-letter
-                try:
-                    res_one = str(one_letter_code(key, residue))
-                except ValueError:
-                    continue
+        items = value.split()
+        res_num = items[5]
+        chain = items[4]
+        residue = items[3]
+        lhposition = str(f'{chain}{res_num}')
+        if lhposition in good_positions:
+            # Use defined dictionary to convert 3-letter res code to 1-letter
+            try:
+                res_one = str(one_letter_code(key, residue))
+            except ValueError:
+                continue
 
-                # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
-                
-                res_info = [pdb_code, lhposition, res_one]
-                table.append(res_info)
+            # Create a column that reads the light/ heavy chain residue location e.g. L38 (for easy search)
+            
+            res_info = [pdb_code, lhposition, res_one]
+            table.append(res_info)
 
     # Use pandas to build a data table from compiled residue info and column headers:
     ftable = pd.DataFrame(data=table, columns=c)
