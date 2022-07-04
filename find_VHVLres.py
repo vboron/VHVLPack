@@ -80,7 +80,7 @@ def prep_table(df, residue_list_file, csv_output, directory):
 
     df = df[df['L/H position'].isin(good_positions)]
     for row in df.iterrows():
-        df['residue'] = one_letter_code(df['code'], df['residue'])
+        # df['residue'] = one_letter_code(df['code'], df['residue'])
         print(row)
     # ftable = ftable.drop_duplicates()
 
