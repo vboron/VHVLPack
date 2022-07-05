@@ -163,8 +163,8 @@ def compactness(resi):
     compactness_dic = {'A': 1, 'R': 6, "N": 3, "D": 3, "C": 2, "Q": 4, "E": 4, "G": 0, "H": 4, "I": 3,
                        "L": 3, "K": 6, "M": 4, "F": 5, "P": 2,
                        "S": 2, "T": 2, "W": 6, "Y": 6, "V": 2, "X": 4.45}  # , "X": 4.45
-    compactness = nan
-    if resi != nan:
+    compactness = 'nan'
+    if resi != 'nan':
         compactness = compactness_dic[resi]
     return compactness
 
