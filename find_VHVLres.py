@@ -49,7 +49,7 @@ def prep_table(df, residue_list_file):
     df = df[df['L/H position'].isin(good_positions)]
 
     def apply_one_letter_code(row):
-        res_one_letter = utils.one_letter_code(row[0], row[2])
+        res_one_letter = one_letter_code(row[0], row[2])
         # print(res_one_letter)
         return res_one_letter
 
