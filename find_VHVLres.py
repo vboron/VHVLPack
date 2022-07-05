@@ -45,6 +45,7 @@ def prep_table(df, residue_list_file):
 
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
+    n_pos = len(good_positions)
     df = df[df['L/H position'].isin(good_positions)]
 
     def apply_one_letter_code(row):
@@ -53,7 +54,7 @@ def prep_table(df, residue_list_file):
         return res_one_letter
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
-    return df
+    return df, n_pos
 
 # *************************************************************************
 def pivot_df(df, directory, csv_output):
@@ -63,18 +64,18 @@ def pivot_df(df, directory, csv_output):
     df.to_csv(csv_path, index=True)
     return df
 
-def encode_4d(df):
-    def encode_rows(row):
-        print(row)
+def encode_4d(df, n_pos):
+    def encode_rows(column):
+        print(column)
         # TODO write a function that will encode each residue
-    test = df.apply(encode_rows, axis=1)
+    test = df.apply(encode_rows)
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
-    VHVLtable = prep_table(pdb_lines, residue_positions)
+    VHVLtable, n_positions = prep_table(pdb_lines, residue_positions)
     pivotted_table = pivot_df(VHVLtable, directory, csv_output)
     # return VHVLtable
-    encode_4d(pivotted_table)
+    encode_4d(pivotted_table, n_positions)
 
 
 # *************************************************************************
