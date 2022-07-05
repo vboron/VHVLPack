@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from cmath import nan
 import math
 import subprocess
 import pandas as pd
@@ -161,8 +162,10 @@ def compactness(resi):
     # 2. number of side-chain atoms in shortest path from Calpha to most distal atom
     compactness_dic = {'A': 1, 'R': 6, "N": 3, "D": 3, "C": 2, "Q": 4, "E": 4, "G": 0, "H": 4, "I": 3,
                        "L": 3, "K": 6, "M": 4, "F": 5, "P": 2,
-                       "S": 2, "T": 2, "W": 6, "Y": 6, "V": 2, "X": 4.45, "nan": 4.45}  # , "X": 4.45
-    compactness = compactness_dic[resi]
+                       "S": 2, "T": 2, "W": 6, "Y": 6, "V": 2, "X": 4.45}  # , "X": 4.45
+    compactness = nan
+    if compactness in compactness_dic:
+        compactness = compactness_dic[resi]
     return compactness
 
 # *************************************************************************
@@ -172,9 +175,10 @@ def hydrophobicity(resi):
     Hydrophathy_index = {'A': 00.250, 'R': -1.800, "N": -0.640, "D": -0.720, "C": 00.040, "Q": -0.690, "E": -0.620,
                          "G": 00.160, "H": -0.400, "I": 00.730, "L": 00.530, "K": -1.100, "M": 00.260, "F": 00.610,
                          "P": -0.070,
-                         "S": -0.260, "T": -0.180, "W": 00.370, "Y": 00.020, "V": 00.540, "X": -0.5, "nan": -0.5}  # -0.5 is average
-
-    hydrophobicity = Hydrophathy_index[resi]
+                         "S": -0.260, "T": -0.180, "W": 00.370, "Y": 00.020, "V": 00.540, "X": -0.5}  # -0.5 is average
+    hydrophobicity = nan
+    if resi in Hydrophathy_index:
+        hydrophobicity = Hydrophathy_index[resi]
     return hydrophobicity
 
 # *************************************************************************
