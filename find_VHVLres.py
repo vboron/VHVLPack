@@ -66,9 +66,13 @@ def pivot_df(df, directory, csv_output):
 
 def encode_4d(df, n_pos):
     def encode_columns(column):
-        print(column.name)
-        # TODO write a function that will encode each residue
+        df[f'{column.name}a'] = utils.nr_side_chain_atoms(df[column.name])
+        df[f'{column.name}b'] = utils.charge(df[column.name])
+        df[f'{column.name}c'] = utils.compactness(df[column.name])
+        df[f'{column.name}d'] = utils.hydophobicity(df[column.name])
+        del df[column.name]
     test = df.apply(encode_columns)
+    print(test)
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
