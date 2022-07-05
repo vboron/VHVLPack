@@ -60,10 +60,12 @@ def prep_table(df, residue_list_file):
 def pivot_df(df, directory, csv_output):
     df = df.pivot(index='code', columns='L/H position', values='residue')
     # df.reset_index()
+    angle_df = pd.read_csv('Everything/Everything_ang.csv')
+    complete_df = pd.merge(df, angle_df, how="right", on=["code"], sort=True)
     csv_path = os.path.join(directory, f'{csv_output}.csv')
-    df.to_csv(csv_path, index=True)
-    return df
-
+    complete_df.to_csv(csv_path, index=True)
+    return complete_df
+    
 def encode_4d(df, n_pos):
     def encode_columns(column):
         # df[f'{column.name}a'] = column.apply(lambda x: nr_side_chain_atoms(x))
