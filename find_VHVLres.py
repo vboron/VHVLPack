@@ -66,10 +66,10 @@ def pivot_df(df, directory, csv_output):
 
 def encode_4d(df, n_pos):
     def encode_columns(column):
-        df[f'{column.name}a'] = utils.nr_side_chain_atoms(df[column.name])
-        df[f'{column.name}b'] = utils.charge(df[column.name])
-        df[f'{column.name}c'] = utils.compactness(df[column.name])
-        df[f'{column.name}d'] = utils.hydophobicity(df[column.name])
+        df[f'{column.name}a'] = df[column.name].apply(lambda x: utils.nr_side_chain_atoms(x))
+        df[f'{column.name}b'] = df[column.name].apply(lambda x: utils.charge(x))
+        df[f'{column.name}c'] = df[column.name].apply(lambda x: utils.compactness(x))
+        df[f'{column.name}d'] = df[column.name].apply(lambda x: utils.hydrophobicity(x))
         del df[column.name]
     test = df.apply(encode_columns)
     print(test)
