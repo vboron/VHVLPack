@@ -71,6 +71,7 @@ def encode_4d(df, n_pos):
         # df[f'{column.name}a'] = column.apply(lambda x: nr_side_chain_atoms(x))
         df[column.name].apply(lambda x: print(x))
         df[f'{column.name}b'] = df[column.name].apply(lambda x: charge(x))
+        print(df[f'{column.name}b'])
         df[f'{column.name}c'] = df[column.name].apply(lambda x: compactness(x))
         df[f'{column.name}d'] = df[column.name].apply(lambda x: hydrophobicity(x))
         del df[column.name]
