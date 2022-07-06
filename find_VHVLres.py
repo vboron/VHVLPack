@@ -101,9 +101,10 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
     res_table = prep_table(pdb_lines, residue_positions)
     pivotted_table = pivot_df(res_table, directory, csv_output, angle_df)
     encoded_table = encode_4d(pivotted_table)
+    final_df = pd.merge(encoded_table, angle_df, how="right", on=["code"], sort=True)
     csv_path = os.path.join(directory, f'{csv_output}_4d.csv')
-    encoded_table.to_csv(csv_path, index=True)
-    return encoded_table
+    final_df.to_csv(csv_path, index=True)
+    return final_df
 
 
 # *************************************************************************
