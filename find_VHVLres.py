@@ -79,8 +79,10 @@ def encode_4d(df, n_pos):
     # test = df.apply(encode_columns)
     # print(test)
     for column in df:
-        for element in df[column]:
-            print(element)
+        df[f'{column}a'] = df[column].apply(lambda x: nr_side_chain_atoms(x))
+        df[f'{column}b'] = df[column].apply(lambda x: charge(x))
+        df[f'{column}c'] = df[column].apply(lambda x: compactness(x))
+        df[f'{column}d'] = df[column].apply(lambda x: hydrophobicity(x))
 
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
