@@ -53,26 +53,17 @@ def buid_table_of_angles():
     # Takes the two lists made in files and combines them into lists of tuples that have
     # the name linked to the file.
     for pdb_code, pdb_file in pdb_files:
-
-        # Uses the subprocess module to call abpackingangle and inputs the headers/.pdb lists
-        # into the program as arguments
         try:
             angle = (subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
-
-        # bypasses any files that raise an error and the abpackingangle cannot run
         except subprocess.CalledProcessError:
             continue
-        # Converts the output of the subprocess into normal string
+        print(angle)
         angle = angle.split()
-        # angle = float(angle[1])
         angle = angle[1]
-
         data = [pdb_code, angle]
         file_data.append(data)
-
     col = ['code', 'angle']
     df_ang = pd.DataFrame(data=file_data, columns=col)
-
     try:
         df_ang = df_ang[df_ang['angle'].str.contains('Packing') == False]
     except:
