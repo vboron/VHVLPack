@@ -1,13 +1,11 @@
 #!/usr/bin/python3
-from cmath import nan
 import math
 import subprocess
 import pandas as pd
 import numpy as np
 
+
 # *************************************************************************
-
-
 def one_letter_code(pdb, res):
     """
     Go from the three-letter code to the one-letter code.
@@ -27,9 +25,8 @@ def one_letter_code(pdb, res):
     one_letter = dic[res]
     return one_letter
 
+
 # *************************************************************************
-
-
 def run_cmd(cmd_list, is_dry_run: bool, stdout=None, env=None, cwd=None, stderr=None):
     log_msg = f"Running {cmd_list}"
     # if env is not None:
@@ -43,9 +40,8 @@ def run_cmd(cmd_list, is_dry_run: bool, stdout=None, env=None, cwd=None, stderr=
             cmd_list, stdout=stdout, env=env, cwd=cwd, stderr=stderr)
         comp_process.check_returncode()
 
+
 # *************************************************************************
-
-
 def calc_relemse_from_csv(results_csv, rmse):
     """Read the .csv for angles and take the RMSE from the commandline to calculate the relative RMSE.
     Equation used: RELRMSE = (RMSE*(n**(1/2)))/((sum (angle**2))**(1/2))
@@ -87,9 +83,8 @@ def calc_relemse_from_csv(results_csv, rmse):
     relrmse = (rmse*rn)/rc_sangles
     return relrmse
 
+
 # *************************************************************************
-
-
 def relrmse_from_df(df, rmse):
     """Read the df for angles and take the RMSE from the commandline to calculate the relative RMSE.
     Equation used: RELRMSE = (RMSE*(n**(1/2)))/((sum (angle**2))**(1/2))
@@ -127,9 +122,8 @@ def relrmse_from_df(df, rmse):
     relrmse = (rmse*rn)/rc_sangles
     return relrmse
 
+
 # *************************************************************************
-
-
 def stats_for_pred_vs_actual_graph(df):
 
     df['sqerror'] = np.square(df['error'])
@@ -148,9 +142,8 @@ def stats_for_pred_vs_actual_graph(df):
     stats_df = pd.DataFrame(data=[stat_data], columns=stat_col)
     return stats_df, stat_data
 
+
 # *************************************************************************
-
-
 def nr_side_chain_atoms(resi):
     # 1. total number of side-chain atoms
     nr_side_chain_atoms_dic = {'A': 1, 'R': 7, "N": 4, "D": 4, "C": 2, "Q": 5, "E": 5, "G": 0, "H": 6, "I": 4,
@@ -162,9 +155,8 @@ def nr_side_chain_atoms(resi):
         nr_side_chain_atoms = None
     return nr_side_chain_atoms
 
+
 # *************************************************************************
-
-
 def compactness(resi):
     # 2. number of side-chain atoms in shortest path from Calpha to most distal atom
     compactness_dic = {'A': 1, 'R': 6, "N": 3, "D": 3, "C": 2, "Q": 4, "E": 4, "G": 0, "H": 4, "I": 3,
@@ -176,9 +168,8 @@ def compactness(resi):
         compactness = compactness_dic[resi]
     return compactness
 
+
 # *************************************************************************
-
-
 def hydrophobicity(resi):
     # 3. eisenberg consensus hydrophobicity
     # Consensus values: Eisenberg, et al 'Faraday Symp.Chem.Soc'17(1982)109
@@ -192,9 +183,8 @@ def hydrophobicity(resi):
         hydrophobicity = None
     return hydrophobicity
 
+
 # *************************************************************************
-
-
 def charge(resi):
     dic = {"D": -1, "K": 1, "R": 1, 'E': -1, 'H': 0.5}
     charge = 0
@@ -203,3 +193,14 @@ def charge(resi):
     if resi in dic:
         charge += dic[resi]
     return charge
+
+
+# *************************************************************************
+def encode_4d(df):
+    for column in df:
+        df[f'{column}a'] = df[column].apply(lambda x: nr_side_chain_atoms(x))
+        df[f'{column}b'] = df[column].apply(lambda x: charge(x))
+        df[f'{column}c'] = df[column].apply(lambda x: compactness(x))
+        df[f'{column}d'] = df[column].apply(lambda x: hydrophobicity(x))
+        del df[column]
+    return df

@@ -61,23 +61,13 @@ def pivot_df(df, directory, csv_output):
 
 
 # *************************************************************************
-def encode_4d(df, directory, csv_output):
-    for column in df:
-        df[f'{column}a'] = df[column].apply(lambda x: nr_side_chain_atoms(x))
-        df[f'{column}b'] = df[column].apply(lambda x: charge(x))
-        df[f'{column}c'] = df[column].apply(lambda x: compactness(x))
-        df[f'{column}d'] = df[column].apply(lambda x: hydrophobicity(x))
-        del df[column]
-    csv_path = os.path.join(directory, f'{csv_output}_4d.csv')
-    df.to_csv(csv_path, index=True)
-
-
-# *************************************************************************
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
     res_table = prep_table(pdb_lines, residue_positions)
     pivotted_table = pivot_df(res_table, directory, csv_output)
     encoded_table = encode_4d(pivotted_table, directory, csv_output)
+    csv_path = os.path.join(directory, f'{csv_output}_4d.csv')
+    encoded_table.to_csv(csv_path, index=True)
     return encoded_table
 
 
