@@ -39,7 +39,6 @@ def calculate_packing_angles(directory):
     except:
         print('No missing angles.')
     df_ang['angle'] = df_ang['angle'].astype(float)
-    print(type(df_ang))
     return df_ang
 
 
@@ -82,14 +81,13 @@ def prep_table(df, residue_list_file):
         res_one_letter = one_letter_code(row[0], row[2])
         return res_one_letter
 
-    df.loc['residue'] = df.apply(apply_one_letter_code, axis=1)
+    df['residue'] = df.apply(apply_one_letter_code, axis=1)
     return df
 
 
 # *************************************************************************
 def pivot_df(df, directory, csv_output, angles):
     df = df.pivot(index='code', columns='L/H position', values='residue')
-    print(type(df), type(angles))
     complete_df = pd.merge(df, angles, how="right", on=["code"], sort=True)
     csv_path = os.path.join(directory, f'{csv_output}_unencoded.csv')
     complete_df.to_csv(csv_path, index=True)
@@ -99,6 +97,7 @@ def pivot_df(df, directory, csv_output, angles):
 # *************************************************************************
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     angle_df = calculate_packing_angles
+    print(type(angle_df))
     pdb_lines = read_pdbfiles_as_lines(directory)
     res_table = prep_table(pdb_lines, residue_positions)
     pivotted_table = pivot_df(res_table, directory, csv_output, angle_df)
