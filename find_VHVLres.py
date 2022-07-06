@@ -82,7 +82,7 @@ def prep_table(df, residue_list_file):
         res_one_letter = one_letter_code(row[0], row[2])
         return res_one_letter
 
-    df['residue'] = df.apply(apply_one_letter_code, axis=1)
+    df.loc['residue'] = df.apply(apply_one_letter_code, axis=1)
     return df
 
 
