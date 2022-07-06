@@ -5,12 +5,10 @@ import pandas as pd
 from utils import *
 import argparse
 
+
 # *************************************************************************
-
-
 def read_pdbfiles_as_lines(directory):
     files = []
-
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
             files.append(os.path.join(directory, file))
@@ -18,12 +16,9 @@ def read_pdbfiles_as_lines(directory):
     atom_lines = []
     col = ['code', 'L/H position', 'residue']
     for structure_file in files:
-
         with open(structure_file, "r") as text_file:
-
             structure_file = structure_file.replace(directory, '')
             pdb_code = structure_file[:-4]
-
             for line in text_file.read().split('\n'):
                 if str(line).strip().startswith('ATOM'):
                     items = line.split()
@@ -42,19 +37,17 @@ def read_pdbfiles_as_lines(directory):
 
 # *************************************************************************
 def prep_table(df, residue_list_file):
-
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
-    n_pos = len(good_positions)
     df = df[df['L/H position'].isin(good_positions)]
 
     def apply_one_letter_code(row):
         res_one_letter = one_letter_code(row[0], row[2])
-        # print(res_one_letter)
         return res_one_letter
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
-    return df, n_pos
+    return df
+
 
 # *************************************************************************
 def pivot_df(df, directory, csv_output):
@@ -62,25 +55,30 @@ def pivot_df(df, directory, csv_output):
     # df.reset_index()
     angle_df = pd.read_csv('Everything/Everything_ang.csv')
     complete_df = pd.merge(df, angle_df, how="right", on=["code"], sort=True)
-    csv_path = os.path.join(directory, f'{csv_output}.csv')
+    csv_path = os.path.join(directory, f'{csv_output}_unencoded.csv')
     complete_df.to_csv(csv_path, index=True)
     return df
-    
-def encode_4d(df, n_pos):
+
+
+# *************************************************************************
+def encode_4d(df, directory, csv_output):
     for column in df:
         df[f'{column}a'] = df[column].apply(lambda x: nr_side_chain_atoms(x))
         df[f'{column}b'] = df[column].apply(lambda x: charge(x))
         df[f'{column}c'] = df[column].apply(lambda x: compactness(x))
         df[f'{column}d'] = df[column].apply(lambda x: hydrophobicity(x))
         del df[column]
-    print(df)
+    csv_path = os.path.join(directory, f'{csv_output}_4d.csv')
+    df.to_csv(csv_path, index=True)
 
+
+# *************************************************************************
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
-    VHVLtable, n_positions = prep_table(pdb_lines, residue_positions)
-    pivotted_table = pivot_df(VHVLtable, directory, csv_output)
-    # return VHVLtable
-    encode_4d(pivotted_table, n_positions)
+    res_table = prep_table(pdb_lines, residue_positions)
+    pivotted_table = pivot_df(res_table, directory, csv_output)
+    encoded_table = encode_4d(pivotted_table, directory, csv_output)
+    return encoded_table
 
 
 # *************************************************************************
