@@ -72,7 +72,8 @@ def encode_4d(df, n_pos):
         df[f'{column}b'] = df[column].apply(lambda x: charge(x))
         df[f'{column}c'] = df[column].apply(lambda x: compactness(x))
         df[f'{column}d'] = df[column].apply(lambda x: hydrophobicity(x))
-        print(df)
+        del df[column]
+    print(df)
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
