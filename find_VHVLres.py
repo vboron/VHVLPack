@@ -5,6 +5,42 @@ import pandas as pd
 from utils import *
 import argparse
 
+# *************************************************************************
+def calculate_packing_angles(directory):
+    """Run 'abpackingangle' on all files in directory by using the header and .pdb outputs produced and output the
+    pdb name followed by the VH-VL packing angle
+    e.g.
+    2VDM_1: -46.928593
+    5V6M_1: -41.396929
+    6MLK_1: -48.376004
+    5WKO_4: -43.998193
+    3U0T_1: -35.507964
+    """
+
+    pdb_files = []
+    for file in os.listdir(directory):
+        if file.endswith(".pdb") or file.endswith(".ent"):
+            code = file[:-4]
+            pdb_files.append((code, os.path.join(args.directory, file)))
+
+    file_data = []
+    for pdb_code, pdb_file in pdb_files:
+        try:
+            angle = (subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
+        except subprocess.CalledProcessError:
+            continue
+        angle = angle.split()
+        data = [pdb_code, angle[1]]
+        file_data.append(data)
+    col = ['code', 'angle']
+    df_ang = pd.DataFrame(data=file_data, columns=col)
+    try:
+        df_ang = df_ang[df_ang['angle'].str.contains('Packing') == False]
+    except:
+        print('No missing angles.')
+    df_ang['angle'] = df_ang['angle'].astype(float)
+    return df_ang
+
 
 # *************************************************************************
 def read_pdbfiles_as_lines(directory):
@@ -50,11 +86,9 @@ def prep_table(df, residue_list_file):
 
 
 # *************************************************************************
-def pivot_df(df, directory, csv_output):
+def pivot_df(df, directory, csv_output, angles):
     df = df.pivot(index='code', columns='L/H position', values='residue')
-    # df.reset_index()
-    angle_df = pd.read_csv('Everything/Everything_ang.csv')
-    complete_df = pd.merge(df, angle_df, how="right", on=["code"], sort=True)
+    complete_df = pd.merge(df, angles, how="right", on=["code"], sort=True)
     csv_path = os.path.join(directory, f'{csv_output}_unencoded.csv')
     complete_df.to_csv(csv_path, index=True)
     return df
@@ -62,10 +96,11 @@ def pivot_df(df, directory, csv_output):
 
 # *************************************************************************
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
+    angle_df = calculate_packing_angles
     pdb_lines = read_pdbfiles_as_lines(directory)
     res_table = prep_table(pdb_lines, residue_positions)
-    pivotted_table = pivot_df(res_table, directory, csv_output)
-    encoded_table = encode_4d(pivotted_table)
+    pivotted_table = pivot_df(res_table, directory, csv_output, angle_df)
+    encoded_table = encode_4d(pivotted_table, angle_df)
     csv_path = os.path.join(directory, f'{csv_output}_4d.csv')
     encoded_table.to_csv(csv_path, index=True)
     return encoded_table
