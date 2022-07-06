@@ -88,6 +88,7 @@ def prep_table(df, residue_list_file):
 # *************************************************************************
 def pivot_df(df, directory, csv_output, angles):
     df = df.pivot(index='code', columns='L/H position', values='residue')
+    print(type(df), type(angles))
     complete_df = pd.merge(df, angles, how="right", on=["code"], sort=True)
     csv_path = os.path.join(directory, f'{csv_output}_unencoded.csv')
     complete_df.to_csv(csv_path, index=True)
