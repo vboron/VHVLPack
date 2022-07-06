@@ -96,8 +96,7 @@ def pivot_df(df, directory, csv_output, angles):
 
 # *************************************************************************
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
-    angle_df = calculate_packing_angles
-    print(type(angle_df))
+    angle_df = calculate_packing_angles(directory)
     pdb_lines = read_pdbfiles_as_lines(directory)
     res_table = prep_table(pdb_lines, residue_positions)
     pivotted_table = pivot_df(res_table, directory, csv_output, angle_df)
