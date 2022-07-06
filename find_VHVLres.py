@@ -67,17 +67,20 @@ def pivot_df(df, directory, csv_output):
     return df
     
 def encode_4d(df, n_pos):
-    def encode_columns(column):
-        # df[f'{column.name}a'] = column.apply(lambda x: nr_side_chain_atoms(x))
-        # df[column.name].apply(lambda x: print(type(x[column.name])))
-        df[column.name].apply(lambda x: print(type(x)))
-        # df[f'{column.name}b'] = df[column.name].apply(lambda x: charge(x[column.name]))
-        # print(df[f'{column.name}b'])
-        # df[f'{column.name}c'] = df[column.name].apply(lambda x: compactness(x))
-        # df[f'{column.name}d'] = df[column.name].apply(lambda x: hydrophobicity(x))
-        # del df[column.name]
-    test = df.apply(encode_columns)
-    print(test)
+    # def encode_columns(column):
+    #     # df[f'{column.name}a'] = column.apply(lambda x: nr_side_chain_atoms(x))
+    #     # df[column.name].apply(lambda x: print(type(x[column.name])))
+    #     df[column.name].apply(lambda x: print(type(x)))
+    #     # df[f'{column.name}b'] = df[column.name].apply(lambda x: charge(x[column.name]))
+    #     # print(df[f'{column.name}b'])
+    #     # df[f'{column.name}c'] = df[column.name].apply(lambda x: compactness(x))
+    #     # df[f'{column.name}d'] = df[column.name].apply(lambda x: hydrophobicity(x))
+    #     # del df[column.name]
+    # test = df.apply(encode_columns)
+    # print(test)
+    for element in df['H100']:
+        print(element)
+        print(type(element))
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
