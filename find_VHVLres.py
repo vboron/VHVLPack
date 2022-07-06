@@ -100,7 +100,7 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
     pdb_lines = read_pdbfiles_as_lines(directory)
     res_table = prep_table(pdb_lines, residue_positions)
     pivotted_table = pivot_df(res_table, directory, csv_output, angle_df)
-    encoded_table = encode_4d(pivotted_table, angle_df)
+    encoded_table = encode_4d(pivotted_table)
     csv_path = os.path.join(directory, f'{csv_output}_4d.csv')
     encoded_table.to_csv(csv_path, index=True)
     return encoded_table
