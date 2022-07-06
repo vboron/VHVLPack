@@ -78,9 +78,10 @@ def encode_4d(df, n_pos):
     #     # del df[column.name]
     # test = df.apply(encode_columns)
     # print(test)
-    for element in df['H100']:
-        print(element)
-        print(type(element))
+    for column in df:
+        for element in df[column]:
+            print(element)
+
 
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     pdb_lines = read_pdbfiles_as_lines(directory)
