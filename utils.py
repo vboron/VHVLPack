@@ -156,7 +156,7 @@ def nr_side_chain_atoms(resi):
     nr_side_chain_atoms_dic = {'A': 1, 'R': 7, "N": 4, "D": 4, "C": 2, "Q": 5, "E": 5, "G": 0, "H": 6, "I": 4,
                                "L": 4, "K": 15, "M": 4, "F": 7, "P": 4,
                                "S": 2, "T": 3, "W": 10, "Y": 8, "V": 3, "X": 10.375}  # "X": 10.375
-    if math.isnan(resi) == False:
+    if math.isNaN(resi) == False:
         nr_side_chain_atoms = nr_side_chain_atoms_dic[resi]
     else:
         nr_side_chain_atoms = None
