@@ -156,7 +156,7 @@ def nr_side_chain_atoms(resi):
     nr_side_chain_atoms_dic = {'A': 1, 'R': 7, "N": 4, "D": 4, "C": 2, "Q": 5, "E": 5, "G": 0, "H": 6, "I": 4,
                                "L": 4, "K": 15, "M": 4, "F": 7, "P": 4,
                                "S": 2, "T": 3, "W": 10, "Y": 8, "V": 3, "X": 10.375, "nan": 10.375}  # "X": 10.375
-    if resi != nan:
+    if resi != 'nan':
         nr_side_chain_atoms = nr_side_chain_atoms_dic[resi]
     else:
         nr_side_chain_atoms = None
@@ -186,7 +186,7 @@ def hydrophobicity(resi):
                          "G": 00.160, "H": -0.400, "I": 00.730, "L": 00.530, "K": -1.100, "M": 00.260, "F": 00.610,
                          "P": -0.070,
                          "S": -0.260, "T": -0.180, "W": 00.370, "Y": 00.020, "V": 00.540, "X": -0.5}  # -0.5 is average
-    if resi != nan:
+    if resi != 'nan':
         hydrophobicity = Hydrophathy_index[resi]
     else:
         hydrophobicity = None
