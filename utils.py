@@ -152,7 +152,7 @@ def nr_side_chain_atoms(resi):
     if type(resi) == str:
         nr_side_chain_atoms = nr_side_chain_atoms_dic[resi]
     else:
-        nr_side_chain_atoms = None
+        nr_side_chain_atoms = 0
     return nr_side_chain_atoms
 
 
@@ -163,7 +163,7 @@ def compactness(resi):
                        "L": 3, "K": 6, "M": 4, "F": 5, "P": 2,
                        "S": 2, "T": 2, "W": 6, "Y": 6, "V": 2, "X": 4.45}  # , "X": 4.45
     if type(resi) != str:
-        compactness = None
+        compactness = 0
     else:
         compactness = compactness_dic[resi]
     return compactness
@@ -180,7 +180,7 @@ def hydrophobicity(resi):
     if type(resi) == str:
         hydrophobicity = Hydrophathy_index[resi]
     else:
-        hydrophobicity = None
+        hydrophobicity = 0
     return hydrophobicity
 
 
@@ -189,7 +189,7 @@ def charge(resi):
     dic = {"D": -1, "K": 1, "R": 1, 'E': -1, 'H': 0.5}
     charge = 0
     if type(resi) != str:
-        charge = None
+        charge = 0
     if resi in dic:
         charge += dic[resi]
     return charge
