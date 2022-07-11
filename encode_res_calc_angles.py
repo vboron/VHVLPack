@@ -74,7 +74,12 @@ def read_pdbfiles_as_lines(directory):
 # *************************************************************************
 def prep_table(df, residue_list_file):
     cdrL1_pos = [f'L{i}' for i in range(24, 35)]
-    print(cdrL1_pos)
+    cdrH2_pos = [f'H{i}' for i in range(50, 59)]
+    cdrH3_pos = [f'H{i}' for i in range(95, 103)]
+
+    test = [df['L/H position'].isin(cdrH3_pos)]
+    print(test, len(test))
+
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
     df = df[df['L/H position'].isin(good_positions)]
