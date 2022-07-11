@@ -78,8 +78,8 @@ def prep_table(df, residue_list_file):
     cdrH3_pos = [f'H{i}' for i in range(95, 103)]
 
     test = df[df['L/H position'].isin(cdrH3_pos)]
-    test['Counts'] = test.groupby(['code']).sum()
-    print(test, len(test))
+    test = test.groupby(['code']).sum()
+    print(test)
 
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
