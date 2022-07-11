@@ -77,7 +77,7 @@ def prep_table(df, residue_list_file):
     cdrH2_pos = [f'H{i}' for i in range(50, 59)]
     cdrH3_pos = [f'H{i}' for i in range(95, 103)]
 
-    test = [df['L/H position'].isin(cdrH3_pos)]
+    test = df[df['L/H position'].isin(cdrH3_pos)]
     print(test, len(test))
 
     good_positions = [i.strip('\n')
