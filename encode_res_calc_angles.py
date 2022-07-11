@@ -87,7 +87,7 @@ def prep_table(df, residue_list_file):
     test3 = test3.groupby(['code']).sum()
     test3['count_H2'] = test3['residue'].str.len()
     dfs = [test, test2, test3]
-    test = ft.reduce(lambda left, right: pd.merge(left, right, on='name'), dfs)
+    test = ft.reduce(lambda left, right: pd.merge(left, right, on='code'), dfs)
     print(test)
 
     good_positions = [i.strip('\n')
