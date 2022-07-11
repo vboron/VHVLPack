@@ -77,21 +77,20 @@ def prep_table(df, residue_list_file):
     cdrH2_pos = [f'H{i}' for i in range(50, 59)]
     cdrH3_pos = [f'H{i}' for i in range(95, 103)]
 
-    test = df[df['L/H position'].isin(cdrH3_pos)]
-    test = test.groupby(['code']).sum()
-    test['count_H3'] = test['residue'].str.len()
-    test= test.drop(columns=['L/H position', 'residue'])
-    test2 = df[df['L/H position'].isin(cdrH2_pos)]
-    test2 = test2.groupby(['code']).sum()
-    test2['count_L1'] = test2['residue'].str.len()
-    test2 = test2.drop(columns=['L/H position', 'residue'])
-    test3 = df[df['L/H position'].isin(cdrL1_pos)]
-    test3 = test3.groupby(['code']).sum()
-    test3['count_H2'] = test3['residue'].str.len()
-    test3 = test3.drop(columns=['L/H position', 'residue'])
-    dfs = [test, test2, test3]
-    test = ft.reduce(lambda left, right: pd.merge(left, right, on='code'), dfs)
-    print(test)
+    def calc_loop_length(pos_list, loop_name):
+        df_loop = df[df['L/H position'].isin(pos_list)]
+        df_loop = df_loop.groupby(['code']).sum()
+        df_loop[f'{loop_name}_length'] = df_loop['residue'].str.len()
+        df_loop = df_loop.drop(columns=['L/H position', 'residue'])
+        return df_loop
+    
+    l1_df = calc_loop_length(cdrL1_pos, 'L1')
+    h2_df = calc_loop_length(cdrH2_pos, 'H2')
+    h3_df = calc_loop_length(cdrH3_pos, 'H3')
+
+    loop_dfs = [l1_df, h2_df, h3_df]
+    loop_df = ft.reduce(lambda left, right: pd.merge(left, right, on='code'), loop_dfs)
+    print(loop_df)
 
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
