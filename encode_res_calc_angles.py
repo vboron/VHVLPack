@@ -4,6 +4,7 @@ import os
 import pandas as pd
 from utils import *
 import argparse
+import re
 
 # *************************************************************************
 def calculate_packing_angles(directory):
@@ -51,12 +52,13 @@ def read_pdbfiles_as_lines(directory):
 
     atom_lines = []
     col = ['code', 'L/H position', 'residue']
+    re_search_start = re.compile('^\s*ATOM')
     for structure_file in files:
         with open(structure_file, "r") as text_file:
             structure_file = structure_file.replace(directory, '')
             pdb_code = structure_file[:-4]
             for line in text_file:
-                if line.strip().startswith('ATOM'):
+                if re_search_start.search(line) != None:
                     items = line.split()
                     if items[2] == 'CA':
                         res_num = items[5]
