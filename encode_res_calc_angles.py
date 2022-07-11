@@ -80,12 +80,15 @@ def prep_table(df, residue_list_file):
     test = df[df['L/H position'].isin(cdrH3_pos)]
     test = test.groupby(['code']).sum()
     test['count_H3'] = test['residue'].str.len()
+    test.drop(columns=['L/H position', 'residue'])
     test2 = df[df['L/H position'].isin(cdrH2_pos)]
     test2 = test2.groupby(['code']).sum()
-    test['count_L1'] = test2['residue'].str.len()
+    test2['count_L1'] = test2['residue'].str.len()
+    test2.drop(columns=['L/H position', 'residue'])
     test3 = df[df['L/H position'].isin(cdrL1_pos)]
     test3 = test3.groupby(['code']).sum()
     test3['count_H2'] = test3['residue'].str.len()
+    test3.drop(columns=['L/H position', 'residue'])
     dfs = [test, test2, test3]
     test = ft.reduce(lambda left, right: pd.merge(left, right, on='code'), dfs)
     print(test)
