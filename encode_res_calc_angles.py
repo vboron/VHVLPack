@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import functools as ft
 import os
 import pandas as pd
 from utils import *
@@ -86,7 +86,8 @@ def prep_table(df, residue_list_file):
     test3 = df[df['L/H position'].isin(cdrL1_pos)]
     test3 = test3.groupby(['code']).sum()
     test3['count_H2'] = test3['residue'].str.len()
-    test = pd.merge(test, test2, test3, how="right", on=["code"], sort=True)
+    dfs = [test, test2, test3]
+    test = ft.reduce(lambda left, right: pd.merge(left, right, on='name'), dfs)
     print(test)
 
     good_positions = [i.strip('\n')
