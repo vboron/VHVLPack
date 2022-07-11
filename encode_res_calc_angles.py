@@ -55,17 +55,16 @@ def read_pdbfiles_as_lines(directory):
         with open(structure_file, "r") as text_file:
             structure_file = structure_file.replace(directory, '')
             pdb_code = structure_file[:-4]
-            for line in text_file.read().split('\n'):
-                if str(line).strip().startswith('ATOM'):
+            for line in text_file:
+                if line.strip().startswith('ATOM'):
                     items = line.split()
                     if items[2] == 'CA':
                         res_num = items[5]
                         chain = items[4]
                         residue = items[3]
-                        lhposition = str(f'{chain}{res_num}')
+                        lhposition = f'{chain}{res_num}'
                         data = [pdb_code, lhposition, residue]
                         atom_lines.append(data)
-            text_file.close()
 
     df = pd.DataFrame(data=atom_lines, columns=col)
     return df
