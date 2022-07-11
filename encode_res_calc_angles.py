@@ -89,7 +89,7 @@ def prep_table(df, residue_list_file):
 def pivot_df(df, directory, csv_output, angles):
     df = df.pivot(index='code', columns='L/H position', values='residue')
     complete_df = pd.merge(df, angles, how="right", on=["code"], sort=True)
-    csv_path = os.path.join(directory, f'{csv_output}_unencoded.csv')
+    csv_path = os.path.join(directory, f'{csv_output}_unencoded_toH100G.csv')
     complete_df.to_csv(csv_path, index=True)
     return df
 
@@ -102,7 +102,7 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
     pivotted_table = pivot_df(res_table, directory, csv_output, angle_df)
     encoded_table = encode_4d(pivotted_table)
     final_df = pd.merge(encoded_table, angle_df, how="right", on=["code"], sort=True)
-    csv_path = os.path.join(directory, f'{csv_output}_4d.csv')
+    csv_path = os.path.join(directory, f'{csv_output}_toH100G_4d.csv')
     final_df.to_csv(csv_path, index=True)
     return final_df
 
