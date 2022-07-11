@@ -52,7 +52,7 @@ def read_pdbfiles_as_lines(directory):
 
     atom_lines = []
     col = ['code', 'L/H position', 'residue']
-    re_search_start = re.compile('^\s*ATOM')
+    re_search_start = re.compile(r'^\s*ATOM')
     for structure_file in files:
         with open(structure_file, "r") as text_file:
             structure_file = structure_file.replace(directory, '')
