@@ -81,11 +81,12 @@ def prep_table(df, residue_list_file):
     test = test.groupby(['code']).sum()
     test['count_H3'] = test['residue'].str.len()
     test2 = df[df['L/H position'].isin(cdrH2_pos)]
-    test2 = test.groupby(['code']).sum()
+    test2 = test2.groupby(['code']).sum()
     test['count_L1'] = test2['residue'].str.len()
-    test2 = df[df['L/H position'].isin(cdrL1_pos)]
-    test2 = test.groupby(['code']).sum()
-    test['count_H2'] = test2['residue'].str.len()
+    test3 = df[df['L/H position'].isin(cdrL1_pos)]
+    test3 = test3.groupby(['code']).sum()
+    test3['count_H2'] = test3['residue'].str.len()
+    test = pd.merge(test, test2, test3, how="right", on=["code"], sort=True)
     print(test)
 
     good_positions = [i.strip('\n')
