@@ -28,23 +28,21 @@ def calculate_packing_angles(directory):
         data = [pdb_code, angle[1]]
         data_list.append(data)
         print(data_list)
-
-    pdb_files = []
+    data_list = []
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
             code = file[:-4]
-            pdb_files.append((code, os.path.join(args.directory, file)))
             run_abpackingangle(code, os.path(directory, file))
             
     
     
-    file_data = []
-    with Pool() as p:
-        results = []
+    # file_data = []
+    # with Pool() as p:
+    #     results = []
 
 
     col = ['code', 'angle']
-    df_ang = pd.DataFrame(data=file_data, columns=col)
+    df_ang = pd.DataFrame(data=data_list, columns=col)
     try:
         df_ang = df_ang[df_ang['angle'].str.contains('Packing') == False]
     except:
