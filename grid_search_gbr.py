@@ -8,7 +8,7 @@ from ordered_set import OrderedSet
 import os
 
 def run_gridsearch(directory, file):
-    df = pd.read_csv(os.path.join(directory, file))
+    df = pd.read_csv(file)
     target_column = {'angle'}
     pdb_code = {'code'}
     predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
