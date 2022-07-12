@@ -40,10 +40,6 @@ def calculate_packing_angles(directory):
         p.join()
         if not all([r.successful() for r in results]):
             raise Exception('Processing: AsyncResult not successful')
-    
-    # file_data = []
-
-
 
     col = ['code', 'angle']
     df_ang = pd.DataFrame(data=data_list, columns=col)
@@ -52,6 +48,7 @@ def calculate_packing_angles(directory):
     except:
         print('No missing angles.')
     df_ang['angle'] = df_ang['angle'].astype(float)
+    print(df_ang)
     return df_ang
 
 
