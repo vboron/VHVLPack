@@ -5,6 +5,7 @@ import pandas as pd
 from utils import *
 import argparse
 import re
+from multiprocessing import Pool
 
 # *************************************************************************
 def calculate_packing_angles(directory):
@@ -18,21 +19,30 @@ def calculate_packing_angles(directory):
     3U0T_1: -35.507964
     """
 
+    def run_abpackingangle(pdb_code, pdb_file, data_list):
+        try:
+            angle = (subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
+        except subprocess.CalledProcessError:
+            pass
+        angle = angle.split()
+        data = [pdb_code, angle[1]]
+        data_list.append(data)
+        print(data_list)
+
     pdb_files = []
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
             code = file[:-4]
             pdb_files.append((code, os.path.join(args.directory, file)))
-
+            run_abpackingangle(code, os.path(directory, file))
+            
+    
+    
     file_data = []
-    for pdb_code, pdb_file in pdb_files:
-        try:
-            angle = (subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
-        except subprocess.CalledProcessError:
-            continue
-        angle = angle.split()
-        data = [pdb_code, angle[1]]
-        file_data.append(data)
+    with Pool() as p:
+        results = []
+
+
     col = ['code', 'angle']
     df_ang = pd.DataFrame(data=file_data, columns=col)
     try:
