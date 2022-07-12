@@ -27,6 +27,7 @@ def calculate_packing_angles(directory):
         angle = angle.split()
         data = [pdb_code, angle[1]]
         data_list.append(data)
+        print(pdb_code)
 
     data_list = []
     with Pool() as p:
