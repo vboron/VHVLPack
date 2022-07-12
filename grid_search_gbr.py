@@ -28,7 +28,7 @@ def run_gridsearch(directory, file):
     }
 
     grid_GBR = GridSearchCV(estimator=GBR, param_grid = gbr_params, cv = 2, n_jobs=-1)
-    grid_GBR.fit(X_train, y_train)
+    grid_GBR.fit(X_train, y_train.ravel())
 
     print(" Results from Grid Search " )
     print("\n The best estimator across ALL searched params:\n",grid_GBR.best_estimator_)
