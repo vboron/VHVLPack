@@ -8,6 +8,7 @@ import math
 import graphing
 from sklearn.ensemble import GradientBoostingRegressor
 import pickle
+import sklearn_methods
 
 
 gbr_params = {
@@ -20,7 +21,7 @@ gbr_params = {
     }
 
 def generate_GBReg_model_everything(directory):
-    X_train, y_train, _x_ = utils.make_sets(os.path.join(directory, 'VHVL_res_expanded_toH100G_4d.csv'))
+    X_train, y_train, _x_ = sklearn_methods.make_sets(os.path.join(directory, 'VHVL_res_expanded_toH100G_4d.csv'))
     gbr = GradientBoostingRegressor(**gbr_params).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename = 'af2clean_trained_gbr_123features.pkl'
