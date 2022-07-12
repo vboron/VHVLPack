@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from ast import Continue
 import functools as ft
 import os
 import pandas as pd
@@ -38,7 +39,7 @@ def calculate_packing_angles(directory):
                     results.append(p.apply_async(run_abpackingangle, (code, os.path.join(directory, file), data_list)))
                 # run_abpackingangle(code, os.path.join(directory, file), data_list)
                 except:
-                    pass
+                    continue
         p.close()
         p.join()
         if not all([r.successful() for r in results]):
