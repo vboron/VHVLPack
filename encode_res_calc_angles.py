@@ -42,7 +42,6 @@ def calculate_packing_angles(directory):
     except:
         print('No missing angles.')
     df_ang['angle'] = df_ang['angle'].astype(float)
-    print(df_ang)
     return df_ang
 
 
