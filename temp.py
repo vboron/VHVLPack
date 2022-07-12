@@ -21,12 +21,15 @@ gbr_params = {
     }
 
 def generate_GBReg_model_everything(directory):
-    X_train, y_train, _x_ = sklearn_methods.make_sets(os.path.join(directory, 'VHVL_res_expanded_toH100G_4d.csv'))
-    gbr = GradientBoostingRegressor(**gbr_params).fit(X_train, y_train.ravel())
-    # Save to file in the current working directory
+    df = pd.read_csv(os.path.join(directory, 'VHVL_res_expanded_toH100G_4d.csv'))
+    X_test, y_true, df_test = sklearn_methods.make_sets_from_df(df)
     pkl_filename = 'af2clean_trained_gbr_123features.pkl'
-    with open(pkl_filename, 'wb') as file:
-        pickle.dump(gbr, file)
+    with open(pkl_filename, 'rb') as file:
+        pickle_model = pickle.load(file)
+    y_pred = pickle_model.predict(X_test)
+    df['predicted'] = y_pred
+    df['error'] = df['predicted']-df['angle']
+    df.to_csv('testing_123features_gbr.csv', index=False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
