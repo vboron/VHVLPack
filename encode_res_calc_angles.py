@@ -103,6 +103,7 @@ def prep_table(df, residue_list_file):
         return res_one_letter
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
+    print(loop_df)
     return df
 
 
