@@ -29,17 +29,18 @@ def calculate_packing_angles(directory):
         data_list.append(data)
 
     data_list = []
-    # with Pool() as p:
-        # results = []
-    for file in os.listdir(directory):
-        if file.endswith(".pdb") or file.endswith(".ent"):
-            code = file[:-4]
-            # results.append(p.apply_async(run_abpackingangle, (code, os.path.join(directory, file), data_list)))
-            run_abpackingangle(code, os.path.join(directory, file), data_list)
-        # p.close()
-        # p.join()
-        # if not all([r.successful() for r in results]):
-        #     raise Exception('Processing: AsyncResult not successful')
+    with Pool() as p:
+        results = []
+        for file in os.listdir(directory):
+            if file.endswith(".pdb") or file.endswith(".ent"):
+                code = file[:-4]
+                results.append(p.apply_async(run_abpackingangle, (code, os.path.join(directory, file), data_list)))
+                # run_abpackingangle(code, os.path.join(directory, file), data_list)
+                print(results)
+        p.close()
+        p.join()
+        if not all([r.successful() for r in results]):
+            raise Exception('Processing: AsyncResult not successful')
 
     col = ['code', 'angle']
     df_ang = pd.DataFrame(data=data_list, columns=col)
