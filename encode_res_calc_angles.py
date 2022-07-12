@@ -28,11 +28,13 @@ def calculate_packing_angles(directory):
         data = [pdb_code, angle[1]]
         data_list.append(data)
         print(data_list)
+
     data_list = []
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
             code = file[:-4]
-            run_abpackingangle(code, os.path(directory, file))
+            file_path = os.path(directory, file)
+            run_abpackingangle(code, file_path, data_list)
             
     
     
