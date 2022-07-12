@@ -5,6 +5,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from ordered_set import OrderedSet
+import os
 
 def run_gridsearch(directory, file):
     df = pd.read_csv(os.path.join(directory, file))
