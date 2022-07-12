@@ -30,21 +30,10 @@ def calculate_packing_angles(directory):
         data_list.append(data)
 
     data_list = []
-    with Pool() as p:
-        results = []
-        for file in os.listdir(directory):
-            if file.endswith(".pdb") or file.endswith(".ent"):
-                code = file[:-4]
-                try:
-                    results.append(p.apply_async(run_abpackingangle, (code, os.path.join(directory, file), data_list)))
-                # run_abpackingangle(code, os.path.join(directory, file), data_list)
-                except:
-                    continue
-        p.close()
-        p.join()
-        if not all([r.successful() for r in results]):
-            print('not all angles worked')
-            print(r.unsucessful() for r in results)
+    for file in os.listdir(directory):
+        if file.endswith(".pdb") or file.endswith(".ent"):
+            code = file[:-4]
+            run_abpackingangle(code, os.path.join(directory, file), data_list)
 
     col = ['code', 'angle']
     df_ang = pd.DataFrame(data=data_list, columns=col)
