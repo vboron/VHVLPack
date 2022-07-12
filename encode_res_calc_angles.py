@@ -32,16 +32,14 @@ def calculate_packing_angles(directory):
     with Pool() as p:
         results = []
         for file in os.listdir(directory):
-            print(file)
             if file.endswith(".pdb") or file.endswith(".ent"):
                 code = file[:-4]
                 results.append(p.apply_async(run_abpackingangle, (code, os.path.join(directory, file), data_list)))
                 # run_abpackingangle(code, os.path.join(directory, file), data_list)
         p.close()
         p.join()
-        # if not all([r.successful() for r in results]):
-        #     print(results)
-        #     raise Exception('Processing: AsyncResult not successful')
+        if not all([r.successful() for r in results]):
+            raise 
 
     col = ['code', 'angle']
     df_ang = pd.DataFrame(data=data_list, columns=col)
@@ -102,7 +100,6 @@ def prep_table(df, residue_list_file):
 
     loop_dfs = [l1_df, h2_df, h3_df]
     loop_df = ft.reduce(lambda left, right: pd.merge(left, right, on='code'), loop_dfs)
-    print(loop_df)
 
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
