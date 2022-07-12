@@ -27,12 +27,12 @@ def calculate_packing_angles(directory):
         angle = angle.split()
         data = [pdb_code, angle[1]]
         data_list.append(data)
-        print(pdb_code)
 
     data_list = []
     with Pool() as p:
         results = []
         for file in os.listdir(directory):
+            print(file)
             if file.endswith(".pdb") or file.endswith(".ent"):
                 code = file[:-4]
                 results.append(p.apply_async(run_abpackingangle, (code, os.path.join(directory, file), data_list)))
