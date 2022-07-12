@@ -21,7 +21,7 @@ def run_gridsearch(directory, file):
     gbr_params = {
     'n_estimators': [100,500, 550, 1000,1500],
     'max_depth': [2, 4,6,8,10],
-    'min_samples_leaf': 10,
+    'min_samples_leaf': [10],
     'learning_rate': [0.01,0.02,0.03,0.04, 0.05, 0.1],
     'subsample': [0.9, 0.5, 0.2, 0.1],
     'random_state': [10, 20, 30, 50, 80, 100, 200, 250, 105]
