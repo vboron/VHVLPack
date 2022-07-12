@@ -39,7 +39,8 @@ def calculate_packing_angles(directory):
         p.close()
         p.join()
         if not all([r.successful() for r in results]):
-            raise 
+            print('not all angles worked')
+            print(r.unsucessful() for r in results)
 
     col = ['code', 'angle']
     df_ang = pd.DataFrame(data=data_list, columns=col)
