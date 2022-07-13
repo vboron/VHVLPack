@@ -35,7 +35,9 @@ def generate_GBReg_model_everything(directory):
     df = df.drop(df['sq_angle'])
 
     df.to_csv('testing_123features_gbr.csv', index=False)
-
+    graphing.actual_vs_predicted_from_df(df, 'everything_123features')
+    graphing.error_distribution('/', 'testing_123features_gbr.csv', '123features')
+    graphing.sq_error_vs_actual_angle('/', 'testing_123features_gbr.csv', '123features')
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Program for applying a rotational correction factor recursively')
