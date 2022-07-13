@@ -12,12 +12,12 @@ import sklearn_methods
 
 
 gbr_params = {
-    'n_estimators': 550,
+    'n_estimators': 1500,
     'max_depth': 2,
     'min_samples_leaf': 10,
     'learning_rate': 0.05,
-    'subsample': 0.1,
-    'random_state': 105
+    'subsample': 0.9,
+    'random_state': 50
     }
 
 def generate_GBReg_model_everything(directory):
