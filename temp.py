@@ -32,7 +32,8 @@ def generate_GBReg_model_everything(directory):
     sum_sq_angles = df['sq_angle'].sum()
     relrmse = std*(len(df)**(1/2))/(sum_sq_angles**(1/2))
     print(f'relrmse:{relrmse}, std: {std}, mean error: {mean_error}')
-    df = df.drop(['sq_angle'])
+    # df = df.drop(['sq_angle'])
+    print(df)
 
     df.to_csv('testing_123features_gbr.csv', index=False)
     graphing.actual_vs_predicted_from_df(df, 'everything_123features')
