@@ -3,6 +3,7 @@
 import argparse
 import os
 import pandas as pd
+import numpy as np
 import utils
 import math
 import graphing
@@ -25,6 +26,14 @@ def generate_GBReg_model_everything(directory):
     X_train, y_train, _x_ = sklearn_methods.make_sets_from_df(df)
     X_test, y_true, df_test = sklearn_methods.make_sets_from_df(df)
     df = sklearn_methods.run_GradientBoostingRegressor(X_train, y_train, X_test, df_test, 'af2clean_trained_gbr_123features')
+    mean_error = df['error'].abs().mean()
+    std = df['error'].std()
+    df['sq_angle'] = np.square(df['angle'])
+    sum_sq_angles = df['sq_angle'].sum()
+    relrmse = std*(df['error'].count()).sqrt()/sum_sq_angles.sqrt()
+    print(f'relrmse:{relrmse}, std: {std}, mean error: {mean_error}')
+    df = df.drop(df['sq_angle'])
+
     df.to_csv('testing_123features_gbr.csv', index=False)
 
 if __name__ == '__main__':
