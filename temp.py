@@ -30,7 +30,7 @@ def generate_GBReg_model_everything(directory):
     std = df['error'].std()
     df['sq_angle'] = np.square(df['angle'])
     sum_sq_angles = df['sq_angle'].sum()
-    relrmse = std*math.isqrt(len(df))/sum_sq_angles.sqrt()
+    relrmse = std*(len(df)**(1/2))/sum_sq_angles.sqrt()
     print(f'relrmse:{relrmse}, std: {std}, mean error: {mean_error}')
     df = df.drop(df['sq_angle'])
 
