@@ -32,7 +32,7 @@ def generate_GBReg_model_everything(directory):
     sum_sq_angles = df['sq_angle'].sum()
     relrmse = std*(len(df)**(1/2))/(sum_sq_angles**(1/2))
     print(f'relrmse:{relrmse}, std: {std}, mean error: {mean_error}')
-    df.drop(['sq_angle'])
+    df.drop(['sq_angle'], axis=1)
     print(df)
 
     df.to_csv('testing_123features_gbr.csv', index=False)
