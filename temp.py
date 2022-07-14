@@ -22,8 +22,8 @@ gbr_params = {
     }
 
 def generate_GBReg_model_everything(directory):
-    df_test = pd.read_csv(os.path.join('Everything', 'VHVL_res_expanded_toH100G_4d.csv'))
-    df_train = pd.read_csv(os.path.join('PreAF2', 'PreAF2_VHVL_res_expanded_toH100G_4d.csv'))
+    df_test = pd.read_csv(os.path.join('PreAF2', 'PreAF2_VHVL_res_expanded_toH100G_4d.csv'))
+    df_train = pd.read_csv(os.path.join('PostAF2', 'PostAF2_VHVL_res_expanded_toH100G_4d.csv'))
     X_train, y_train, _x_ = sklearn_methods.make_sets_from_df(df_train)
     X_test, y_true, df_test = sklearn_methods.make_sets_from_df(df_test)
     df = sklearn_methods.run_GradientBoostingRegressor(X_train, y_train, X_test, df_test, 'preaf2_trained_gbr_123features')
@@ -36,10 +36,10 @@ def generate_GBReg_model_everything(directory):
     df.drop(['sq_angle'], axis=1)
     print(df)
 
-    df.to_csv('trainpreaf2_testeverything_123features_gbr.csv', index=False)
-    graphing.actual_vs_predicted_from_df(df, './', 'trainpreaf2_testeverything_123features', 'trainpreaf2_testeverything_123features_pa')
-    graphing.error_distribution('./', 'trainpreaf2_testeverything_123features_gbr.csv', '123features_err_dist')
-    graphing.sq_error_vs_actual_angle('./', 'trainpreaf2_testeverything_123features_gbr.csv', 'trainpreaf2_testeverything_123features_sq_err')
+    df.to_csv('trainpreaf2_testpostaf2_123features_gbr.csv', index=False)
+    graphing.actual_vs_predicted_from_df(df, './', 'trainpreaf2_testpostaf2_123features', 'trainpreaf2_testpostaf2_123features_pa')
+    graphing.error_distribution('./', 'trainpreaf2_testpostaf2_123features_gbr.csv', 'trainpreaf2_testpostaf2_123features_err_dist')
+    graphing.sq_error_vs_actual_angle('./', 'trainpreaf2_testpostaf2_123features_gbr.csv', 'trainpreaf2_testpostaf2_123features_sq_err')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
