@@ -22,8 +22,8 @@ gbr_params = {
     }
 
 def generate_GBReg_model_everything(directory):
-    df_test = pd.read_csv(os.path.join(directory, 'VHVL_res_expanded_toH100G_4d.csv'))
-    df_train = pd.read_csv(os.path.join(directory, 'PreAF2_VHVL_res_expanded_toH100G_4d.csv'))
+    df_test = pd.read_csv(os.path.join('Everything', 'VHVL_res_expanded_toH100G_4d.csv'))
+    df_train = pd.read_csv(os.path.join('PreAF2', 'PreAF2_VHVL_res_expanded_toH100G_4d.csv'))
     X_train, y_train, _x_ = sklearn_methods.make_sets_from_df(df_train)
     X_test, y_true, df_test = sklearn_methods.make_sets_from_df(df_test)
     df = sklearn_methods.run_GradientBoostingRegressor(X_train, y_train, X_test, df_test, 'preaf2_trained_gbr_123features')
