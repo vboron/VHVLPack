@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-from ast import Continue
 import functools as ft
 import os
 import pandas as pd
 from utils import *
 import argparse
 import re
-from multiprocessing import Pool
 
 # *************************************************************************
 def calculate_packing_angles(directory):
