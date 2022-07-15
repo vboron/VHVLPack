@@ -47,7 +47,7 @@ def calculate_packing_angles(directory):
 def read_pdbfiles_as_lines(directory):
     files = []
     for file in os.listdir(directory):
-        if file.endswith(".pdb") or file.endswith(".ent"):
+        if file.endswith(".pdb") or file.endswith(".cho"):
             files.append(os.path.join(directory, file))
 
     atom_lines = []
