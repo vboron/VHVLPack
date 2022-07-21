@@ -44,9 +44,9 @@ def runGBReg(trainset, testset):
         f'{trainset}/{trainset}_NR2_4d.csv')
     X_test, y_true, df_test = make_sets(
         f'{testset}/{testset}_NR2_4d.csv')
-    print(f'Running GBRegressor on {testset}_NR2')
+    print(f'Running GBRegressor on {testset}')
     df = run_GradientBoostingRegressor(
-        X_train, y_train, X_test, df_test, 'gbr_postaf2')
+        X_train, y_train, X_test, df_test, 'af2clean_trained_gbr_123features')
     df.to_csv(f'{testset}/{testset}_NR2_GBReg.csv', index=False)
 
 # *************************************************************************
