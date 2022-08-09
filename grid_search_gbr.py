@@ -26,7 +26,7 @@ def run_gridsearch(directory, file):
     'subsample': [0.9, 0.5, 0.2, 0.1],
     'random_state': [10, 20, 30, 50, 80, 100, 200, 250, 105],
     'ccp_alpha': [1, 2, 5, 10, 50, 100],
-    'alpha': [0, 0.1, 0.2, 0.5, 0.7, 0.8, 0.9, 1]
+    'alpha': [0.01, 0.1, 0.2, 0.5, 0.7, 0.8, 0.9, 1]
     }
 
     grid_GBR = GridSearchCV(estimator=GBR, param_grid = gbr_params, cv = 2, n_jobs=-1)
