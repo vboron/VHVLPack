@@ -7,20 +7,26 @@ from ordered_set import OrderedSet
 from sklearn.ensemble import GradientBoostingRegressor
 import pickle
 
-gbr_params = {
-    # 'n_estimators': 550,
-    # 'max_depth': 2,
-    # 'min_samples_leaf': 10,
-    # 'learning_rate': 0.05,
-    # 'subsample': 0.1,
-    # 'random_state': 105
-    'n_estimators': 1500,
-    'max_depth': 2,
-    'min_samples_leaf': 10,
-    'learning_rate': 0.05,
-    'subsample': 0.9,
-    'random_state': 50
-    }
+gbr_params = {'learning_rate': 0.05,
+              'max_depth': 2,
+              'max_features': 52,
+              'min_samples_leaf': 2,
+              'n_estimators': 250,
+              'subsample': 0.15}
+#     # 'n_estimators': 550,
+#     # 'max_depth': 2,
+#     # 'min_samples_leaf': 10,
+#     # 'learning_rate': 0.05,
+#     # 'subsample': 0.1,
+#     # 'random_state': 105
+#     'n_estimators': 1500,
+#     'max_depth': 2,
+#     'min_samples_leaf': 10,
+#     'learning_rate': 0.05,
+#     'subsample': 0.9,
+#     'random_state': 50
+#     }
+
 
 def make_sets(file):
     df = pd.read_csv(file)
