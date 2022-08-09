@@ -7,7 +7,7 @@ import shutil
 def compare_dirs(dir1, dir2):
     dir1_files = os.listdir(dir1)
     dir2_files = os.listdir(dir2)
-    new_files = list(set(dir1_files) - set(dir2_files))
+    new_files = list(set(dir2_files) - set(dir1_files))
     new_dir = 'new_files'
     for file in new_files:
         src = os.path.join(dir2, file)
@@ -16,8 +16,8 @@ def compare_dirs(dir1, dir2):
 
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
-parser.add_argument('--dir1')
-parser.add_argument('--dir2')
+parser.add_argument('--dir1', required=True)
+parser.add_argument('--dir2', required=True)
 
 args = parser.parse_args()
 
