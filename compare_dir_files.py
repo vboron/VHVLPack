@@ -13,7 +13,10 @@ def compare_dirs(dir1, dir2):
             new_files.append(file)
     new_dir = 'new_files'
     print(len(new_files))
-    # for file in new_files:
+    i=0
+    for file in new_files:
+        i+=1
+        print(i)
     #     print(file)
     #     src = os.path.join(dir2, file)
     #     dst = os.path.join(new_dir, file)
