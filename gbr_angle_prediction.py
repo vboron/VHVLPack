@@ -47,8 +47,6 @@ parser.add_argument('--preprocess', action='store_true', default=False)
 parser.add_argument('--process', action='store_true', default=False)
 parser.add_argument('--postprocess', action='store_true', default=False)
 parser.add_argument('--latex', action='store_true', default=False)
-parser.add_argument(
-    '--name_model', action='name that the trained model will be stored under', default=False)
 
 args = parser.parse_args()
 
@@ -63,7 +61,7 @@ if args.preprocess:
 
 if args.process:
     print('Processing...')
-    result_df = runGBReg(df_train, df_test)
+    result_df = runGBReg(df_train, df_test, 'train_Everything_test_abdbnew')
 
 if args.postprocess:
     print('Postprocessing...')
