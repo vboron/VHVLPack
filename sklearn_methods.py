@@ -7,25 +7,15 @@ from ordered_set import OrderedSet
 from sklearn.ensemble import GradientBoostingRegressor
 import pickle
 
-gbr_params = {'learning_rate': 0.05,
+gbr_params = {'alpha': 0.01,
+              'ccp_alpha': 1,
+              'learning_rate': 0.1,
               'max_depth': 2,
-              'max_features': 52,
-              'min_samples_leaf': 2,
-              'n_estimators': 250,
-              'subsample': 0.15}
-#     # 'n_estimators': 550,
-#     # 'max_depth': 2,
-#     # 'min_samples_leaf': 10,
-#     # 'learning_rate': 0.05,
-#     # 'subsample': 0.1,
-#     # 'random_state': 105
-#     'n_estimators': 1500,
-#     'max_depth': 2,
-#     'min_samples_leaf': 10,
-#     'learning_rate': 0.05,
-#     'subsample': 0.9,
-#     'random_state': 50
-#     }
+              'min_samples_leaf': 10,
+              'n_estimators': 1500,
+              'random_state': 100,
+              'subsample': 0.1,
+              'verbose': 1}
 
 
 def make_sets(file):
@@ -37,6 +27,7 @@ def make_sets(file):
     X_df = df[predictors].values
     y_df = df[target_column].values
     return X_df, y_df, df2
+
 
 def make_sets_from_df(df):
     target_column = {'angle'}
