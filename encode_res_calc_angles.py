@@ -21,6 +21,7 @@ def calculate_packing_angles(directory):
     """
 
     def run_abpackingangle(pdb_code, pdb_file, data_list):
+        i=0
         try:
             angle = (subprocess.check_output(
                 ['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
@@ -28,6 +29,7 @@ def calculate_packing_angles(directory):
             data = [pdb_code, angle[1]]
             data_list.append(data)
         except subprocess.CalledProcessError:
+            i+=1
             print(code)
             pass
        
