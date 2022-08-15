@@ -32,7 +32,7 @@ def calculate_packing_angles(directory):
             i+=1
             print(code)
             pass
-       
+        print(i)
 
     data_list = []
     for file in os.listdir(directory):
@@ -109,6 +109,7 @@ def prep_table(df, residue_list_file):
         return res_one_letter
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
+    df.reset_index()
     return df, loop_df
 
 
