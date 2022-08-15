@@ -14,7 +14,7 @@ from sklearn_methods import *
 # *************************************************************************
 def preprocessing(ds):
     encoded_df = erca.extract_and_export_packing_residues(
-        ds, ds, f'{ds}_expanded_residues.dat')
+        ds, ds, 'expanded_residues.dat')
     nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
     return nonred_df
 
