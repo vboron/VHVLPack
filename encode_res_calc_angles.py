@@ -114,6 +114,7 @@ def prep_table(df, residue_list_file):
 
 # *************************************************************************
 def pivot_df(df, directory, csv_output, angles, loop_df):
+    print(df)
     df = df.pivot(index='code', columns='L/H position', values='residue')
     dfs = [df, loop_df, angles]
     complete_df = ft.reduce(
