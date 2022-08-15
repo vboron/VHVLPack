@@ -28,6 +28,7 @@ def calculate_packing_angles(directory):
             data = [pdb_code, angle[1]]
             data_list.append(data)
         except subprocess.CalledProcessError:
+            print(code)
             pass
        
 
