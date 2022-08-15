@@ -18,8 +18,8 @@ gbr_params = {'alpha': 0.01,
               'verbose': 1}
 
 
-def make_sets(df):
-    # df = pd.read_csv(file)
+def make_sets(file):
+    df = pd.read_csv(file)
     target_column = {'angle'}
     pdb_code = {'code'}
     predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
