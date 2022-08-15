@@ -24,11 +24,12 @@ def calculate_packing_angles(directory):
         try:
             angle = (subprocess.check_output(
                 ['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
+            angle = angle.split()
+            data = [pdb_code, angle[1]]
+            data_list.append(data)
         except subprocess.CalledProcessError:
             pass
-        angle = angle.split()
-        data = [pdb_code, angle[1]]
-        data_list.append(data)
+       
 
     data_list = []
     for file in os.listdir(directory):
