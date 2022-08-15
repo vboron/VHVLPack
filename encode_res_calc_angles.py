@@ -19,7 +19,7 @@ def calculate_packing_angles(directory):
     5WKO_4: -43.998193
     3U0T_1: -35.507964
     """
-    i=0
+
     def run_abpackingangle(pdb_code, pdb_file, data_list):
         
         try:
@@ -29,7 +29,6 @@ def calculate_packing_angles(directory):
             data = [pdb_code, angle[1]]
             data_list.append(data)
         except subprocess.CalledProcessError:
-            i+=1
             print(code)
             pass
 
@@ -47,7 +46,6 @@ def calculate_packing_angles(directory):
     except:
         print('No missing angles.')
     df_ang['angle'] = df_ang['angle'].astype(float)
-    print(i)
     return df_ang
 
 
