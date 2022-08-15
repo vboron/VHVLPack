@@ -7,6 +7,8 @@ import argparse
 import re
 
 # *************************************************************************
+
+
 def calculate_packing_angles(directory):
     """Run 'abpackingangle' on all files in directory by using the header and .pdb outputs produced and output the
     pdb name followed by the VH-VL packing angle
@@ -20,7 +22,8 @@ def calculate_packing_angles(directory):
 
     def run_abpackingangle(pdb_code, pdb_file, data_list):
         try:
-            angle = (subprocess.check_output(['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
+            angle = (subprocess.check_output(
+                ['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
         except subprocess.CalledProcessError:
             pass
         angle = angle.split()
@@ -84,13 +87,14 @@ def prep_table(df, residue_list_file):
         df_loop[f'{loop_name}_length'] = df_loop['residue'].str.len()
         df_loop = df_loop.drop(columns=['L/H position', 'residue'])
         return df_loop
-    
+
     l1_df = calc_loop_length(cdrL1_pos, 'L1')
     h2_df = calc_loop_length(cdrH2_pos, 'H2')
     h3_df = calc_loop_length(cdrH3_pos, 'H3')
 
     loop_dfs = [l1_df, h2_df, h3_df]
-    loop_df = ft.reduce(lambda left, right: pd.merge(left, right, on='code'), loop_dfs)
+    loop_df = ft.reduce(lambda left, right: pd.merge(
+        left, right, on='code'), loop_dfs)
 
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
@@ -108,7 +112,8 @@ def prep_table(df, residue_list_file):
 def pivot_df(df, directory, csv_output, angles, loop_df):
     df = df.pivot(index='code', columns='L/H position', values='residue')
     dfs = [df, loop_df, angles]
-    complete_df = ft.reduce(lambda left, right: pd.merge(left, right, on='code'), dfs)
+    complete_df = ft.reduce(
+        lambda left, right: pd.merge(left, right, on='code'), dfs)
     csv_path = os.path.join(directory, f'{csv_output}_unencoded_toH100G.csv')
     complete_df.to_csv(csv_path, index=False)
     return df
@@ -119,10 +124,12 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
     angle_df = calculate_packing_angles(directory)
     pdb_lines = read_pdbfiles_as_lines(directory)
     res_table, loop_table = prep_table(pdb_lines, residue_positions)
-    pivotted_table = pivot_df(res_table, directory, csv_output, angle_df, loop_table)
+    pivotted_table = pivot_df(res_table, directory,
+                              csv_output, angle_df, loop_table)
     encoded_table = encode_4d(pivotted_table)
     dfs = [encoded_table, loop_table, angle_df]
-    final_df = ft.reduce(lambda left, right: pd.merge(left, right, on='code'), dfs)
+    final_df = ft.reduce(lambda left, right: pd.merge(
+        left, right, on='code'), dfs)
     csv_path = os.path.join(directory, f'{csv_output}_toH100G_4d.csv')
     final_df.to_csv(csv_path, index=False)
     return final_df
@@ -142,5 +149,6 @@ if __name__ == '__main__':
         '--residue_positions', help='File containing a list of the residues to be used as features', required=True)
     args = parser.parse_args()
 
-    extract_and_export_packing_residues(
-        args.directory, args.csv_output, args.residue_positions)
+    extract_and_export_packing_residues(args.directory, 
+                                        args.csv_output, 
+                                        args.residue_positions)

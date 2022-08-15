@@ -67,28 +67,23 @@ def NR1(dir_dataset_pdbs, out_file, encoded_csv):
     nr1_dataframe.to_csv(nr1_path, index=False)
 
 # *************************************************************************
-def NR2(encoded_csv_file, columns, directory, out_file):
+def NR2(encoded_df, directory, out_file):
     """Read the .csv file containing encoded residues and angles and combine lines that have the same PDB code and
     the same encoded sequence into one line, averaging the angle
 
     Return: seq_df      --- Dataframe that contains a single angle for all PDB files with unique sequences
     """
 
-    # The column names contained in the .csv file imported from a .dat file
-    col1 = [l.strip('\n') for l in open(columns).readlines()]
-
-    # Take the commandline input as the directory, otherwise look in current directory
-    res_file = pd.read_csv(encoded_csv_file)
-
+    col1 = list(encoded_df)
     # angle needs to be converted to a float to be averaged
-    res_file['angle'] = res_file['angle'].astype(float)
+    encoded_df['angle'] = encoded_df['angle'].astype(float)
 
     # aggregation function specifies that when the rows are grouped, the first value of code will be kept and the
     # angles will be averaged
     aggregation_func = {'code': 'first', 'angle': 'mean'}
 
     # make a column of rounded values for angle
-    res_file['ang2dp']=res_file['angle'].round(decimals=2)
+    encoded_df['ang2dp']=encoded_df['angle'].round(decimals=2)
 
     # remove 'angle' and 'code' from columns header list, since program is not grouping by these, but add the rounded
     # angle column
@@ -97,7 +92,7 @@ def NR2(encoded_csv_file, columns, directory, out_file):
     col1.append('ang2dp')
 
     # group by values now in col1 (residue identities and rounded angle to 2dp)
-    seq_df = res_file.groupby(col1).aggregate(aggregation_func)
+    seq_df = encoded_df.groupby(col1).aggregate(aggregation_func)
 
     # grouping produces a "sup" column that is over the columns that were grouped by. This resets all column names
     # to the same level
@@ -109,6 +104,7 @@ def NR2(encoded_csv_file, columns, directory, out_file):
     seq_df=seq_df[cols]
     nr2_path = os.path.join(directory, f'{out_file}.csv')
     seq_df.to_csv(nr2_path, index=False)
+    return seq_df
 
 # *************************************************************************
 def NR3(encoded_csv_file, columns, directory, out_file):

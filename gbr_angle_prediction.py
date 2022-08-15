@@ -4,6 +4,7 @@ import os
 import argparse
 import shutil
 import utils
+import encode_res_calc_angles as erca
 import nonred
 import graphing
 import gbr_latex as ltp
@@ -14,25 +15,12 @@ from sklearn_methods import *
 
 
 def preprocessing(ds):
-    def run_compile_angles(dataset):
-        utils.run_cmd(['./compile_angles.py', '--directory', dataset,
-                      '--csv_output', f'{dataset}_ang'], False)
-
-    def run_find_VHVLres(dataset):
-        utils.run_cmd(['./find_VHVLres.py', '--directory', dataset,
-                      '--csv_output', f'{dataset}_res'], False)
-
-    def run_encode_4d(dataset):
-        utils.run_cmd(['./encode_4d.py', '--residue_csv', f'{dataset}_res.csv', '--angle_csv', f'{dataset}_ang.csv',
-                       '--columns', args.cols_4d, '--csv_output', f'{dataset}_4d', '--directory', f'{dataset}'], False)
-    run_compile_angles(ds)
-    run_find_VHVLres(ds)
-    run_encode_4d(ds)
+    erca.extract_and_export_packing_residues(ds, ds, 'expanded_residues.dat')
 
 
 # *************************************************************************
 def run_nr(dataset):
-    encoded_csv_path = os.path.join(dataset, f'{dataset}_4d.csv')
+  
     new_file = f'{dataset}_NR2_4d'
     nonred.NR2(encoded_csv_path, args.cols_4d, dataset, new_file)
 
@@ -76,7 +64,6 @@ def postprocessing(dataset):
 
 # *************************************************************************
 parser = argparse.ArgumentParser(description='Program for compiling angles')
-parser.add_argument('--cols-4d', default='4d.dat')
 parser.add_argument('--preprocess', action='store_true', default=False)
 parser.add_argument('--process', action='store_true', default=False)
 parser.add_argument('--postprocess', action='store_true', default=False)
