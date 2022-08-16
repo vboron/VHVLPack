@@ -101,9 +101,7 @@ def prep_table(df, residue_list_file):
     loop_dfs = [l1_df, h2_df, h3_df]
     loop_df = ft.reduce(lambda left, right: pd.merge(
         left, right, on='code'), loop_dfs)
-    print(loop_df)
     loop_df = loop_df.reset_index()
-    print(loop_df)
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
     df = df[df['L/H position'].isin(good_positions)]
@@ -124,14 +122,14 @@ def pivot_df(df, directory, csv_output, angles, loop_df):
     df_piv = df.pivot_table(index='code', columns='L/H position', values='residue', aggfunc='sum')
     df = df_piv.reset_index()
     df = df.rename_axis(None, axis=1)
-    print(df)
     dfs = [df, loop_df, angles]
-    print(loop_df, angles)
-    # complete_df = df.reduce(
-    #     lambda left, right: pd.merge(left, right, on='code'), dfs)
+    complete_df = df.reduce(
+        lambda left, right: pd.merge(left, right, on='code'), dfs)
+    
     # csv_path = os.path.join(directory, f'{csv_output}_unencoded_toH100G.csv')
     # complete_df.to_csv(csv_path, index=False)
-    return df
+    print(complete_df)
+    return complete_df
 
 
 # *************************************************************************
