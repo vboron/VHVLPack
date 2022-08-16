@@ -149,7 +149,7 @@ def nr_side_chain_atoms(resi):
     nr_side_chain_atoms_dic = {'A': 1, 'R': 7, "N": 4, "D": 4, "C": 2, "Q": 5, "E": 5, "G": 0, "H": 6, "I": 4,
                                "L": 4, "K": 15, "M": 4, "F": 7, "P": 4,
                                "S": 2, "T": 3, "W": 10, "Y": 8, "V": 3, "X": 10.375}  # "X": 10.375
-    if type(resi) == str and resi in list(nr_side_chain_atoms_dic.keys()):
+    if resi in list(nr_side_chain_atoms_dic.keys()):
         nr_side_chain_atoms = nr_side_chain_atoms_dic[resi]
     else:
         nr_side_chain_atoms = 0
@@ -162,10 +162,10 @@ def compactness(resi):
     compactness_dic = {'A': 1, 'R': 6, "N": 3, "D": 3, "C": 2, "Q": 4, "E": 4, "G": 0, "H": 4, "I": 3,
                        "L": 3, "K": 6, "M": 4, "F": 5, "P": 2,
                        "S": 2, "T": 2, "W": 6, "Y": 6, "V": 2, "X": 4.45}  # , "X": 4.45
-    if type(resi) != str:
-        compactness = 0
-    else:
+    if resi in list(compactness_dic.keys()):
         compactness = compactness_dic[resi]
+    else:
+        compactness = 0
     return compactness
 
 
@@ -177,7 +177,7 @@ def hydrophobicity(resi):
                          "G": 00.160, "H": -0.400, "I": 00.730, "L": 00.530, "K": -1.100, "M": 00.260, "F": 00.610,
                          "P": -0.070,
                          "S": -0.260, "T": -0.180, "W": 00.370, "Y": 00.020, "V": 00.540, "X": -0.5}  # -0.5 is average
-    if type(resi) == str:
+    if resi in list(Hydrophathy_index.keys()):
         hydrophobicity = Hydrophathy_index[resi]
     else:
         hydrophobicity = 0
@@ -188,10 +188,11 @@ def hydrophobicity(resi):
 def charge(resi):
     dic = {"D": -1, "K": 1, "R": 1, 'E': -1, 'H': 0.5}
     charge = 0
-    if type(resi) != str:
-        charge = 0
     if resi in dic:
         charge += dic[resi]
+    else:
+        charge = 0
+    
     return charge
 
 
