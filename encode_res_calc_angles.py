@@ -19,7 +19,7 @@ def calculate_packing_angles(directory):
     5WKO_4: -43.998193
     3U0T_1: -35.507964
     """
-    i=0
+
     def run_abpackingangle(pdb_code, pdb_file, data_list):
         
         try:
@@ -30,7 +30,6 @@ def calculate_packing_angles(directory):
             data_list.append(data)
         except subprocess.CalledProcessError:
             print(code)
-            i+=1
             pass
 
 
@@ -39,7 +38,7 @@ def calculate_packing_angles(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
             code = file[:-4]
             run_abpackingangle(code, os.path.join(directory, file), data_list)
-    print(i)
+
     col = ['code', 'angle']
     df_ang = pd.DataFrame(data=data_list, columns=col)
     try:
