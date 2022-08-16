@@ -114,6 +114,8 @@ def prep_table(df, residue_list_file):
     print(df)
     df = df.reset_index().drop(["index"], axis=1)
     print(df)
+    df = df.reset_index().drop(["index"], axis=1)
+    print(df)
     return df, loop_df
 
 
