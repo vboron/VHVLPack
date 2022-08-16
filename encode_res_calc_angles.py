@@ -124,10 +124,11 @@ def pivot_df(df, directory, csv_output, angles, loop_df):
     df = df.rename_axis(None, axis=1)
     print(df)
     dfs = [df, loop_df, angles]
-    complete_df = ft.reduce(
-        lambda left, right: pd.merge(left, right, on='code'), dfs)
-    csv_path = os.path.join(directory, f'{csv_output}_unencoded_toH100G.csv')
-    complete_df.to_csv(csv_path, index=False)
+    print(loop_df, angles)
+    # complete_df = df.reduce(
+    #     lambda left, right: pd.merge(left, right, on='code'), dfs)
+    # csv_path = os.path.join(directory, f'{csv_output}_unencoded_toH100G.csv')
+    # complete_df.to_csv(csv_path, index=False)
     return df
 
 
