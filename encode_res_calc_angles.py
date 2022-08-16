@@ -99,9 +99,11 @@ def prep_table(df, residue_list_file):
     h3_df = calc_loop_length(cdrH3_pos, 'H3')
 
     loop_dfs = [l1_df, h2_df, h3_df]
+    print(loop_df)
     loop_df = ft.reduce(lambda left, right: pd.merge(
         left, right, on='code'), loop_dfs)
-
+    print(loop_df)
+    loop_df = loop_df.reset_index()
     good_positions = [i.strip('\n')
                       for i in open(residue_list_file).readlines()]
     df = df[df['L/H position'].isin(good_positions)]
