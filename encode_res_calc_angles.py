@@ -112,7 +112,7 @@ def prep_table(df, residue_list_file):
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
     df = df.reset_index().drop(["index"], axis=1)
-    df = df.drop_duplicates(keep='first')
+    df = df.drop_duplicates(subset=['code', 'L/H position'], keep='first')
     df.to_csv('dummy.csv', index=False)
     return df, loop_df
 
