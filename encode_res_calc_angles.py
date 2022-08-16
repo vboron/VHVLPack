@@ -111,19 +111,17 @@ def prep_table(df, residue_list_file):
         return res_one_letter
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
-    print(df)
     df = df.reset_index().drop(["index"], axis=1)
-    print(df)
     df = df.drop_duplicates(keep='first')
-    print(df)
     df.to_csv('dummy.csv', index=False)
     return df, loop_df
 
 
 # *************************************************************************
 def pivot_df(df, directory, csv_output, angles, loop_df):
-    df_piv = df.pivot(index='code', columns='L/H position', values='residue')
-    df.join(df_piv).drop('L/H position', axis=1)
+    df_piv = df.pivot_table(index='code', columns='L/H position', values='residue')
+    print(df_piv)
+    # df.join(df_piv).drop('L/H position', axis=1)
     dfs = [df_piv, loop_df, angles]
     complete_df = ft.reduce(
         lambda left, right: pd.merge(left, right, on='code'), dfs)
