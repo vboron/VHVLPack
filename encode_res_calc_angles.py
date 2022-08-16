@@ -29,11 +29,12 @@ def calculate_packing_angles(directory):
             data = [pdb_code, angle[1]]
             data_list.append(data)
         except subprocess.CalledProcessError:
-            print(code)
+            error_files.append(code)
             pass
 
 
     data_list = []
+    error_files = []
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".ent"):
             code = file[:-4]
@@ -46,6 +47,8 @@ def calculate_packing_angles(directory):
     except:
         print('No missing angles.')
     df_ang['angle'] = df_ang['angle'].astype(float)
+    df_error = pd.Series(error_files).to_frame()
+    df_error.to_csv('error_files.csv', index=False)
     return df_ang
 
 
@@ -61,7 +64,7 @@ def read_pdbfiles_as_lines(directory):
     re_search_start = re.compile(r'^\s*ATOM')
     for structure_file in files:
         with open(structure_file, "r") as text_file:
-            structure_file = structure_file.replace(directory, '')
+            structure_file = structure_file.replace(f'{directory}/', '')
             pdb_code = structure_file[:-4]
             for line in text_file:
                 if re_search_start.search(line) != None:
@@ -108,13 +111,14 @@ def prep_table(df, residue_list_file):
         return res_one_letter
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
+    print(df)
     df = df.reset_index()
+    print(df)
     return df, loop_df
 
 
 # *************************************************************************
 def pivot_df(df, directory, csv_output, angles, loop_df):
-    print(df)
     df = df.pivot(index='code', columns='L/H position', values='residue')
     dfs = [df, loop_df, angles]
     complete_df = ft.reduce(
