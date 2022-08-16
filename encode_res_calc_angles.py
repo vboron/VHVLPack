@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from base64 import encode
 import functools as ft
 import os
 import pandas as pd
@@ -128,7 +129,6 @@ def pivot_df(df, directory, csv_output, angles, loop_df):
     
     # csv_path = os.path.join(directory, f'{csv_output}_unencoded_toH100G.csv')
     # complete_df.to_csv(csv_path, index=False)
-    print(complete_df)
     return complete_df
 
 
@@ -140,6 +140,7 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
     pivotted_table = pivot_df(res_table, directory,
                               csv_output, angle_df, loop_table)
     encoded_table = encode_4d(pivotted_table)
+    print(encoded_table)
     dfs = [encoded_table, loop_table, angle_df]
     final_df = ft.reduce(lambda left, right: pd.merge(
         left, right, on='code'), dfs)
