@@ -142,7 +142,7 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
     encoded_table = encode_4d(just_residues_df)
     print(encoded_table)
     print(pivotted_table['code'])
-    encoded_table = encoded_table.merge(pivotted_table['code'], how='left')
+    encoded_table = encoded_table.join(pivotted_table['code'], how='left')
     dfs = [encoded_table, loop_table, angle_df]
     final_df = ft.reduce(lambda left, right: pd.merge(
         left, right, on='code'), dfs)
