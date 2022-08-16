@@ -121,7 +121,7 @@ def prep_table(df, residue_list_file):
 def pivot_df(df, directory, csv_output, angles, loop_df):
     df_piv = df.pivot_table(index='code', columns='L/H position', values='residue', aggfunc='sum')
     df = df_piv.reset_index()
-    df.index.name = None
+    df = df.index.name = None
     print(df)
     dfs = [df, loop_df, angles]
     complete_df = ft.reduce(
