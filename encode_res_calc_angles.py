@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from base64 import encode
 import functools as ft
 import os
 import pandas as pd
@@ -139,7 +138,10 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
     res_table, loop_table = prep_table(pdb_lines, residue_positions)
     pivotted_table = pivot_df(res_table, directory,
                               csv_output, angle_df, loop_table)
-    encoded_table = encode_4d(pivotted_table)
+    just_residues_df = pivotted_table.drop(columns='code')
+    encoded_table = encode_4d(just_residues_df)
+    print(encoded_table)
+    encoded_table = pivotted_table['code'].merge(encoded_table, on='right')
     print(encoded_table)
     dfs = [encoded_table, loop_table, angle_df]
     final_df = ft.reduce(lambda left, right: pd.merge(
