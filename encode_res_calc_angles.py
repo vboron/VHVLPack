@@ -112,7 +112,7 @@ def prep_table(df, residue_list_file):
 
     df['residue'] = df.apply(apply_one_letter_code, axis=1)
     print(df)
-    df = df.reset_index()
+    df.reset_index()
     print(df)
     return df, loop_df
 
