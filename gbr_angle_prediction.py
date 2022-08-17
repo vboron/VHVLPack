@@ -73,8 +73,8 @@ def postprocessing(dataset, df):
 
 df_train = preprocessing('Everything')
 df_test = preprocessing('new_files')
-# print('Processing...')
-# result_df = runGBReg(df_train, df_test, 'train_Everything_test_abdbnew')
+print('Processing...')
+result_df = runGBReg(df_train, df_test, 'train_Everything_H100G_residues_considered')
 # print('Postprocessing...')
 # postprocessing(result_df, 'new_files')
 print('Goodbye!')
