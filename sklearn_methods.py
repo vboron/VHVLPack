@@ -8,7 +8,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 import pickle
 
 gbr_params = {'alpha': 0.01,
-              'ccp_alpha': 0.01,
+              'ccp_alpha': 100,
               'learning_rate': 0.1,
               'max_depth': 2,
               'min_samples_leaf': 10,
