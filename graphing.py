@@ -109,8 +109,7 @@ def sq_error_vs_actual_angle(directory, csv_input, graph_name):
 def actual_vs_predicted_from_df(df, directory, stats_csv_name, pa_graph_name):
 
        # Calculate the Root Mean Square Error
-       for value in df['error']:
-              print(type(value))
+       print(df['error'])
        # df['sqerror'] = np.power((df['error']), 2)
        # sum_sqerror = df['sqerror'].sum()
        # average_error = sum_sqerror / int(df['angle'].size)
