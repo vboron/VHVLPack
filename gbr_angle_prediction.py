@@ -13,10 +13,10 @@ from sklearn_methods import *
 
 # *************************************************************************
 def preprocessing(ds):
-    encoded_df = erca.extract_and_export_packing_residues(
+    encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, ds, 'expanded_residues.dat')
     nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
-    return nonred_df
+    return nonred_df, ang_df
 
 
 # *************************************************************************
@@ -30,15 +30,15 @@ def runGBReg(train_df, test_df, model_name):
 
 
 # *************************************************************************
-def postprocessing(df, dataset):
+def postprocessing(df, dataset, ang_df):
     name = 'train_everything_test_abdbnew'
     graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
-        dataset, f'{name}.csv', f'{name}_sqerror_vs_actual')
+        dataset, df, f'{name}_sqerror_vs_actual')
     graphing.angle_distribution(
-        dataset, f'{dataset}_ang.csv', f'{name}_angledistribution')
+        dataset, ang_df, f'{name}_angledistribution')
     graphing.error_distribution(
-        dataset, f'{name}.csv', f'{name}_errordistribution')
+        dataset, df, f'{name}_errordistribution')
 
 
 # *************************************************************************
@@ -71,11 +71,11 @@ def postprocessing(df, dataset):
 #     print('Generating LaTeX...')
 #     # ltp.generate_latex('PostAF2', 'Everything', 'GBReg_PostAF2')
 
-df_train = preprocessing('Everything')
-df_test = preprocessing('new_files')
+df_train, train_angles = preprocessing('Everything')
+df_test, test_angles= preprocessing('new_files')
 print('Processing...')
 result_df = runGBReg(df_train, df_test, 'train_Everything_H100G_residues_considered')
 print(result_df)
 print('Postprocessing...')
-postprocessing(result_df, 'new_files')
+postprocessing(result_df, 'new_files', test_angles)
 print('Goodbye!')
