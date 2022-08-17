@@ -11,7 +11,7 @@ from sklearn.metrics import mean_squared_error
 
 
 # *************************************************************************
-def angle_distribution(directory, csv_ang, graph_name):
+def angle_distribution(directory, df_ang, graph_name):
     """Plot a histogram of the VH-VL packing angle distribution
 
     Input: directory    --- directory where the data can be found and where the graph will be saved
@@ -22,26 +22,24 @@ def angle_distribution(directory, csv_ang, graph_name):
     """
 
     plt.figure()
-    ang_file = os.path.join(directory, csv_ang)
-    data = pd.read_csv(ang_file)
 
-    data['angle'] = (data['angle']).astype(float)
+    df_ang['angle'] = (df_ang['angle']).astype(float)
 
     # Specify the mean width of bins and make them equidistant
     w = 0.5
-    n = math.ceil((data['angle'].max() - data['angle'].min()) / w)
-    plt.hist(data['angle'], bins=n, edgecolor='k', color='rosybrown')
+    n = math.ceil((df_ang['angle'].max() - df_ang['angle'].min()) / w)
+    plt.hist(df_ang['angle'], bins=n, edgecolor='k', color='rosybrown')
 
     # Add axis labels to graph
     plt.xlabel('VH-VL Packing Angle')
     plt.ylabel('Frequency')
 
     # Add a black, dashed line at the mean
-    plt.axvline(data['angle'].mean(), color='k', linestyle='dashed', linewidth=1)
+    plt.axvline(df_ang['angle'].mean(), color='k', linestyle='dashed', linewidth=1)
 
     # Add 'Mean: ' label to graph, the first number specifies the x-position of the label and the second the y-position
     _, max_ylim = plt.ylim()
-    plt.text(data['angle'].mean() * 0.9, max_ylim * 0.9, 'Mean: {:.2f}'.format(data['angle'].mean()))
+    plt.text(df_ang['angle'].mean() * 0.9, max_ylim * 0.9, 'Mean: {:.2f}'.format(df_ang['angle'].mean()))
 
     # plt.suptitle(f'{graph_title}', fontsize=14)
 
@@ -51,7 +49,7 @@ def angle_distribution(directory, csv_ang, graph_name):
 
 
 # *************************************************************************
-def error_distribution(directory, csv_input, graph_name):
+def error_distribution(directory, df, graph_name):
     """Plot the error distribution for the dataset predictions
 
     Input: directory    --- directory where the data can be found and where the graph will be saved
@@ -62,8 +60,6 @@ def error_distribution(directory, csv_input, graph_name):
     By: VAB
     """
     plt.figure()
-
-    df = pd.read_csv(os.path.join(directory, csv_input)).copy()
 
     df = df.round({'error': 1})
 
@@ -80,7 +76,7 @@ def error_distribution(directory, csv_input, graph_name):
     plt.close()
 
 # *************************************************************************
-def sq_error_vs_actual_angle(directory, csv_input, graph_name):
+def sq_error_vs_actual_angle(directory, df, graph_name):
        """Plot squared error in predicted packing angle against actual packing angle.
 
        Input: directory    --- directory where the data can be found and where the graph will be saved
@@ -92,7 +88,6 @@ def sq_error_vs_actual_angle(directory, csv_input, graph_name):
        """
        plt.figure()
 
-       df = pd.read_csv(os.path.join(directory, csv_input)).copy()
        df['sqerror'] = np.square(df['error'])
 
        x = df['angle']
