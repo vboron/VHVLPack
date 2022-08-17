@@ -8,7 +8,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 import pickle
 
 gbr_params = {'alpha': 0.01,
-              'ccp_alpha': 0.00001,
+              
               'learning_rate': 0.1,
               'max_depth': 2,
               'min_samples_leaf': 10,
@@ -16,7 +16,7 @@ gbr_params = {'alpha': 0.01,
               'random_state': 100,
               'subsample': 0.1,
               'verbose': 1}
-
+# 'ccp_alpha': 0.00001,
 
 def make_sets(file):
     df = pd.read_csv(file)
