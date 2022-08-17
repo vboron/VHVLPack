@@ -146,7 +146,7 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
         left, right, on='code'), dfs)
     csv_path = os.path.join(directory, f'{csv_output}_toH100G_4d.csv')
     final_df.to_csv(csv_path, index=False)
-    return final_df
+    return final_df, angle_df
 
 
 # *************************************************************************
