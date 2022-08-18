@@ -30,7 +30,6 @@ def calculate_packing_angles(directory):
             data_list.append(data)
         except subprocess.CalledProcessError:
             error_files.append(code)
-            pass
 
 
     data_list = []
@@ -53,7 +52,7 @@ def calculate_packing_angles(directory):
 
 
 # *************************************************************************
-def read_pdbfiles_as_lines(directory):
+def read_pdbfiles_as_lines(directory) -> pd.DataFrame:
     files = []
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".cho"):

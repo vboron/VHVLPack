@@ -53,10 +53,10 @@ def run_MLPRegressor(X_train, y_train, X_test, df):
     return df
 
 
-def run_GradientBoostingRegressor(X_train, y_train, X_test, df, model_name):
+def run_GradientBoostingRegressor(X_train, y_train, X_test, df: pd.DataFrame, model_name) -> pd.DataFrame:
     gbr = GradientBoostingRegressor(**gbr_params).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
-    pkl_filename = f'{model_name}.pkl'
+    pkl_filename: str = f'{model_name}.pkl'
     with open(pkl_filename, 'wb') as file:
         pickle.dump(gbr, file)
 

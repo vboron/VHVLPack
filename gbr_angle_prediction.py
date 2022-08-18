@@ -11,12 +11,11 @@ import utils
 import encode_res_calc_angles as erca
 import nonred
 import graphing
-import gbr_latex as ltp
 from sklearn_methods import *
 
 
 # *************************************************************************
-def preprocessing(ds):
+def preprocessing(ds: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, ds, 'expanded_residues.dat')
     nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
@@ -24,7 +23,7 @@ def preprocessing(ds):
 
 
 # *************************************************************************
-def runGBReg(train_df, test_df, model_name):
+def runGBReg(train_df, test_df, model_name: str) -> pd.DataFrame:
     X_train, y_train, _x_ = make_sets_from_df(train_df)
     X_test, y_true, df_test = make_sets_from_df(test_df)
     df = run_GradientBoostingRegressor(
