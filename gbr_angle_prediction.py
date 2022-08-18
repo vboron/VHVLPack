@@ -31,7 +31,7 @@ def runGBReg(train_df, test_df, model_name):
 
 # *************************************************************************
 def postprocessing(df, dataset, ang_df):
-    name = 'train_everything_test_abdbnew'
+    name = 'train_PrePAPA_test_PostPAPA'
     graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
         dataset, df, f'{name}_sqerror_vs_actual')
@@ -71,11 +71,11 @@ def postprocessing(df, dataset, ang_df):
 #     print('Generating LaTeX...')
 #     # ltp.generate_latex('PostAF2', 'Everything', 'GBReg_PostAF2')
 
-df_train, train_angles = preprocessing('Everything')
-df_test, test_angles= preprocessing('new_files')
+df_train, train_angles = preprocessing('PrePAPA')
+df_test, test_angles= preprocessing('PostPAPA')
 print('Processing...')
-result_df = runGBReg(df_train, df_test, 'train_Everything_H100G_residues_considered')
+result_df = runGBReg(df_train, df_test, 'train_PrePAPA_H100G_residues_considered')
 print(result_df)
 print('Postprocessing...')
-postprocessing(result_df, 'new_files', test_angles)
+postprocessing(result_df, 'PostPAPA', test_angles)
 print('Goodbye!')
