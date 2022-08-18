@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+
+# Program can be run like this:  ./gbr_angle_prediction.py --trainset 'Everything' --testset 'new_data' 
+# --modelname 'train_Everything_H100G_residues_considered_nosubsampling' 
+# --graphname 'train_everything_test_abdbnew_nosubsampling'
 # # *************************************************************************
 import os
 import argparse
@@ -30,8 +34,7 @@ def runGBReg(train_df, test_df, model_name):
 
 
 # *************************************************************************
-def postprocessing(df, dataset, ang_df):
-    name = 'train_everything_test_abdbnew_nosubsampling'
+def postprocessing(df, dataset, ang_df, name):
     graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
         dataset, df, f'{name}_sqerror_vs_actual')
@@ -42,40 +45,24 @@ def postprocessing(df, dataset, ang_df):
 
 
 # *************************************************************************
-# parser = argparse.ArgumentParser(description='Program for compiling angles')
-# parser.add_argument('--preprocess', action='store_true', default=False)
-# parser.add_argument('--process', action='store_true', default=False)
-# parser.add_argument('--postprocess', action='store_true', default=False)
+parser = argparse.ArgumentParser(description='Program for compiling angles')
+parser.add_argument('--trainset', required=True, help='directory of pdb files used for training model')
+parser.add_argument('--testset', required=True, help='directory of pdb files used for testing model')
+parser.add_argument('--modelname', required=True, help='name which will be given to the model that is trained')
+parser.add_argument('--graphname', required=True, help='name which will be included in the graphs')
 # parser.add_argument('--latex', action='store_true', default=False)
 
-# args = parser.parse_args()
-
-# if not args.preprocess and not args.process and not args.postprocess and not args.latex:
-#     print('Neither --preprocess nor --process nor --postprocess nor --latex has been specified. Enabling all of them.')
-#     args.process = args.postprocess = args.latex = True
-
-
-# if args.preprocess:
-#     df_train = preprocessing('Everything')
-#     df_test = preprocessing('new_files')
-
-# if args.process:
-#     print('Processing...')
-#     result_df = runGBReg(df_train, df_test, 'train_Everything_test_abdbnew')
-
-# if args.postprocess:
-#     print('Postprocessing...')
-#     postprocessing(result_df, 'new_files')
+args = parser.parse_args()
 
 # if args.latex:
 #     print('Generating LaTeX...')
 #     # ltp.generate_latex('PostAF2', 'Everything', 'GBReg_PostAF2')
 
-df_train, train_angles = preprocessing('Everything')
-df_test, test_angles= preprocessing('new_files')
+df_train, train_angles = preprocessing(args.trainset)
+df_test, test_angles= preprocessing(args.testset)
 print('Processing...')
-result_df = runGBReg(df_train, df_test, 'train_Everything_H100G_residues_considered_nosubsampling')
+result_df = runGBReg(df_train, df_test, args.modelname)
 print(result_df)
 print('Postprocessing...')
-postprocessing(result_df, 'new_files', test_angles)
+postprocessing(result_df, args.testset, test_angles, args.graphname)
 print('Goodbye!')
