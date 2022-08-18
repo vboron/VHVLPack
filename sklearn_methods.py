@@ -14,9 +14,10 @@ gbr_params = {'alpha': 0.01,
               'min_samples_leaf': 10,
               'n_estimators': 1500,
               'random_state': 100,
-              'subsample': 0.1,
+              
               'verbose': 1}
 # 'ccp_alpha': 0.00001,
+# 'subsample': 0.1,
 
 def make_sets(file):
     df = pd.read_csv(file)
