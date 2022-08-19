@@ -26,7 +26,7 @@ def preprocessing(ds):
 
 
 # *************************************************************************
-def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, graph_name: str) -> pd.DataFrame:
+def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> pd.DataFrame:
     print('Making train and test sets...')
     X_train, y_train, _x_ = make_sets_from_df(train_df)
     X_test, y_true, df_test = make_sets_from_df(test_df)
@@ -35,7 +35,7 @@ def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, gra
         X_train, y_train, X_test, df_test, model_name)
     df.to_csv(f'results_for_{model_name}', index=False)
     print('Plotting deviance...')
-    plot_deviance(gbr, f'{graph_name}_deviance', X_test, y_true)
+    plot_deviance(gbr, os.path.join(dircetory, f'{graph_name}_deviance'), X_test, y_true)
     return df
 
 
@@ -68,7 +68,7 @@ df_train, train_angles = preprocessing(args.trainset)
 print(f'Preprocessing {args.testset}...')
 df_test, test_angles= preprocessing(args.testset)
 print('Processing...')
-result_df = runGBReg(df_train, df_test, args.modelname, args.graphname)
+result_df = runGBReg(df_train, df_test, args.modelname, args.graphname, args.testset)
 print(result_df)
 print('Postprocessing...')
 postprocessing(result_df, args.testset, test_angles, args.graphname)

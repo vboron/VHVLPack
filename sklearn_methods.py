@@ -56,7 +56,7 @@ def run_MLPRegressor(X_train, y_train, X_test, df):
     return df
 
 
-def run_GradientBoostingRegressor(X_train, y_train, X_test, df: pd.DataFrame, model_name) -> pd.DataFrame:
+def run_GradientBoostingRegressor(X_train, y_train, X_test, df: pd.DataFrame, model_name):
     gbr = GradientBoostingRegressor(**gbr_params).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename: str = f'{model_name}.pkl'
@@ -85,12 +85,12 @@ def plot_deviance(gbr, graph_name, X_test, y_test):
         np.arange(gbr_params["n_estimators"]) + 1,
         gbr.train_score_,
         "b-",
-        label="Training Set Deviance",)
+        label="Training Set Deviance")
     plt.plot(np.arange(gbr_params["n_estimators"]) + 1, test_score, "r-", label="Test Set Deviance")
     plt.legend(loc="upper right")
     plt.xlabel("Boosting Iterations")
     plt.ylabel("Deviance")
     fig.tight_layout()
-    path_fig = os.path.join(directory, f'{graph_name}.jpg')
+    path_fig: str = f'{graph_name}.jpg'
     plt.savefig(path_fig, format='jpg')
     # plt.show()
