@@ -6,6 +6,7 @@ from ordered_set import OrderedSet
 # from sklearn.datasets import make_regression
 from sklearn.ensemble import GradientBoostingRegressor
 import pickle
+import numpy as np
 
 gbr_params = {'alpha': 0.01,
               # 'ccp_alpha': 0.00001,
