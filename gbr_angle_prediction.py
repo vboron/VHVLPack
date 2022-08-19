@@ -16,19 +16,24 @@ from sklearn_methods import *
 
 # *************************************************************************
 def preprocessing(ds):
+    print('Extracting angles and residues, and encoding...')
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, ds, 'expanded_residues.dat')
+    print('Nonredundantizing...')
     nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
     return nonred_df, ang_df
 
 
 # *************************************************************************
 def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, graph_name: str) -> pd.DataFrame:
+    print('Making train and test sets...')
     X_train, y_train, _x_ = make_sets_from_df(train_df)
     X_test, y_true, df_test = make_sets_from_df(test_df)
+    print('Running ML...')
     df, gbr = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, model_name)
     df.to_csv(f'results_for_{model_name}', index=False)
+    print('Plotting deviance...')
     plot_deviance(gbr, f'{graph_name}_deviance')
     return df
 
