@@ -71,7 +71,7 @@ def run_GradientBoostingRegressor(X_train, y_train, X_test, df: pd.DataFrame, mo
     return df, gbr
 
 
-def plot_deviance(gbr, graph_name):
+def plot_deviance(gbr, graph_name, X_test):
     test_score = np.zeros((gbr_params["n_estimators"],), dtype=np.float64)
     for i, y_pred in enumerate(gbr.staged_predict(X_test)):
         test_score[i] = gbr.loss_(y_test, y_pred)
