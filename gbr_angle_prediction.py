@@ -35,7 +35,7 @@ def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, gra
         X_train, y_train, X_test, df_test, model_name)
     df.to_csv(f'results_for_{model_name}', index=False)
     print('Plotting deviance...')
-    plot_deviance(gbr, os.path.join(dircetory, f'{graph_name}_deviance'), X_test, y_true)
+    plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
     return df
 
 
