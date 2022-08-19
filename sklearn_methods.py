@@ -12,9 +12,10 @@ gbr_params = {'alpha': 0.01,
               'learning_rate': 0.1,
               'max_depth': 2,
               'min_samples_leaf': 10,
-              'n_estimators': 1500,
+              'n_estimators': 50000,
               'random_state': 100,
             #   'subsample': 0.1,
+            #   'loss':'absolute_error',
               'verbose': 1}
 
 
