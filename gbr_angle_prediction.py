@@ -57,8 +57,9 @@ args = parser.parse_args()
 # if args.latex:
 #     print('Generating LaTeX...')
 #     # ltp.generate_latex('PostAF2', 'Everything', 'GBReg_PostAF2')
-
+print(f'Preprocessing {args.trainset}...')
 df_train, train_angles = preprocessing(args.trainset)
+print(f'Preprocessing {args.testset}...')
 df_test, test_angles= preprocessing(args.testset)
 print('Processing...')
 result_df = runGBReg(df_train, df_test, args.modelname, args.graphname)
