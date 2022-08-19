@@ -92,4 +92,4 @@ def plot_deviance(gbr, graph_name, X_test, y_test):
     fig.tight_layout()
     path_fig = os.path.join(directory, f'{graph_name}.jpg')
     plt.savefig(path_fig, format='jpg')
-    plt.show()
+    # plt.show()
