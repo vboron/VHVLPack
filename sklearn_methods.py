@@ -14,10 +14,9 @@ gbr_params = {'alpha': 0.01,
               'min_samples_leaf': 10,
               'n_estimators': 50000,
               'random_state': 100,
-            #   'subsample': 0.1,
-            #   'loss':'absolute_error',
+              #   'subsample': 0.1,
+              #   'loss':'absolute_error',
               'verbose': 1}
-
 
 
 def make_sets(file):
@@ -68,4 +67,27 @@ def run_GradientBoostingRegressor(X_train, y_train, X_test, df: pd.DataFrame, mo
 
     df['predicted'] = y_pred
     df['error'] = df['predicted']-df['angle']
-    return df
+    return df, gbr
+
+
+def plot_deviance(gbr, graph_name):
+    test_score = np.zeros((gbr_params["n_estimators"],), dtype=np.float64)
+    for i, y_pred in enumerate(gbr.staged_predict(X_test)):
+        test_score[i] = gbr.loss_(y_test, y_pred)
+
+    fig = plt.figure(figsize=(6, 6))
+    plt.subplot(1, 1, 1)
+    plt.title("Deviance")
+    plt.plot(
+        np.arange(gbr_params["n_estimators"]) + 1,
+        gbr.train_score_,
+        "b-",
+        label="Training Set Deviance",)
+    plt.plot(np.arange(gbr_params["n_estimators"]) + 1, test_score, "r-", label="Test Set Deviance")
+    plt.legend(loc="upper right")
+    plt.xlabel("Boosting Iterations")
+    plt.ylabel("Deviance")
+    fig.tight_layout()
+    path_fig = os.path.join(directory, f'{graph_name}.jpg')
+    plt.savefig(path_fig, format='jpg')
+    plt.show()

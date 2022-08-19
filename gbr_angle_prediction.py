@@ -15,7 +15,7 @@ from sklearn_methods import *
 
 
 # *************************************************************************
-def preprocessing(ds: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+def preprocessing(ds):
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, ds, 'expanded_residues.dat')
     nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
@@ -23,12 +23,13 @@ def preprocessing(ds: str) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 # *************************************************************************
-def runGBReg(train_df, test_df, model_name: str) -> pd.DataFrame:
+def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, graph_name: str) -> pd.DataFrame:
     X_train, y_train, _x_ = make_sets_from_df(train_df)
     X_test, y_true, df_test = make_sets_from_df(test_df)
-    df = run_GradientBoostingRegressor(
+    df, gbr = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, model_name)
     df.to_csv(f'results_for_{model_name}', index=False)
+    plot_deviance(gbr, f'{graph_name}_deviance')
     return df
 
 
@@ -60,7 +61,7 @@ args = parser.parse_args()
 df_train, train_angles = preprocessing(args.trainset)
 df_test, test_angles= preprocessing(args.testset)
 print('Processing...')
-result_df = runGBReg(df_train, df_test, args.modelname)
+result_df = runGBReg(df_train, df_test, args.modelname, args.graphname)
 print(result_df)
 print('Postprocessing...')
 postprocessing(result_df, args.testset, test_angles, args.graphname)
