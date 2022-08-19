@@ -12,6 +12,7 @@ import encode_res_calc_angles as erca
 import nonred
 import graphing
 from sklearn_methods import *
+import numpy as np
 
 
 # *************************************************************************
