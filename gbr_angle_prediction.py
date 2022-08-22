@@ -28,8 +28,7 @@ def preprocessing(ds):
 # *************************************************************************
 def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> pd.DataFrame:
     print('Making train and test sets...')
-    X_train, y_train, _x_ = make_sets_from_df(train_df)
-    X_test, y_true, df_test = make_sets_from_df(test_df)
+    X_train, y_train, _x_, X_test, y_true, df_test = make_sets_from_df(train_df, test_df)
     print('Running ML...')
     df, gbr = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, model_name)

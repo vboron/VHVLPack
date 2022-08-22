@@ -33,14 +33,18 @@ def make_sets(file):
     return X_df, y_df, df2
 
 
-def make_sets_from_df(df):
-    target_column = {'angle'}
-    pdb_code = {'code'}
-    predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
-    df2 = df[['code', 'angle']]
-    X_df = df[predictors].values
-    y_df = df[target_column].values
-    return X_df, y_df, df2
+def make_sets_from_df(df_train, df_test):
+    def make_set(df):
+        target_column = {'angle'}
+        pdb_code = {'code'}
+        predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
+        df2 = df[['code', 'angle']]
+        X_df = df[predictors].values
+        y_df = df[target_column].values
+        return X_df, y_df, df2
+    X_train, y_train, code_ang_train = make_set(df_train)
+    X_test, y_test, code_ang_test = make_set(df_test)
+    return X_train, y_train, code_ang_train, X_test, y_test, code_ang_test
 
 # X_train, y_train, _x_ = make_sets('PreAF2/PreAF2_NR2_4d.csv')
 # X_test, y_true, df_test = make_sets('PostAF2/PostAF2_NR2_4d.csv')
