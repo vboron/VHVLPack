@@ -33,7 +33,7 @@ def make_sets(file):
     return X_df, y_df, df2
 
 
-def make_sets_from_df(df_train, df_test):
+def make_reg_sets_from_df(df_train, df_test):
     def make_set(df):
         target_column = {'angle'}
         pdb_code = {'code'}
