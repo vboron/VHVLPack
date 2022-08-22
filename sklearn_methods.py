@@ -9,6 +9,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from sklearn.ensemble import GradientBoostingClassifier
 
 gbr_params = {'alpha': 0.01,
               # 'ccp_alpha': 0.00001,
@@ -77,6 +78,37 @@ def run_GradientBoostingRegressor(X_train, y_train, X_test, df: pd.DataFrame, mo
     return df, gbr
 
 
+def make_class_sets_from_df():
+    def make_set(df):
+        target_column = {'class'}
+        pdb_code = {'code'}
+        predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
+        df2 = df[['code', 'class']]
+        X_df = df[predictors].values
+        y_df = df[target_column].values
+        return X_df, y_df, df2
+    X_train, y_train, code_class_train = make_set(df_train)
+    X_test, y_test, code_class_test = make_set(df_test)
+    return X_train, y_train, code_class_train, X_test, y_test, code_class_test
+
+
+def run_GradientBoostingClassifier(X_train, y_train, X_test, df: pd.DataFrame, model_name):
+    gbc = GradientBoostingClassifier().fit(X_train, y_train.ravel())
+    # Save to file in the current working directory
+    pkl_filename: str = f'{model_name}.pkl'
+    with open(pkl_filename, 'wb') as file:
+        pickle.dump(gbc, file)
+
+    # Load from file
+    with open(pkl_filename, 'rb') as file:
+        pickle_model = pickle.load(file)
+    y_pred = pickle_model.predict(X_test)
+
+    df['predicted'] = y_pred
+    df['error'] = df['predicted']-df['class']
+    return df, gbc
+
+
 def plot_deviance(gbr, graph_name, X_test, y_test):
     test_score = np.zeros((gbr_params["n_estimators"],), dtype=np.float64)
     for i, y_pred in enumerate(gbr.staged_predict(X_test)):
@@ -90,7 +122,8 @@ def plot_deviance(gbr, graph_name, X_test, y_test):
         gbr.train_score_,
         "b-",
         label="Training Set Deviance")
-    plt.plot(np.arange(gbr_params["n_estimators"]) + 1, test_score, "r-", label="Test Set Deviance")
+    plt.plot(np.arange(gbr_params["n_estimators"]) + 1,
+             test_score, "r-", label="Test Set Deviance")
     plt.legend(loc="upper right")
     plt.xlabel("Boosting Iterations")
     plt.ylabel("Deviance")
