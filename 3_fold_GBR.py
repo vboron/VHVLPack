@@ -19,17 +19,26 @@ def make_norm_out_dfs(directory, csv_file):
 
     # extract data where the predicted angle is within the normal range into a new dataframe
     df_normal = df[df['angle'].between(min_norm, max_norm)]
+    df_normal['class'] = 'normal'
 
     # extract data where predicted angles are outside of the normal range and add into a new dataframe
     outliers_max = df[df['angle'] >= max_norm]
+    outliers_max['class'] = 'max_out'
     outliers_min = df[df['angle'] <= min_norm]
+    outliers_min['class'] = 'min_out'
 
     return df_normal, outliers_max, outliers_min
 
+def determine_class(df, set_name):
+    X_train, y_train, _x_, X_test, y_true, df_test = make_sets_from_df(df, df)
+    print(f'Running GBClassifier on {set_name}')
+    df = run_GradientBoostingClassifier(
+        X_train, y_train, X_test, df_test, f'gbc_{set_name}')
+    df = df.reset_index()
+    return class_df
 
 def runGBReg(directory, df, set_name):
-    X_train, y_train, _x_ = make_sets_from_df(df)
-    X_test, y_true, df_test = make_sets_from_df(df)
+    X_train, y_train, _x_, X_test, y_true, df_test = make_sets_from_df(df, df)
     print(f'Running GBRegressor on {set_name}')
     df = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, f'gbr_{set_name}')
