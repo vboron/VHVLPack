@@ -44,7 +44,7 @@ def make_norm_out_dfs(df):
     out_min_classed = add_class(outliers_min, 'min_out')
 
     df_classed = combine_dfs([normal_classed, out_max_classed, out_min_classed])
-    return df_normal, outliers_max, outliers_min
+    return df_normal, outliers_max, outliers_min, df_classed
 
 def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
     print(f'Running GBClassifier on {set_name}')
@@ -77,10 +77,11 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
         directory, f'{file_name}.csv', f'{file_name}_errordistribution')
 
 
-def three_fold_GBR(directory, csv_file):
+def three_fold_GBR(train_dir):
     encoded_train_df, train_just_angs_df = preprocessing(train_dir)
-    encoded_test_df, test_just_angs_df = preprocessing(test_dir)
-    # df_norm, df_out_max, df_out_min = make_norm_out_dfs(directory, csv_file)
+    # encoded_test_df, test_just_angs_df = preprocessing(test_dir)
+    df_norm, df_out_max, df_out_min, classed_df = make_norm_out_dfs(encoded_train_df)
+    print(classed_df)
     # runGBReg(directory, df_norm, 'norm')
     # runGBReg(directory, df_out_max, 'out_max')
     # runGBReg(directory, df_out_min, 'out_min')
@@ -96,8 +97,6 @@ if __name__ == '__main__':
         description='Program for applying a rotational correction factor recursively')
 
     parser.add_argument('--directory', help='Directory', required=True)
-    parser.add_argument(
-        '--csv_file', help='Uncorrected csv file', required=True)
     args = parser.parse_args()
 
-    three_fold_GBR(args.directory, args.csv_file)
+    three_fold_GBR(args.directory)
