@@ -63,7 +63,7 @@ def read_pdbfiles_as_lines(directory) -> pd.DataFrame:
     re_search_start = re.compile(r'^\s*ATOM')
     for structure_file in files:
         with open(structure_file, "r") as text_file:
-            print(structure_file)
+            print(type(structure_file))
             structure_file = structure_file.replace(f'{directory}/', '')
             print(structure_file)
             pdb_code = structure_file[:-4]
