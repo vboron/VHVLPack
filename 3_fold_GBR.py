@@ -14,7 +14,7 @@ import nonred
 def preprocessing(ds, set_name):
     print('Extracting angles and residues, and encoding...')
     if set_name.endswith('/'):
-        set_name.replace('/', '')
+        set_name = set_name.replace('/', '')
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, set_name, 'expanded_residues.dat')
     print('Nonredundantizing...')
