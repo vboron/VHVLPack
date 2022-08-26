@@ -50,7 +50,7 @@ def make_norm_out_dfs(df):
     # print(list_of_dfs)
     for df in list_of_dfs:
         print(df.columns)
-    df_classed = pd.concat(list_of_dfs, axis=1)
+    df_classed = pd.concat(list_of_dfs)
     print(df_classed.columns)
     return df_normal, outliers_max, outliers_min, df_classed
 
