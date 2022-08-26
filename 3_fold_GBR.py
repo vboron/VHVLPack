@@ -10,10 +10,10 @@ from sklearn_methods import *
 import encode_res_calc_angles as erca
 
 
-def preprocessing(ds):
+def preprocessing(ds, set_name):
     print('Extracting angles and residues, and encoding...')
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
-        ds, ds, 'expanded_residues.dat')
+        ds, set_name, 'expanded_residues.dat')
     print('Nonredundantizing...')
     nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
     return nonred_df, ang_df
@@ -78,7 +78,7 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
 
 
 def three_fold_GBR(train_dir):
-    encoded_train_df, train_just_angs_df = preprocessing(train_dir)
+    encoded_train_df, train_just_angs_df = preprocessing(train_dir, 'Everything')
     # encoded_test_df, test_just_angs_df = preprocessing(test_dir)
     df_norm, df_out_max, df_out_min, classed_df = make_norm_out_dfs(encoded_train_df)
     print(classed_df)
