@@ -80,8 +80,10 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
 
 def three_fold_GBR(train_dir):
     encoded_train_df, train_just_angs_df = preprocessing(train_dir, 'Everything')
+    print(encoded_train_df)
     # encoded_test_df, test_just_angs_df = preprocessing(test_dir)
     df_norm, df_out_max, df_out_min, classed_df = make_norm_out_dfs(encoded_train_df)
+    print(df_norm)
     print(classed_df)
     # runGBReg(directory, df_norm, 'norm')
     # runGBReg(directory, df_out_max, 'out_max')
