@@ -15,15 +15,18 @@ def preprocessing(ds, set_name):
     print('Extracting angles and residues, and encoding...')
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, set_name, 'expanded_residues.dat')
+    print(encoded_df)
     print('Nonredundantizing...')
     nonred_df = nonred.NR2(encoded_df, ds, f'{set_name}_NR2_expanded_residues')
     return nonred_df, ang_df
+
 
 def combine_dfs(list_of_dfs):
     dfs = [df.set_index('code') for df in list_of_dfs]
     df = pd.concat(dfs, axis=1)
     df = df.reset_index()
     return df
+
 
 def make_norm_out_dfs(df):
     min_norm = -53
@@ -44,8 +47,10 @@ def make_norm_out_dfs(df):
     outliers_min = df[df['angle'] <= min_norm]
     out_min_classed = add_class(outliers_min, 'min_out')
 
-    df_classed = combine_dfs([normal_classed, out_max_classed, out_min_classed])
+    df_classed = combine_dfs(
+        [normal_classed, out_max_classed, out_min_classed])
     return df_normal, outliers_max, outliers_min, df_classed
+
 
 def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
     print(f'Running GBClassifier on {set_name}')
@@ -54,8 +59,9 @@ def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
     df = df.reset_index()
     return class_df
 
+
 def runGBReg(directory, X_train, y_train, X_test, y_true, df_test, set_name):
-    
+
     print(f'Running GBRegressor on {set_name}')
     df = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, f'gbr_{set_name}')
@@ -63,9 +69,6 @@ def runGBReg(directory, X_train, y_train, X_test, y_true, df_test, set_name):
     # print(df)
     path = os.join(directory, f'NR2_GBReg_{set_name}.csv')
     df.to_csv(path, index=False)
-
-
-
 
 
 def run_graphs(directory, set_name, df_all, df_out, df_norm):
@@ -79,10 +82,11 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
 
 
 def three_fold_GBR(train_dir):
-    encoded_train_df, train_just_angs_df = preprocessing(train_dir, 'Everything')
-    print(encoded_train_df)
+    encoded_train_df, train_just_angs_df = preprocessing(
+        train_dir, 'Everything')
     # encoded_test_df, test_just_angs_df = preprocessing(test_dir)
-    df_norm, df_out_max, df_out_min, classed_df = make_norm_out_dfs(encoded_train_df)
+    df_norm, df_out_max, df_out_min, classed_df = make_norm_out_dfs(
+        encoded_train_df)
     print(df_norm)
     print(classed_df)
     # runGBReg(directory, df_norm, 'norm')
