@@ -27,8 +27,8 @@ def combine_dfs(list_of_dfs):
 
 
 def make_norm_out_dfs(df):
-    min_norm = -53
-    max_norm = -37
+    min_norm = -50
+    max_norm = -40
 
     def add_class(df, class_name):
         df['class'] = class_name
@@ -47,7 +47,7 @@ def make_norm_out_dfs(df):
 
     list_of_dfs = [normal_classed, out_max_classed, out_min_classed]
     list_of_dfs = [df.reset_index() for df in list_of_dfs]
-    print(list_of_dfs)
+    # print(list_of_dfs)
     df_classed = pd.concat(list_of_dfs, axis=1)
     print(df_classed)
     return df_normal, outliers_max, outliers_min, df_classed
