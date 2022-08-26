@@ -15,7 +15,6 @@ def preprocessing(ds, set_name):
     print('Extracting angles and residues, and encoding...')
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, set_name, 'expanded_residues.dat')
-    print(encoded_df)
     print('Nonredundantizing...')
     nonred_df = nonred.NR2(encoded_df, ds, f'{set_name}_NR2_expanded_residues')
     return nonred_df, ang_df
@@ -48,7 +47,7 @@ def make_norm_out_dfs(df):
     out_min_classed = add_class(outliers_min, 'min_out')
 
     df_classed = combine_dfs(
-        [normal_classed, out_max_classed, out_min_classed])
+        [normal_classed, out_max_classed, out_min_classed], axes=1)
     return df_normal, outliers_max, outliers_min, df_classed
 
 
