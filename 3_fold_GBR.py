@@ -48,8 +48,10 @@ def make_norm_out_dfs(df):
     list_of_dfs = [normal_classed, out_max_classed, out_min_classed]
     # list_of_dfs = [df.reset_index() for df in list_of_dfs]
     # print(list_of_dfs)
+    for df in list_of_dfs:
+        print(df.columns)
     df_classed = pd.concat(list_of_dfs, axis=1)
-    print(df_classed)
+    print(df_classed.columns)
     return df_normal, outliers_max, outliers_min, df_classed
 
 
@@ -88,8 +90,7 @@ def three_fold_GBR(train_dir):
     # encoded_test_df, test_just_angs_df = preprocessing(test_dir)
     df_norm, df_out_max, df_out_min, classed_df = make_norm_out_dfs(
         encoded_train_df)
-    print(df_norm)
-    print(classed_df)
+
     # runGBReg(directory, df_norm, 'norm')
     # runGBReg(directory, df_out_max, 'out_max')
     # runGBReg(directory, df_out_min, 'out_min')
