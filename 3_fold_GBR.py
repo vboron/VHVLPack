@@ -22,7 +22,7 @@ def preprocessing(ds, set_name):
 
 def combine_dfs(list_of_dfs):
     # dfs = [df.set_index('code') for df in list_of_dfs]
-    df = pd.concat(dfs, axis=1)
+    df = pd.concat(list_of_dfs, axis=1)
     df = df.reset_index()
     return df
 
