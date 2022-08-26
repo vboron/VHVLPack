@@ -64,7 +64,6 @@ def read_pdbfiles_as_lines(directory) -> pd.DataFrame:
     for structure_file in files:
         with open(structure_file, "r") as text_file:
             structure_file = structure_file.replace(f'{directory}', '')
-            print(structure_file)
             pdb_code = structure_file[:-4]
             for line in text_file:
                 if re_search_start.search(line) != None:
