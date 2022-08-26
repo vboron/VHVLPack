@@ -77,7 +77,6 @@ def read_pdbfiles_as_lines(directory) -> pd.DataFrame:
                         atom_lines.append(data)
 
     df = pd.DataFrame(data=atom_lines, columns=col)
-    print(df)
     return df
 
 
