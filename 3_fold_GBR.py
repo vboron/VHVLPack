@@ -46,7 +46,7 @@ def make_norm_out_dfs(df):
     out_min_classed = add_class(outliers_min, 'min_out')
 
     list_of_dfs = [normal_classed, out_max_classed, out_min_classed]
-    list_of_dfs = [df.reset_index() for df in list_of_dfs]
+    # list_of_dfs = [df.reset_index() for df in list_of_dfs]
     # print(list_of_dfs)
     df_classed = pd.concat(list_of_dfs, axis=1)
     print(df_classed)
