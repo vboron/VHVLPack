@@ -21,7 +21,7 @@ def preprocessing(ds, set_name):
 
 
 def combine_dfs(list_of_dfs):
-    dfs = [df.set_index('code') for df in list_of_dfs]
+    # dfs = [df.set_index('code') for df in list_of_dfs]
     df = pd.concat(dfs, axis=1)
     df = df.reset_index()
     return df
@@ -47,7 +47,7 @@ def make_norm_out_dfs(df):
     out_min_classed = add_class(outliers_min, 'min_out')
 
     df_classed = combine_dfs(
-        [normal_classed, out_max_classed, out_min_classed], axes=1)
+        [normal_classed, out_max_classed, out_min_classed])
     return df_normal, outliers_max, outliers_min, df_classed
 
 
