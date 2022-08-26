@@ -13,6 +13,8 @@ import nonred
 
 def preprocessing(ds, set_name):
     print('Extracting angles and residues, and encoding...')
+    if set_name.endswith('/'):
+        set_name.replace('/', '')
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, set_name, 'expanded_residues.dat')
     print('Nonredundantizing...')
@@ -58,7 +60,6 @@ def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
 
 
 def runGBReg(directory, X_train, y_train, X_test, y_true, df_test, set_name):
-
     print(f'Running GBRegressor on {set_name}')
     df = run_GradientBoostingRegressor(
         X_train, y_train, X_test, df_test, f'gbr_{set_name}')
@@ -79,7 +80,7 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
 
 def three_fold_GBR(train_dir):
     encoded_train_df, train_just_angs_df = preprocessing(
-        train_dir, 'Everything')
+        train_dir, train_dir)
     # encoded_test_df, test_just_angs_df = preprocessing(test_dir)
     df_norm, df_out_max, df_out_min, classed_df = make_norm_out_dfs(
         encoded_train_df)
