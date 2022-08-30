@@ -77,7 +77,7 @@ def run_GradientBoostingRegressor(X_train, y_train, X_test, df: pd.DataFrame, mo
     df['error'] = df['predicted']-df['angle']
     return df, gbr
 
-def make_set(df):
+def make_set_class(df):
     target_column = {'class'}
     pdb_code = {'code'}
     predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
@@ -86,27 +86,33 @@ def make_set(df):
     y_df = df[target_column].values
     return X_df, y_df, df2
 
-def make_class_sets_from_df():
-    X_train, y_train, code_class_train = make_set(df_train)
-    X_test, y_test, code_class_test = make_set(df_test)
+def make_class_sets_from_df(df_train, df_test):
+    X_train, y_train, code_class_train = make_set_class(df_train)
+    X_test, y_test, code_class_test = make_set_class(df_test)
     return X_train, y_train, code_class_train, X_test, y_test, code_class_test
 
-
-def run_GradientBoostingClassifier(X_train, y_train, X_test, df: pd.DataFrame, model_name):
+def build_GradientBoostingClassifier_model(X_train, y_train, model_name):
     gbc = GradientBoostingClassifier().fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename: str = f'{model_name}.pkl'
     with open(pkl_filename, 'wb') as file:
         pickle.dump(gbc, file)
 
+
+def run_GradientBoostingClassifier(X_test, df: pd.DataFrame, model_name):
+    # Inputted dataframe contains the pdb code and the true value being inputted
     # Load from file
     with open(pkl_filename, 'rb') as file:
         pickle_model = pickle.load(file)
     y_pred = pickle_model.predict(X_test)
-
+#   for X_test:
+        # y_pred = pickle_model.predict(X_test)
     df['predicted'] = y_pred
-    df['error'] = df['predicted']-df['class']
-    return df, gbc
+    if df['predicted'] == df['class']:
+        df['correct'] = 'True'
+    else:
+        df['correct'] = 'False'
+    return df
 
 
 def plot_deviance(gbr, graph_name, X_test, y_test):
