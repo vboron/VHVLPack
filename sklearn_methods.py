@@ -100,6 +100,7 @@ def build_GradientBoostingClassifier_model(X_train, y_train, model_name):
 
 
 def run_GradientBoostingClassifier(X_test, df: pd.DataFrame, model_name):
+    pkl_filename: str = f'{model_name}.pkl'
     # Inputted dataframe contains the pdb code and the true value being inputted
     # Load from file
     with open(pkl_filename, 'rb') as file:
