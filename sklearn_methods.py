@@ -109,7 +109,7 @@ def run_GradientBoostingClassifier(X_test, df: pd.DataFrame, model_name):
 #   for X_test:
         # y_pred = pickle_model.predict(X_test)
     df['predicted'] = y_pred
-    if df['predicted'] == df['class']:
+    if df['predicted'].values == df['class'].values:
         df['correct'] = 'True'
     else:
         df['correct'] = 'False'
