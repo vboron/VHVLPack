@@ -58,7 +58,7 @@ def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
     print(f'Running GBClassifier on {set_name}')
     build_GradientBoostingClassifier_model(X_train, y_train, f'gbc_{set_name}')
     class_df = run_GradientBoostingClassifier(X_test, df_test, f'gbc_{set_name}')
-    print(df)
+    print(class_df)
     return class_df
 
 
