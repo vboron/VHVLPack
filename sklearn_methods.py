@@ -120,6 +120,8 @@ def run_GradientBoostingClassifier(X_test, df: pd.DataFrame, model_name):
     df['result'] = (df['class'].apply(set) - df['predicted'].apply(set)).astype(bool)
     print(df['result'].value_counts())
     print(df['class'].value_counts())
+    print(df['predicted'].value_counts())
+    df.to_csv('classification_results.csv', index=False)
     return df
 
 
