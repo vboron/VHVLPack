@@ -80,7 +80,7 @@ def run_GradientBoostingRegressor(X_train, y_train, X_test, df: pd.DataFrame, mo
 def make_set_class(df):
     target_column = {'class'}
     pdb_code = {'code'}
-    predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
+    predictors = list(OrderedSet(df.columns) - target_column - pdb_code - {'angle'})
     df2 = df[['code', 'class']]
     X_df = df[predictors].values
     y_df = df[target_column].values
