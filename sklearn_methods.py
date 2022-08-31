@@ -22,6 +22,16 @@ gbr_params = {'alpha': 0.01,
               #   'loss':'absolute_error',
               'verbose': 1}
 
+gbc_params = {'learning_rate': 0.1,
+              'max_depth': 2,
+              'min_samples_leaf': 10,
+              'n_estimators': 50000,
+              'random_state': 100,
+              'warm_start': 'True',
+              #   'subsample': 0.1,
+              #   'loss':'absolute_error',
+              'verbose': 1}
+
 
 def make_sets(file):
     df = pd.read_csv(file)
@@ -92,7 +102,7 @@ def make_class_sets_from_df(df_train, df_test):
     return X_train, y_train, code_class_train, X_test, y_test, code_class_test
 
 def build_GradientBoostingClassifier_model(X_train, y_train, model_name):
-    gbc = GradientBoostingClassifier(**gbr_params).fit(X_train, y_train.ravel())
+    gbc = GradientBoostingClassifier(**gbc_params).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename: str = f'{model_name}.pkl'
     with open(pkl_filename, 'wb') as file:
