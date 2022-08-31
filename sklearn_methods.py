@@ -116,11 +116,11 @@ def run_GradientBoostingClassifier(X_test, df: pd.DataFrame, model_name):
     with open(pkl_filename, 'rb') as file:
         pickle_model = pickle.load(file)
     y_pred = pickle_model.predict(X_test)
-    df['predicted'] = y_pred
-    df['result'] = (df['class'].apply(set) - df['predicted'].apply(set)).astype(bool)
+    df['predclass'] = y_pred
+    df['result'] = (df['predclass'].apply(set) - df['class'].apply(set)).astype(bool)
     print(df['result'].value_counts())
     print(df['class'].value_counts())
-    print(df['predicted'].value_counts())
+    print(df['predclass'].value_counts())
     df.to_csv('classification_results.csv', index=False)
     return df
 

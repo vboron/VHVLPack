@@ -23,33 +23,34 @@ def preprocessing(ds):
     return nonred_df, ang_df
 
 
-def combine_dfs(list_of_dfs):
-    # dfs = [df.set_index('code') for df in list_of_dfs]
+def define_class(df):
+    min_norm = -50
+    max_norm = -40
 
+    if df['angle'].between(min_norm, max_norm):
+        df['class'] = 'normal'
+    elif df['angle'] >= max_norm:
+        df['class'] = 'max_out'
+    else:
+        df['class'] = 'min_out'
     return df
+
 
 
 def make_norm_out_dfs(df):
     min_norm = -50
     max_norm = -40
 
-    def add_class(df, class_name):
-        df['class'] = class_name
-        return df
-
     # extract data where the predicted angle is within the normal range into a new dataframe
     df_normal = df[df['angle'].between(min_norm, max_norm)]
-    normal_classed = add_class(df_normal, 'normal')
 
     # extract data where predicted angles are outside of the normal range and add into a new dataframe
     outliers_max = df[df['angle'] >= max_norm]
-    out_max_classed = add_class(outliers_max, 'max_out')
 
     outliers_min = df[df['angle'] <= min_norm]
-    out_min_classed = add_class(outliers_min, 'min_out')
 
     df_classed = pd.concat([normal_classed, out_max_classed, out_min_classed])
-    return df_normal, outliers_max, outliers_min, df_classed
+    return df_classed
 
 
 def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
@@ -59,6 +60,7 @@ def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
     build_GradientBoostingClassifier_model(X_train, y_train, f'gbc_{set_name}')
     class_df = run_GradientBoostingClassifier(X_test, df_test, f'gbc_{set_name}')
     print(class_df)
+
     return class_df
 
 
@@ -83,11 +85,14 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
 
 def three_fold_GBR(train_dir, test_dir):
     encoded_train_df, train_just_angs_df = preprocessing(train_dir)
-    encoded_test_df, test_just_angs_df = preprocessing(test_dir)
-    train_df_norm, train_df_out_max, train_df_out_min, train_classed_df = make_norm_out_dfs(encoded_train_df)
-    test_df_norm, test_df_out_max, test_df_out_min, test_classed_df = make_norm_out_dfs(encoded_train_df)
-    X_train_class, y_train_class, _x_, X_test_class, y_test_class, code_class_test_class = make_class_sets_from_df(train_classed_df, test_classed_df)
-    determine_class(X_train_class, y_train_class, X_test_class, y_test_class, code_class_test_class, test_dir)
+    print(define_class(encoded_train_df))
+    # encoded_test_df, test_just_angs_df = preprocessing(test_dir)
+    # train_classed_df = make_norm_out_dfs(encoded_train_df)
+    # test_df_norm, test_df_out_max, test_df_out_min, test_classed_df = make_norm_out_dfs(encoded_train_df)
+    # X_train_class, y_train_class, _x_, X_test_class, y_test_class, code_class_test_class = make_class_sets_from_df(train_classed_df, test_classed_df)
+    # pred_class_df = determine_class(X_train_class, y_train_class, X_test_class, y_test_class, test_classed_df, test_dir)
+    
+
     # runGBReg(directory, df_norm, 'norm')
     # runGBReg(directory, df_out_max, 'out_max')
     # runGBReg(directory, df_out_min, 'out_min')
