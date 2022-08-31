@@ -92,7 +92,7 @@ def make_class_sets_from_df(df_train, df_test):
     return X_train, y_train, code_class_train, X_test, y_test, code_class_test
 
 def build_GradientBoostingClassifier_model(X_train, y_train, model_name):
-    gbc = GradientBoostingClassifier().fit(X_train, y_train.ravel())
+    gbc = GradientBoostingClassifier(**gbr_params).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename: str = f'{model_name}.pkl'
     with open(pkl_filename, 'wb') as file:
