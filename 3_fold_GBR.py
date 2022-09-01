@@ -113,6 +113,7 @@ def three_fold_GBR(train_dir, test_dir):
     print('Training GBReg models...')
     train_df_norm, train_df_out_max, train_df_out_min = make_norm_out_dfs(encoded_train_df)
     dir_name = train_dir.replace('/', '')
+    print(train_df_norm)
     make_sets_train_model_gbr(train_df_norm, f'norm_class_{dir_name}')
     make_sets_train_model_gbr(train_df_out_max, f'max_out_class_{dir_name}')
     make_sets_train_model_gbr(train_df_out_min, f'min_out_class_{dir_name}')
