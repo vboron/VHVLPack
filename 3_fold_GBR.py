@@ -48,7 +48,7 @@ def make_norm_out_dfs(df):
     return df_normal, outliers_max, outliers_min
 
 
-def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
+def determine_class(X_train, y_train, X_test, df_test, set_name):
     if set_name.endswith('/'):
         set_name = set_name.replace('/', '')
     print(f'Running GBClassifier on {set_name}')
@@ -103,13 +103,13 @@ def split_testdata_runGBR(df):
 
 
 def three_fold_GBR(train_dir, test_dir):
-    # encoded_train_df, train_just_angs_df = preprocessing(train_dir)
-    # encoded_test_df, test_just_angs_df = preprocessing(test_dir)
+    encoded_train_df, train_just_angs_df = preprocessing(train_dir)
+    encoded_test_df, test_just_angs_df = preprocessing(test_dir)
     train_classed_df = define_class(encoded_train_df)
-    # test_classed_df = define_class(encoded_test_df)
-    # X_train_class, y_train_class, _x_, X_test_class, y_test_class, code_class_test_class = make_class_sets_from_df(train_classed_df, test_classed_df)
-    # pred_class_df = determine_class(X_train_class, y_train_class, X_test_class, y_test_class, test_classed_df, test_dir)
-    # print(pred_class_df)
+    test_classed_df = define_class(encoded_test_df)
+    X_train_class, y_train_class, _x_, X_test_class, y_test_class, code_class_test_class = make_class_sets_from_df(train_classed_df, test_classed_df)
+    pred_class_df = determine_class(X_train_class, y_train_class, X_test_class, test_classed_df, test_dir)
+    print(pred_class_df)
 
     # # Train 3 regression models for normal and min/max outliers
     print('Training GBReg models...')
