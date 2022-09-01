@@ -23,7 +23,7 @@ def preprocessing(ds):
     return nonred_df, ang_df
 
 
-def define_class(df):
+def define_class(df, name):
     print('Defining class of eeach angle...')
 
     min_norm = -50
@@ -86,9 +86,9 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
 
 def three_fold_GBR(train_dir, test_dir):
     encoded_train_df, train_just_angs_df = preprocessing(train_dir)
-    train_classed_df = define_class(encoded_train_df)
+    train_classed_df = define_class(encoded_train_df, train_dir)
     encoded_test_df, test_just_angs_df = preprocessing(test_dir)
-    test_classed_df = define_class(encoded_test_df)
+    test_classed_df = define_class(encoded_test_df, test_dir)
     # train_classed_df = make_norm_out_dfs(encoded_train_df)
     # test_df_norm, test_df_out_max, test_df_out_min, test_classed_df = make_norm_out_dfs(encoded_train_df)
     # X_train_class, y_train_class, _x_, X_test_class, y_test_class, code_class_test_class = make_class_sets_from_df(train_classed_df, test_classed_df)
