@@ -83,6 +83,7 @@ def split_testdata_runGBR(df):
 
     def make_test_sets_runGBR(df, model_name):
         df = df.drop(['predclass'], axis=1)
+        df = df.drop(['class'], axis=1)
         print(f'Making test set for {df}')
         X_test, _x_, angle_df = make_sets(df)
         print(f'Running {model_name} on test set...')
