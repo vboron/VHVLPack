@@ -37,17 +37,14 @@ def define_class(df):
 
 
 def make_norm_out_dfs(df):
+    print('Building split dataframes for regression training...')
+
     min_norm = -50
     max_norm = -40
 
-    # extract data where the predicted angle is within the normal range into a new dataframe
     df_normal = df[df['angle'].between(min_norm, max_norm)]
-
-    # extract data where predicted angles are outside of the normal range and add into a new dataframe
     outliers_max = df[df['angle'] >= max_norm]
-
     outliers_min = df[df['angle'] <= min_norm]
-
     return df_normal, outliers_max, outliers_min
 
 
@@ -62,15 +59,6 @@ def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
     return class_df
 
 
-def runGBReg(directory, X_train, y_train, X_test, y_true, df_test, set_name):
-    print(f'Running GBRegressor on {set_name}')
-    df = run_GradientBoostingRegressor(
-        X_train, y_train, X_test, df_test, f'gbr_{set_name}')
-    df = df.reset_index()
-    path = os.join(directory, f'NR2_GBReg_{set_name}.csv')
-    df.to_csv(path, index=False)
-
-
 def run_graphs(directory, set_name, df_all, df_out, df_norm):
     file_name = f'Everything_NR2_GBReg_{set_name}'
     graphing.sq_error_vs_actual_angle(
@@ -79,6 +67,36 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
         directory, f'{directory}_ang.csv', f'{file_name}_angledistribution')
     graphing.error_distribution(
         directory, f'{file_name}.csv', f'{file_name}_errordistribution')
+
+def make_sets_train_model_gbr(df, model_name):
+    print('Making GBR training sets...')
+    X_train, y_train, _x_ = make_sets(df)
+    build_GradientBoostingRegressor_model(X_train, y_train, model_name)
+
+
+def split_testdata_runGBR(df):
+    print('Making GBR test sets...')
+    df = df.drop(['class', 'result'], axis=1)
+    df_normal = df[df['predclass'] == 'normal']
+    outliers_max = df[df['predclass'] == max_out]
+    outliers_min = df[df['predclass'] == min_out]
+
+    def make_test_sets_runGBR(df, model_name):
+        df = df.drop(['predclass'], axis=1)
+        print(f'Making test set for {df}')
+        X_test, _x_, angle_df = make_sets(df)
+        print(f'Running {model_name} on test set...')
+        result_df = run_GradientBoostingRegressor(X_test, angle_df, model_name)
+        return result_df
+
+    norm_result = make_test_sets_runGBR(df_normal, f'norm_class_{train_dir.replace('/', '')}')
+    max_out_result = make_test_sets_runGBR(outliers_max, f'max_out_class_{train_dir.replace('/', '')}')
+    min_out_result = make_test_sets_runGBR(outliers_min, f'min_out_class_{train_dir.replace('/', '')}')
+    df_list = [norm_result, max_out_result, min_out_result]
+    print('Making final results dataframe...')
+    df_final = pd.concat(df_list)
+    return df_final
+
 
 
 def three_fold_GBR(train_dir, test_dir):
@@ -90,16 +108,17 @@ def three_fold_GBR(train_dir, test_dir):
     pred_class_df = determine_class(X_train_class, y_train_class, X_test_class, y_test_class, test_classed_df, test_dir)
     print(pred_class_df)
 
-    # train_classed_df = make_norm_out_dfs(encoded_train_df)
-    # test_df_norm, test_df_out_max, test_df_out_min, test_classed_df = make_norm_out_dfs(encoded_train_df)
+    # Train 3 regression models for normal and min/max outliers
+    print('Training GBReg models...')
+    train_df_norm, train_df_out_max, train_df_out_min = make_norm_out_dfs(encoded_train_df)
+    make_sets_train_model_gbr(train_df_norm, f'norm_class_{train_dir.replace('/', '')}')
+    make_sets_train_model_gbr(train_df_out_max, f'max_out_class_{train_dir.replace('/', '')}')
+    make_sets_train_model_gbr(train_df_out_min, f'min_out_class_{train_dir.replace('/', '')}')
+    results = split_testdata_runGBR(pred_class_df)
+    print(results)
 
-    # runGBReg(directory, df_norm, 'norm')
-    # runGBReg(directory, df_out_max, 'out_max')
-    # runGBReg(directory, df_out_min, 'out_min')
-    # df_alldata = combine_dfs(
-    #     directory, [df_norm, df_out_max, df_out_min], 'all3fold')
-    # df_outdata = combine_dfs(
-    #     directory, [df_out_max, df_out_min], 'outliers3fold')
+
+
     # run_graphs(directory, 'all3fold', df_alldata, df_outdata, df_norm)
 
 

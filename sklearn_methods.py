@@ -33,8 +33,7 @@ gbc_params = {'learning_rate': 0.1,
               'verbose': 1}
 
 
-def make_sets(file):
-    df = pd.read_csv(file)
+def make_sets(df):
     target_column = {'angle'}
     pdb_code = {'code'}
     predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
@@ -70,22 +69,22 @@ def run_MLPRegressor(X_train, y_train, X_test, df):
     df['error'] = df['predicted']-df['angle']
     return df
 
-
-def run_GradientBoostingRegressor(X_train, y_train, X_test, df: pd.DataFrame, model_name):
+def build_GradientBoostingRegressor_model(X_train, y_train, model_name):
     gbr = GradientBoostingRegressor(**gbr_params).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename: str = f'{model_name}.pkl'
     with open(pkl_filename, 'wb') as file:
         pickle.dump(gbr, file)
 
-    # Load from file
+def run_GradientBoostingRegressor(X_test, df: pd.DataFrame, model_name):
+    pkl_filename: str = f'{model_name}.pkl'
     with open(pkl_filename, 'rb') as file:
         pickle_model = pickle.load(file)
     y_pred = pickle_model.predict(X_test)
 
     df['predicted'] = y_pred
     df['error'] = df['predicted']-df['angle']
-    return df, gbr
+    return df
 
 def make_set_class(df):
     target_column = {'class'}
