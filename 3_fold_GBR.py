@@ -59,15 +59,6 @@ def determine_class(X_train, y_train, X_test, df_test, set_name):
     return class_df
 
 
-def run_graphs(directory, set_name, df_all, df_out, df_norm):
-    file_name = f'Everything_NR2_GBReg_{set_name}'
-    graphing.sq_error_vs_actual_angle(
-        directory, f'{file_name}.csv', f'{file_name}_sqerror_vs_actual')
-    graphing.angle_distribution(
-        directory, f'{directory}_ang.csv', f'{file_name}_angledistribution')
-    graphing.error_distribution(
-        directory, f'{file_name}.csv', f'{file_name}_errordistribution')
-
 def make_sets_train_model_gbr(df, model_name):
     print('Making GBR training sets...')
     df = df.drop(['class'], axis=1)
@@ -101,6 +92,16 @@ def split_testdata_runGBR(df):
     return df_final
 
 
+def run_graphs(df, train_dir, test_dir):
+    train_dir_name = train_dir.replace('/', '')
+    test_dir_name = test_dir.replace('/', '')
+    name = f'train_{train_dir_name}_NR2_GBReg_test_{test_dir_name}'
+    graphing.actual_vs_predicted_from_df(df, test_dir, name, f'{name}_pa')
+    graphing.sq_error_vs_actual_angle(
+        test_dir, df, f'{name}_sqerror_vs_actual')
+    graphing.error_distribution(
+        test_dir, df, f'{name}_errordistribution')
+
 
 def three_fold_GBR(train_dir, test_dir):
     encoded_train_df, train_just_angs_df = preprocessing(train_dir)
@@ -121,10 +122,8 @@ def three_fold_GBR(train_dir, test_dir):
     make_sets_train_model_gbr(train_df_out_min, f'min_out_class_{dir_name}')
     results = split_testdata_runGBR(pred_class_df)
     print(results)
-
-
-
-    # run_graphs(directory, 'all3fold', df_alldata, df_outdata, df_norm)
+    results.to_csv('new_files_test.csv', index=False)
+    run_graphs(results, train_dir, test_dir)
 
 
 if __name__ == '__main__':
