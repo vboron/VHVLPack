@@ -34,7 +34,6 @@ def define_class(df):
     return df
 
 
-
 def make_norm_out_dfs(df):
     min_norm = -50
     max_norm = -40
@@ -56,9 +55,9 @@ def determine_class(X_train, y_train, X_test, y_true, df_test, set_name):
         set_name = set_name.replace('/', '')
     print(f'Running GBClassifier on {set_name}')
     build_GradientBoostingClassifier_model(X_train, y_train, f'gbc_{set_name}')
-    class_df = run_GradientBoostingClassifier(X_test, df_test, f'gbc_{set_name}')
-    print(class_df)
-
+    class_df = run_GradientBoostingClassifier(
+        X_test, df_test, f'gbc_{set_name}')
+    print(class_df.value_counts())
     return class_df
 
 
@@ -83,13 +82,13 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
 
 def three_fold_GBR(train_dir, test_dir):
     encoded_train_df, train_just_angs_df = preprocessing(train_dir)
-    print(define_class(encoded_train_df))
-    # encoded_test_df, test_just_angs_df = preprocessing(test_dir)
+    train_classed_df = define_class(encoded_train_df)
+    encoded_test_df, test_just_angs_df = preprocessing(test_dir)
+    test_classed_df = define_class(encoded_test_df)
     # train_classed_df = make_norm_out_dfs(encoded_train_df)
     # test_df_norm, test_df_out_max, test_df_out_min, test_classed_df = make_norm_out_dfs(encoded_train_df)
     # X_train_class, y_train_class, _x_, X_test_class, y_test_class, code_class_test_class = make_class_sets_from_df(train_classed_df, test_classed_df)
     # pred_class_df = determine_class(X_train_class, y_train_class, X_test_class, y_test_class, test_classed_df, test_dir)
-    
 
     # runGBReg(directory, df_norm, 'norm')
     # runGBReg(directory, df_out_max, 'out_max')
@@ -104,8 +103,10 @@ def three_fold_GBR(train_dir, test_dir):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Program for applying a rotational correction factor recursively')
-    parser.add_argument('--train_directory', help='Directory with files that will be used to train models', required=True)
-    parser.add_argument('--test_directory', help='Directory with files that will be used to test models', required=True)
+    parser.add_argument(
+        '--train_directory', help='Directory with files that will be used to train models', required=True)
+    parser.add_argument(
+        '--test_directory', help='Directory with files that will be used to test models', required=True)
     args = parser.parse_args()
 
     three_fold_GBR(args.train_directory, args.test_directory)
