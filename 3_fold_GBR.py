@@ -27,12 +27,10 @@ def define_class(df):
     min_norm = -50
     max_norm = -40
 
-    if df['angle'].between(min_norm, max_norm):
-        df['class'] = 'normal'
-    elif df['angle'] >= max_norm:
-        df['class'] = 'max_out'
-    else:
-        df['class'] = 'min_out'
+    df['class'] = df['angle']
+    df.loc[df['angle'].between(min_norm, max_norm), 'class'] = 'normal'
+    df.loc[df['angle'] >= max_norm, 'class'] = 'max_out'
+    df.loc[df['angle'] <= min_norm, 'class'] = 'min_out'
     return df
 
 
