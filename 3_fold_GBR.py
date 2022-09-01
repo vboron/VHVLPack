@@ -34,6 +34,7 @@ def define_class(df):
     df.loc[df['angle'] >= max_norm, 'class'] = 'max_out'
     df.loc[df['angle'] <= min_norm, 'class'] = 'min_out'
     print(df['class'].value_counts())
+    df.to_csv('testing_class_assignment.csv', index=False)
     return df
 
 
