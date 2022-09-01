@@ -70,9 +70,9 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
 
 def make_sets_train_model_gbr(df, model_name):
     print('Making GBR training sets...')
+    df = df.drop(['class'], axis=1)
     X_train, y_train, _x_ = make_sets(df)
     print(X_train)
-    X_train = X_train.drop(['class'], axis=1)
     build_GradientBoostingRegressor_model(X_train, y_train, model_name)
 
 
