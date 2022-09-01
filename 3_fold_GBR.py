@@ -71,6 +71,8 @@ def run_graphs(directory, set_name, df_all, df_out, df_norm):
 def make_sets_train_model_gbr(df, model_name):
     print('Making GBR training sets...')
     X_train, y_train, _x_ = make_sets(df)
+    print(X_train)
+    X_train = X_train.drop(['class'], axis=1)
     build_GradientBoostingRegressor_model(X_train, y_train, model_name)
 
 
@@ -83,7 +85,6 @@ def split_testdata_runGBR(df):
 
     def make_test_sets_runGBR(df, model_name):
         df = df.drop(['predclass'], axis=1)
-        df = df.drop(['class'], axis=1)
         print(f'Making test set for {df}')
         X_test, _x_, angle_df = make_sets(df)
         print(f'Running {model_name} on test set...')
