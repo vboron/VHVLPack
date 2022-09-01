@@ -24,6 +24,8 @@ def preprocessing(ds):
 
 
 def define_class(df):
+    print('Defining class of eeach angle...')
+
     min_norm = -50
     max_norm = -40
 
@@ -31,6 +33,7 @@ def define_class(df):
     df.loc[df['angle'].between(min_norm, max_norm), 'class'] = 'normal'
     df.loc[df['angle'] >= max_norm, 'class'] = 'max_out'
     df.loc[df['angle'] <= min_norm, 'class'] = 'min_out'
+    print(df['class'].value_counts())
     return df
 
 
