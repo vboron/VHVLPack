@@ -67,7 +67,7 @@ def make_sets_train_model_gbr(df, model_name):
     build_GradientBoostingRegressor_model(X_train, y_train, model_name)
 
 
-def split_testdata_runGBR(df):
+def split_testdata_runGBR(df, train_dir):
     print('Making GBR test sets...')
     df = df.drop(['class', 'result'], axis=1)
     df_normal = df[df['predclass'] == 'normal']
@@ -120,7 +120,7 @@ def three_fold_GBR(train_dir, test_dir):
     make_sets_train_model_gbr(train_df_norm, f'norm_class_{dir_name}')
     make_sets_train_model_gbr(train_df_out_max, f'max_out_class_{dir_name}')
     make_sets_train_model_gbr(train_df_out_min, f'min_out_class_{dir_name}')
-    results = split_testdata_runGBR(pred_class_df)
+    results = split_testdata_runGBR(pred_class_df, train_dir)
     print(results)
     results.to_csv('new_files_test.csv', index=False)
     run_graphs(results, train_dir, test_dir)
