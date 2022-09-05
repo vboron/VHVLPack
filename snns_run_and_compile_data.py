@@ -13,6 +13,7 @@ import os
 import pandas as pd
 import subprocess
 from encode_res_calc_angles import calculate_packing_angles
+import graphing
 
 # *************************************************************************
 def build_snns_dataframe(directory, seq_directory, papa_version):
@@ -41,6 +42,13 @@ def build_snns_dataframe(directory, seq_directory, papa_version):
 
     return df_snns
 
+def postprocessing(df, dataset, name):
+    graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
+    graphing.sq_error_vs_actual_angle(
+        dataset, df, f'{name}_sqerror_vs_actual')
+    graphing.error_distribution(
+        dataset, df, f'{name}_errordistribution')
+
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
@@ -54,3 +62,4 @@ args = parser.parse_args()
 result = build_snns_dataframe(args.directory, args.seq_directory, args.which_papa)
 path = os.path.join(args.directory, f'{args.csv_output}.csv')
 result.to_csv(path, index=False)
+postprocessing(result, args.directory, args.csv_output)
