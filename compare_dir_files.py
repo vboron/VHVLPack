@@ -12,6 +12,7 @@ def compare_dirs(dir1, dir2, new_dir_name):
         if file not in dir1_files:
             new_files.append(file)
     new_dir = new_dir_name
+    os.mkdir(new_dir)
     print(len(new_files))
     i=0
     for file in new_files:
