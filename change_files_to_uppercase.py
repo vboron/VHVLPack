@@ -9,5 +9,5 @@ for file in os.listdir(sys.argv[1]):
     #     dst = os.path.join(cwd, sys.argv[1], (file[2:-4].upper() + '.pdb'))
     if file.endswith('.pdb'):
         src = os.path.join(cwd, sys.argv[1], file)
-        dst = os.path.join(cwd, sys.argv[1], (file[1:]))
+        dst = os.path.join(cwd, sys.argv[1], (file[:6] + '.pdb'))
         os.rename(src, dst)
