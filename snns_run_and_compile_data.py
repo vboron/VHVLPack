@@ -12,16 +12,17 @@ import argparse
 import os
 import pandas as pd
 import subprocess
+from encode_res_calc_angles import calculate_packing_angles
 
 # *************************************************************************
-def build_snns_dataframe(directory, seq_directory, angle_file, papa_version):
+def build_snns_dataframe(directory, seq_directory, papa_version):
     seq_files = []
     for file in os.listdir(seq_directory):
         if file.endswith('.seq'):
             code = file[:-4]
             seq_files.append((code, os.path.join(seq_directory, file)))
 
-    df_ang = pd.read_csv(os.path.join(directory, angle_file))
+    df_ang = calculate_packing_angles(directory)
 
     p_col = ['code', 'predicted']
     file_data = []
@@ -46,11 +47,10 @@ def build_snns_dataframe(directory, seq_directory, angle_file, papa_version):
 parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
 parser.add_argument('--directory', help='Directory of datset', required=True)
 parser.add_argument('--seq_directory', help='Directory where .seq files are', required=True)
-parser.add_argument('--angle_csv', help='.csv file containing VHVL packing angles', required=True)
 parser.add_argument('--csv_output', help='Name of the csv file that will be the output', required=True)
 parser.add_argument('--which_papa', help='Specify the name of the papa version being used: "papa" for just PAPA and "~/name_for_new_papa/papa" for all other versions of papa', required=True)
 args = parser.parse_args()
 
-result = build_snns_dataframe(args.directory, args.seq_directory, args.angle_csv, args.which_papa)
+result = build_snns_dataframe(args.directory, args.seq_directory, args.which_papa)
 path = os.path.join(args.directory, f'{args.csv_output}.csv')
 result.to_csv(path, index=False)
