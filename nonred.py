@@ -102,6 +102,8 @@ def NR2(encoded_df, directory, out_file):
     cols=seq_df.columns.tolist()
     cols = [cols[-2]]+ cols[:-3] + cols[-1:]
     seq_df=seq_df[cols]
+    if '/' in out_file:
+        out_file = out_file.replace('/', '')
     nr2_path = os.path.join(directory, f'{out_file}.csv')
     seq_df.to_csv(nr2_path, index=False)
     return seq_df
