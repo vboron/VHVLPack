@@ -124,7 +124,8 @@ def pivot_df(df, directory, csv_output, angles, loop_df):
     dfs = [df, loop_df, angles]
     complete_df = ft.reduce(
         lambda left, right: pd.merge(left, right, on='code'), dfs)
-    csv_path = os.path.join(directory, f'{csv_output.replace('/', '')}_unencoded_toH100G.csv')
+    csv_output = csv_output.replace('/', '')
+    csv_path = os.path.join(directory, f'{csv_output}_unencoded_toH100G.csv')
     complete_df.to_csv(csv_path, index=False)
     return df
 
