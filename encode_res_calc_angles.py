@@ -124,7 +124,8 @@ def pivot_df(df, directory, csv_output, angles, loop_df):
     dfs = [df, loop_df, angles]
     complete_df = ft.reduce(
         lambda left, right: pd.merge(left, right, on='code'), dfs)
-    csv_output = csv_output.replace('/', '')
+    if '/' in csv_output:
+        csv_output = csv_output.replace('/', '')
     csv_path = os.path.join(directory, f'{csv_output}_unencoded_toH100G.csv')
     complete_df.to_csv(csv_path, index=False)
     return df
@@ -143,7 +144,8 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
     dfs = [encoded_table, loop_table, angle_df]
     final_df = ft.reduce(lambda left, right: pd.merge(
         left, right, on='code'), dfs)
-    csv_output = csv_output.replace('/', '')
+    if '/' in csv_output:
+        csv_output = csv_output.replace('/', '')
     csv_path = os.path.join(directory, f'{csv_output}_toH100G_4d.csv')
     final_df.to_csv(csv_path, index=False)
     return final_df, angle_df

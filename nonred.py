@@ -141,5 +141,7 @@ def NR3(encoded_csv_file, columns, directory, out_file):
     cols = [cols[-2]]+ cols[:-2] + cols[-1:]
     seq_df=seq_df[cols]
 
+    if '/' in out_file:
+        out_file = out_file.replace('/', '')
     nr3_path = os.path.join(directory, f'{out_file}.csv')
     seq_df.to_csv(nr3_path, index=False)
