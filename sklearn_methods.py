@@ -75,6 +75,7 @@ def build_GradientBoostingRegressor_model(X_train, y_train, model_name):
     pkl_filename: str = f'{model_name}.pkl'
     with open(pkl_filename, 'wb') as file:
         pickle.dump(gbr, file)
+    return gbr
 
 def run_GradientBoostingRegressor(X_test, df: pd.DataFrame, model_name):
     pkl_filename: str = f'{model_name}.pkl'

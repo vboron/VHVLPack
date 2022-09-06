@@ -30,7 +30,7 @@ def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, gra
     print('Making train and test sets...')
     X_train, y_train, _x_, X_test, y_true, df_test = make_reg_sets_from_df(train_df, test_df)
     print('Building ML model...')
-    build_GradientBoostingRegressor_model( X_train, y_train,model_name)
+    gbr = build_GradientBoostingRegressor_model( X_train, y_train,model_name)
     print('Running ML...')
     df = run_GradientBoostingRegressor(X_test, df_test, model_name)
     df.to_csv(f'results_for_{model_name}', index=False)
