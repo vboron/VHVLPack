@@ -130,9 +130,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Program for applying a rotational correction factor recursively')
     parser.add_argument(
-        '--train_directory', help='Directory with files that will be used to train models', required=True)
+        '--trainset', help='Directory with files that will be used to train models', required=True)
     parser.add_argument(
-        '--test_directory', help='Directory with files that will be used to test models', required=True)
+        '--testset', help='Directory with files that will be used to test models', required=True)
     args = parser.parse_args()
 
-    three_fold_GBR(args.train_directory, args.test_directory)
+    three_fold_GBR(args.trainset, args.testset)
