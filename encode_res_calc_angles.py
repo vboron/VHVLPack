@@ -46,8 +46,6 @@ def calculate_packing_angles(directory):
     except:
         print('No missing angles.')
     df_ang['angle'] = df_ang['angle'].astype(float)
-    df_error = pd.Series(error_files).to_frame()
-    df_error.to_csv('error_files.csv', index=False)
     return df_ang
 
 
