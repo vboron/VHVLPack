@@ -18,6 +18,7 @@ def get_angle_from_af2_model(af2dir, actualdir):
     pred_df = pred_df.rename({'angle': 'predicted'}, axis=1)
     actual_df = calculate_packing_angles(actualdir)
     final_df = actual_df.merge(pred_df, on='code')
+    final_df['error'] = final_df['predicted']-final_df['angle']
     return final_df
 
 def postprocessing(df, directory, name):
