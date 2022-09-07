@@ -21,11 +21,11 @@ def get_angle_from_af2_model(af2dir, actualdir):
     return final_df
 
 def postprocessing(df, directory, name):
-    graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
+    graphing.actual_vs_predicted_from_df(df, directory, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
-        dataset, df, f'{name}_sqerror_vs_actual')
+        directory, df, f'{name}_sqerror_vs_actual')
     graphing.error_distribution(
-        dataset, df, f'{name}_errordistribution')
+        directory, df, f'{name}_errordistribution')
 
 
 # # *************************************************************************
