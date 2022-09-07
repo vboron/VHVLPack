@@ -29,3 +29,4 @@ parser.add_argument('--af2dir', required=True, help='directory of pdb files used
 parser.add_argument('--actualdir', required=True, help='directory of pdb files used for testing model', type=str)
 
 args = parser.parse_args()
+get_angle_from_af2_model(args.af2dir, args.actualdir)
