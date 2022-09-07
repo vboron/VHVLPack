@@ -95,7 +95,7 @@ def split_testdata_runGBR(df, train_dir):
 def run_graphs(df, train_dir, test_dir):
     train_dir_name = train_dir.replace('/', '')
     test_dir_name = test_dir.replace('/', '')
-    name = f'train_{train_dir_name}_NR2_GBReg_test_{test_dir_name}'
+    name = f'train_{train_dir_name}_NR2_GBReg_test_{test_dir_name}_with_classification'
     graphing.actual_vs_predicted_from_df(df, test_dir, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
         test_dir, df, f'{name}_sqerror_vs_actual')
