@@ -78,6 +78,8 @@ def seq2df(seq_file):
     cdrH2_pos = [f'H{i}' for i in range(50, 59)]
     cdrH3_pos = [f'H{i}' for i in range(95, 103)]
     l1_res = []
+    h2_res = []
+    h3_res = []
     dRes = {}
     kv_list = []
     with open(seq_file) as f:
@@ -96,7 +98,13 @@ def seq2df(seq_file):
                     dRes[col] = value
             if position in cdrL1_pos:
                 l1_res.append(position)
+            if position in cdrH2_pos:
+                h2_res.append(position)
+            if position in cdrH3_pos:
+                h3_res.append(position)
         print(l1_res, len(l1_res))
+        print(h3_res, len(h3_res))
+        print(h2_res, len(h2_res))
 
     df = pd.DataFrame(dRes, index=[0])
     # print(df)
