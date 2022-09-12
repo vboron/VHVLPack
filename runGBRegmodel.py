@@ -116,13 +116,21 @@ def seq2df(seq_file):
 
 
 def run_models(df, model_directory):
+    def apply_model(model):
+            with open(model, 'rb') as file:
+                model = pickle.load(file)
+            y_pred = model.predict(X_test)
+            return y_pred
+
     classifier_model = os.path.join(model_directory, 'gbc_files_until_July2022.pkl')
     predictors = list(OrderedSet(df.columns))
     X_test = df[predictors].values
+    y_pred = apply_model(classifier_model)
 
-    with open(classifier_model, 'rb') as file:
-        classifier_model = pickle.load(file)
-    y_pred = str(classifier_model.predict(X_test))
+    if str(y_pred) == 'normal':
+        y_pred = float(apply_model(os.path.join(model_directory, 'norm_class_files_until_Dec2021.pkl')))
+    # if y_pred == 'max_out':
+    # if y_pred == 'min_out':
     # y_pred = float(classifier_model.predict(X_test))
     print(type(y_pred))
 
