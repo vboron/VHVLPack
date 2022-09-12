@@ -110,7 +110,6 @@ def seq2df(seq_file):
                 h3_res.append(position)
                 dRes['H3_length']=len(h3_res)
     df = pd.DataFrame(dRes, index=[0])
-    print(df)
     return df
 
 
@@ -125,8 +124,9 @@ def run_models(df, model_directory):
     classifier_model = os.path.join(model_directory, 'gbc_files_until_July2022.pkl')
     predictors = list(OrderedSet(df.columns))
     X_test = df[predictors].values
-
-    if str(apply_model(classifier_model)) == 'normal':
+    y_pred = apply_model(classifier_model)
+    print('y_pred', y_pred, type(y_pred))
+    if str(y_pred) == 'normal':
         y_pred = float(apply_model(os.path.join(model_directory, 'norm_class_files_until_Dec2021.pkl'))) 
     # if y_pred == 'max_out':
     # if y_pred == 'min_out':
