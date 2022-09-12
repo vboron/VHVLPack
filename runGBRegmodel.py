@@ -82,6 +82,7 @@ def seq2df(seq_file):
         for line in lines:
             line_elements = line.split()
             position = line_elements[0]
+            print(position)
             if position in good_positions:
                 identity = line_elements[1]
                 identity = one_letter_code(identity)
@@ -147,5 +148,5 @@ parser.add_argument(
 args = parser.parse_args()
 
 data, good_pos = seq2df(args.seqfile)
-data = prep_table(data, good_pos)
+# data = prep_table(data, good_pos)
 # run_models(data, args.model_dir)
