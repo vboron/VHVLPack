@@ -124,7 +124,8 @@ def run_models(df, model_directory):
 
     with open(classifier_model, 'rb') as file:
         classifier_model = pickle.load(file)
-    y_pred = float(classifier_model.predict(X_test))
+    y_pred = classifier_model.predict(X_test)
+    # y_pred = float(classifier_model.predict(X_test))
     print(y_pred)
 
 
