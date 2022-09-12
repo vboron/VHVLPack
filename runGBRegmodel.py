@@ -4,6 +4,7 @@ import argparse
 from ordered_set import OrderedSet
 import pickle
 
+
 def one_letter_code(res):
     dic = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K', 'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F',
            'ASN': 'N', 'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W', 'ALA': 'A', 'VAL': 'V', 'GLU': 'E',
@@ -53,20 +54,26 @@ def charge(resi):
         charge += dic[resi]
     return charge
 # *************************************************************************
+
+
 def make_param(res, param, letter):
     col = param + letter
     if letter == 'a':
         value = nr_side_chain_atoms(res)
     elif letter == 'b':
-        value  = compactness(res)
+        value = compactness(res)
     elif letter == 'c':
         value = hydophobicity(res)
     else:
         value = charge(res)
     return col, value
 
-def seq2df(seq_file):
-    good_positions = ['L38', 'L40', 'L41', 'L44', 'L46', 'L87', 'H33', 'H42', 'H45', 'H60', 'H62', 'H91', 'H105']
+
+def seq2df(seq_file, residue_list_file):
+    good_positions = ['L32', 'L34', 'L36', 'L38', 'L43', 'L44', 'L46', 'L50', 'L86' 'L87', 'L89', 'L91', 'L96', 'L98',
+                      'H35', 'H39', 'H45', 'H47', 'H50', 'H91', 'H99', 'H100', 'H10A', '100B', 'H100C', 'H100D',
+                      'H100E', 'H100F', 'H100G', 'H103']
+
     dRes = {}
     kv_list = []
     with open(seq_file) as f:
@@ -79,12 +86,12 @@ def seq2df(seq_file):
                 identity = one_letter_code(identity)
                 for letter in ['a', 'b', 'c', 'd']:
                     col, value = make_param(identity, position, letter)
-                    dRes[col]=value
-                    # kv_list.append((col, value))
-    # print(kv_list)
+                    dRes[col] = value
+
     df = pd.DataFrame(dRes, index=[0])
     # print(df)
     return df
+
 
 def runningGBR(df, pkl_filename):
     predictors = list(OrderedSet(df.columns))
@@ -94,9 +101,12 @@ def runningGBR(df, pkl_filename):
     y_pred = float(pickle_model.predict(X_test))
     print(y_pred)
 
+
 parser = argparse.ArgumentParser(description='Program for compiling angles')
-parser.add_argument('--seqfile', help='.seq file for VHVL packing', required=True)
-parser.add_argument('--pklmodel', help='trained model in .pkl format', required=True)
+parser.add_argument(
+    '--seqfile', help='.seq file for VHVL packing', required=True)
+parser.add_argument(
+    '--pklmodel', help='trained model in .pkl format', required=True)
 args = parser.parse_args()
 
 data = seq2df(args.seqfile)
