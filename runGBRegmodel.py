@@ -125,7 +125,6 @@ def run_models(df, model_directory):
     predictors = list(OrderedSet(df.columns))
     X_test = df[predictors].values
     y_pred = apply_model(classifier_model)
-    print(y_pred)
     assert len(y_pred) == 1
     filename_prefix = {'normal': 'norm', 'max_out': 'max_out', 'min_out': 'min_out'}[y_pred[0]]
     y_pred = float(apply_model(os.path.join(model_directory, f'{filename_prefix}_class_files_until_Dec2021.pkl'))) 
