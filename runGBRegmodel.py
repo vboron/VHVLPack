@@ -106,8 +106,8 @@ def seq2df(seq_file):
         print('L1_length', len(l1_res))
         print('H2_length', len(h2_res))
         print('H3_length', len(h3_res))
-    print(df)
     df = pd.DataFrame(dRes, index=[0])
+    print(df)
     # print(df)
     return df, good_positions
 
