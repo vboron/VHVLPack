@@ -136,4 +136,4 @@ parser.add_argument(
 args = parser.parse_args()
 
 data = seq2df(args.seqfile)
-# run_models(data, args.model_dir)
+run_models(data, args.model_dir)
