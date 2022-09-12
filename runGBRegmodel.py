@@ -107,7 +107,7 @@ def seq2df(seq_file):
     df = pd.DataFrame(dRes, index=[0])
     print(df)
     # print(df)
-    return df, good_positions
+    return df
 
 
 
@@ -129,5 +129,5 @@ parser.add_argument(
     '--model_dir', help='location of .pkl models', required=True)
 args = parser.parse_args()
 
-data, good_pos = seq2df(args.seqfile)
-# run_models(data, args.model_dir)
+data = seq2df(args.seqfile)
+run_models(data, args.model_dir)
