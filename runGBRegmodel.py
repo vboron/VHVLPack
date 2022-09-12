@@ -92,7 +92,7 @@ def seq2df(seq_file):
             for res in good_positions:
                 for letter in ['a', 'b', 'c', 'd']:
                     new_res=res+letter
-                    dRes[res] = 0
+                    dRes[new_res] = 0
             # if position in good_positions:
             #     identity = line_elements[1]
             #     identity = one_letter_code(identity)
