@@ -98,7 +98,7 @@ def seq2df(seq_file):
                 identity = one_letter_code(identity)
                 for letter in ['a', 'b', 'c', 'd']:
                     col, value = make_param(identity, position, letter)
-                    dRes.update(col=value)
+                    dRes.update({col: value})
             if position in cdrL1_pos:
                 l1_res.append(position)
                 dRes['L1_length']=len(l1_res)
