@@ -96,16 +96,14 @@ def seq2df(seq_file):
                 for letter in ['a', 'b', 'c', 'd']:
                     col, value = make_param(identity, position, letter)
                     dRes[col] = value
-                    print(dRes)
             if position in cdrL1_pos:
                 l1_res.append(position)
+                dRes['L1_length']=len(l1_res)
             if position in cdrH2_pos:
                 h2_res.append(position)
+                dRes['H2_length']=len(h2_res)
             if position in cdrH3_pos:
-                h3_res.append(position)
-        print('L1_length', len(l1_res))
-        print('H2_length', len(h2_res))
-        print('H3_length', len(h3_res))
+                dRes['H3_length']=len(h3_res)
     df = pd.DataFrame(dRes, index=[0])
     print(df)
     # print(df)
