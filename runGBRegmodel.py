@@ -93,12 +93,12 @@ def seq2df(seq_file):
                 for letter in ['a', 'b', 'c', 'd']:
                     res=res+letter
                     dRes[res] = 0
-            if position in good_positions:
-                identity = line_elements[1]
-                identity = one_letter_code(identity)
-                for letter in ['a', 'b', 'c', 'd']:
-                    col, value = make_param(identity, position, letter)
-                    dRes[col] = value
+            # if position in good_positions:
+            #     identity = line_elements[1]
+            #     identity = one_letter_code(identity)
+            #     for letter in ['a', 'b', 'c', 'd']:
+            #         col, value = make_param(identity, position, letter)
+            #         dRes[col] = value
             if position in cdrL1_pos:
                 l1_res.append(position)
                 dRes['L1_length']=len(l1_res)
