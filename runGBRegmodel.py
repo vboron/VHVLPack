@@ -132,7 +132,7 @@ def run_models(df, model_directory):
     # if y_pred == 'max_out':
     # if y_pred == 'min_out':
     # y_pred = float(classifier_model.predict(X_test))
-    print(type(y_pred))
+    print(y_pred)
 
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
