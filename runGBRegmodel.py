@@ -80,9 +80,10 @@ def seq2df(seq_file):
     with open(seq_file) as f:
         lines = f.readlines()
         for line in lines:
+            print(line)
             line_elements = line.split()
+            print(line_elements)
             position = line_elements[0]
-            print(position)
             if position in good_positions:
                 identity = line_elements[1]
                 identity = one_letter_code(identity)
