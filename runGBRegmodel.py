@@ -108,7 +108,7 @@ def seq2df(seq_file):
             if position in cdrH3_pos:
                 dRes['H3_length']=len(h3_res)
     df = pd.DataFrame(dRes, index=[0])
-    print(df.columns)
+    print(list(OrderedSet(df.columns)))
     # print(df)
     return df
 
