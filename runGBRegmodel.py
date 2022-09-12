@@ -74,7 +74,10 @@ def seq2df(seq_file):
     good_positions = ['L32', 'L34', 'L36', 'L38', 'L43', 'L44', 'L46', 'L50', 'L86' 'L87', 'L89', 'L91', 'L96', 'L98',
                       'H35', 'H39', 'H45', 'H47', 'H50', 'H91', 'H99', 'H100', 'H100A', 'H100B', 'H100C', 'H100D',
                       'H100E', 'H100F', 'H100G', 'H103']
-
+    cdrL1_pos = [f'L{i}' for i in range(24, 35)]
+    cdrH2_pos = [f'H{i}' for i in range(50, 59)]
+    cdrH3_pos = [f'H{i}' for i in range(95, 103)]
+    l1_res = []
     dRes = {}
     kv_list = []
     with open(seq_file) as f:
@@ -91,44 +94,47 @@ def seq2df(seq_file):
                 for letter in ['a', 'b', 'c', 'd']:
                     col, value = make_param(identity, position, letter)
                     dRes[col] = value
+            if position in cdrL1_pos:
+                l1_res.append(position)
+        print(l1_res, len(l1_res))
 
     df = pd.DataFrame(dRes, index=[0])
     # print(df)
     return df, good_positions
 
-def prep_table(df, residue_list_file):
-    cdrL1_pos = [f'L{i}' for i in range(24, 35)]
-    cdrH2_pos = [f'H{i}' for i in range(50, 59)]
-    cdrH3_pos = [f'H{i}' for i in range(95, 103)]
+# def prep_table(df, residue_list_file):
+#     cdrL1_pos = [f'L{i}' for i in range(24, 35)]
+#     cdrH2_pos = [f'H{i}' for i in range(50, 59)]
+#     cdrH3_pos = [f'H{i}' for i in range(95, 103)]
 
-    def calc_loop_length(pos_list, loop_name):
-        df_loop = df[df['L/H position'].isin(pos_list)]
-        df_loop = df_loop.groupby(['code']).sum()
-        df_loop[f'{loop_name}_length'] = df_loop['residue'].str.len()
-        df_loop = df_loop.drop(columns=['L/H position', 'residue'])
-        return df_loop
+#     def calc_loop_length(pos_list, loop_name):
+#         df_loop = df[df['L/H position'].isin(pos_list)]
+#         df_loop = df_loop.groupby(['code']).sum()
+#         df_loop[f'{loop_name}_length'] = df_loop['residue'].str.len()
+#         df_loop = df_loop.drop(columns=['L/H position', 'residue'])
+#         return df_loop
 
-    l1_df = calc_loop_length(cdrL1_pos, 'L1')
-    h2_df = calc_loop_length(cdrH2_pos, 'H2')
-    h3_df = calc_loop_length(cdrH3_pos, 'H3')
+#     l1_df = calc_loop_length(cdrL1_pos, 'L1')
+#     h2_df = calc_loop_length(cdrH2_pos, 'H2')
+#     h3_df = calc_loop_length(cdrH3_pos, 'H3')
 
-    loop_dfs = [l1_df, h2_df, h3_df]
-    loop_df = ft.reduce(lambda left, right: pd.merge(
-        left, right, on='code'), loop_dfs)
-    loop_df = loop_df.reset_index()
-    good_positions = [i.strip('\n')
-                      for i in open(residue_list_file).readlines()]
-    df = df[df['L/H position'].isin(good_positions)]
+#     loop_dfs = [l1_df, h2_df, h3_df]
+#     loop_df = ft.reduce(lambda left, right: pd.merge(
+#         left, right, on='code'), loop_dfs)
+#     loop_df = loop_df.reset_index()
+#     good_positions = [i.strip('\n')
+#                       for i in open(residue_list_file).readlines()]
+#     df = df[df['L/H position'].isin(good_positions)]
 
-    def apply_one_letter_code(row):
-        res_one_letter = one_letter_code(row[0], row[2])
-        return res_one_letter
+#     def apply_one_letter_code(row):
+#         res_one_letter = one_letter_code(row[0], row[2])
+#         return res_one_letter
 
-    df['residue'] = df.apply(apply_one_letter_code, axis=1)
-    df = df.reset_index().drop(["index"], axis=1)
-    df = df.drop_duplicates(subset=['code', 'L/H position'], keep='first')
-    print(df, loop_df)
-    return df, loop_df
+#     df['residue'] = df.apply(apply_one_letter_code, axis=1)
+#     df = df.reset_index().drop(["index"], axis=1)
+#     df = df.drop_duplicates(subset=['code', 'L/H position'], keep='first')
+#     print(df, loop_df)
+#     return df, loop_df
 
 
 def run_models(df, model_directory):
