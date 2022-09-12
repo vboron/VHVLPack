@@ -71,7 +71,7 @@ def make_param(res, param, letter):
 
 
 def seq2df(seq_file):
-    good_positions = ['L32', 'L34', 'L36', 'L38', 'L43', 'L44', 'L46', 'L50', 'L86' 'L87', 'L89', 'L91', 'L96', 'L98',
+    good_positions = ['L32', 'L34', 'L36', 'L38', 'L43', 'L44', 'L46', 'L50', 'L86', 'L87', 'L89', 'L91', 'L96', 'L98',
                       'H35', 'H39', 'H45', 'H47', 'H50', 'H91', 'H99', 'H100', 'H100A', 'H100B', 'H100C', 'H100D',
                       'H100E', 'H100F', 'H100G', 'H103']
     cdrL1_pos = [f'L{i}' for i in range(24, 35)]
@@ -108,8 +108,7 @@ def seq2df(seq_file):
             if position in cdrH3_pos:
                 dRes['H3_length']=len(h3_res)
     df = pd.DataFrame(dRes, index=[0])
-    print(list(OrderedSet(df.columns)))
-    # print(df)
+    print(df)
     return df
 
 
