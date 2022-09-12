@@ -3,6 +3,7 @@ import pandas as pd
 import argparse
 from ordered_set import OrderedSet
 import pickle
+import os
 
 
 def one_letter_code(res):
