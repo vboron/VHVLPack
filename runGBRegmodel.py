@@ -124,7 +124,7 @@ def run_models(df, model_directory):
         classifier_model = pickle.load(file)
     y_pred = classifier_model.predict(X_test)
     # y_pred = float(classifier_model.predict(X_test))
-    print(y_pred)
+    print(type(y_pred))
 
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
