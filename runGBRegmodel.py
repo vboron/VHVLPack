@@ -125,8 +125,9 @@ def run_models(df, model_directory):
     predictors = list(OrderedSet(df.columns))
     X_test = df[predictors].values
     y_pred = apply_model(classifier_model)
-    print('y_pred', y_pred, type(y_pred))
+    print('y_pred', y_pred, type(y_pred), str(y_pred))
     if str(y_pred) == 'normal':
+        print('inside if')
         y_pred = float(apply_model(os.path.join(model_directory, 'norm_class_files_until_Dec2021.pkl'))) 
     # if y_pred == 'max_out':
     # if y_pred == 'min_out':
