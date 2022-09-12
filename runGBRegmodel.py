@@ -89,8 +89,11 @@ def seq2df(seq_file):
             line_elements = line.split()
             # print(line_elements)
             position = line_elements[0]
+            for res in good_positions:
+                for letter in ['a', 'b', 'c', 'd']:
+                    res=res+letter
+                    dRes[res] = 0
             if position in good_positions:
-                print(position)
                 identity = line_elements[1]
                 identity = one_letter_code(identity)
                 for letter in ['a', 'b', 'c', 'd']:
