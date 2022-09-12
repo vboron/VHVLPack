@@ -124,7 +124,7 @@ def run_models(df, model_directory):
     classifier_model = os.path.join(model_directory, 'gbc_files_until_July2022.pkl')
     predictors = list(OrderedSet(df.columns))
     X_test = df[predictors].values
-    y_pred = apply_model(classifier_model)
+    y_pred = str(apply_model(classifier_model))
     print('y_pred', y_pred, type(y_pred), str(y_pred))
     if str(y_pred) == 'normal':
         print('inside if')
