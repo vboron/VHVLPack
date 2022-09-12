@@ -90,7 +90,7 @@ def seq2df(seq_file):
                     dRes[col] = value
 
     df = pd.DataFrame(dRes, index=[0])
-    # print(df)
+    print(df)
     return df
 
 
