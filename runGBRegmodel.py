@@ -96,7 +96,7 @@ def seq2df(seq_file):
 
 def run_models(df, model_directory):
     classifier_model = os.path.join(model_directory, 'gbc_files_until_July2022.pkl')
-    
+    predictors = list(OrderedSet(df.columns))
     X_test = df[predictors].values
 
     with open(classifier_model, 'rb') as file:
