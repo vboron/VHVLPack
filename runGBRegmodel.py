@@ -89,16 +89,17 @@ def seq2df(seq_file):
             line_elements = line.split()
             # print(line_elements)
             position = line_elements[0]
-            for res in good_positions:
-                for letter in ['a', 'b', 'c', 'd']:
-                    new_res=res+letter
-                    dRes[new_res] = 0
             if position in good_positions:
                 identity = line_elements[1]
                 identity = one_letter_code(identity)
                 for letter in ['a', 'b', 'c', 'd']:
                     col, value = make_param(identity, position, letter)
-                    dRes.update({col: value})
+                    dRes[col]= value
+            for res in good_positions:
+                for letter in ['a', 'b', 'c', 'd']:
+                    new_res=res+letter
+                    if new_res not in dRes.keys():
+                        dRes[new_res] = 0
             if position in cdrL1_pos:
                 l1_res.append(position)
                 dRes['L1_length']=len(l1_res)
@@ -108,7 +109,7 @@ def seq2df(seq_file):
             if position in cdrH3_pos:
                 dRes['H3_length']=len(h3_res)
     df = pd.DataFrame(dRes, index=[0])
-    print(df)
+    print(df['H100Bc'], )
     return df
 
 
