@@ -93,12 +93,14 @@ def seq2df(seq_file, residue_list_file):
     return df
 
 
-def runningGBR(df, pkl_filename):
-    predictors = list(OrderedSet(df.columns))
+def run_models(df, model_directory):
+    classifier_model = os.path.join(model_directory, 'gbc_files_until_July2022.pkl')
+    
     X_test = df[predictors].values
-    with open(pkl_filename, 'rb') as file:
-        pickle_model = pickle.load(file)
-    y_pred = float(pickle_model.predict(X_test))
+
+    with open(classifier_model, 'rb') as file:
+        classifier_model = pickle.load(file)
+    y_pred = float(classifier_model.predict(X_test))
     print(y_pred)
 
 
@@ -106,8 +108,8 @@ parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument(
     '--seqfile', help='.seq file for VHVL packing', required=True)
 parser.add_argument(
-    '--pklmodel', help='trained model in .pkl format', required=True)
+    '--model_dir', help='location of .pkl models', required=True)
 args = parser.parse_args()
 
 data = seq2df(args.seqfile)
-runningGBR(data, args.pklmodel)
+runningGBR(data, args.model_dir)
