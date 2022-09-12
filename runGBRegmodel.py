@@ -80,9 +80,9 @@ def seq2df(seq_file):
     with open(seq_file) as f:
         lines = f.readlines()
         for line in lines:
-            print(line)
+            # print(line)
             line_elements = line.split()
-            print(line_elements)
+            # print(line_elements)
             position = line_elements[0]
             if position in good_positions:
                 print(position)
@@ -93,7 +93,7 @@ def seq2df(seq_file):
                     dRes[col] = value
 
     df = pd.DataFrame(dRes, index=[0])
-    print(df)
+    # print(df)
     return df, good_positions
 
 def prep_table(df, residue_list_file):
