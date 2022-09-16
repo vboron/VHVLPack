@@ -122,7 +122,9 @@ def three_fold_GBR(train_dir, test_dir):
     make_sets_train_model_gbr(train_df_out_min, f'min_out_class_{dir_name}')
     results = split_testdata_runGBR(pred_class_df, train_dir)
     print(results)
-    results.to_csv('new_files_test.csv', index=False)
+    test_name = test_dir.replace('/', '')
+    results_path = os.path(test_dir, f'results_test_{}_train_{}.csv')
+    results.to_csv(results_path, index=False)
     run_graphs(results, train_dir, test_dir)
 
 
