@@ -123,7 +123,7 @@ def three_fold_GBR(train_dir, test_dir):
     results = split_testdata_runGBR(pred_class_df, train_dir)
     print(results)
     test_name = test_dir.replace('/', '')
-    results_path = os.path(test_dir, f'results_test_{}_train_{}.csv')
+    results_path = os.path(test_dir, f'results_test_{dir_name}_train_{test_name}.csv')
     results.to_csv(results_path, index=False)
     run_graphs(results, train_dir, test_dir)
 
