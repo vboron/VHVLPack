@@ -8,7 +8,7 @@ the SNNS to process.
 
 2. The final .csv containing all of the files for training is turned into an arff (with normalization)
 ([csv2arff](https://github.com/AndrewCRMartin/bioscripts/blob/master/csv2arff.pl)). Here the output will be 'angle'.
-`csv2arff -v -norm -ni input.dat mycsvfile.csv output > myfile.arff`
+`csv2arff -v -norm -ni input.dat output mycsvfile.csv > myfile.arff`
 
 3. This arff file is converted to a .pat file using
 ([arff2snns](https://github.com/AndrewCRMartin/bioscripts/blob/master/arff2snns.pl)).
