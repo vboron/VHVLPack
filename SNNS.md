@@ -24,3 +24,7 @@ running the model.
 
 6. This new version can now be run as:
 `~/name_for_new_papa/papa`
+
+## Notes on making files for input
+<!-- csv2arff -v -norm -ni ${INPUTS} angle ${file} > ${DST}/${name}.arff -->
+<!-- arff2snns ${file} > ${DST}/${name}.pat -->
