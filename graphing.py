@@ -94,6 +94,9 @@ def sq_error_vs_actual_angle(directory, df, graph_name):
        y = df['sqerror']
        plt.scatter(x, y, s=2, color='mediumturquoise')
 
+       plt.xlabel('Actual angle')
+       plt.ylabel('Square of error')
+
        plt.tight_layout()
 
        path_fig = os.path.join(directory, f'{graph_name}.jpg')
