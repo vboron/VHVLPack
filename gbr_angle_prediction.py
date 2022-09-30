@@ -36,8 +36,8 @@ def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, gra
     print('Running ML...')
     df = run_GradientBoostingRegressor(X_test, df_test, model_name)
     df.to_csv(os.path.join(graph_dir, f'results_for_{model_name}.csv'), index=False)
-    print('Plotting deviance...')
-    plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
+    # print('Plotting deviance...')
+    # plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
     return df
 
 
