@@ -7,7 +7,7 @@ cwd = os.getcwd()
 for file in os.listdir(sys.argv[1]):
     if file.endswith('.mar'):
         src = os.path.join(cwd, sys.argv[1], file)
-        dst = os.path.join(cwd, sys.argv[1], (file[3:6].upper() + '.pdb'))
+        dst = os.path.join(cwd, sys.argv[1], (file[3:9].upper() + '.pdb'))
         # os.rename(src, dst)
         shutil.copy2(src, dst)
     # if file.endswith('.pdb'):
