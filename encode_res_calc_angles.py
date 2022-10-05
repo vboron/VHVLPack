@@ -21,7 +21,6 @@ def calculate_packing_angles(directory):
     """
 
     def run_abpackingangle(pdb_code, pdb_file, data_list):
-        print('Making angle table...')
         try:
             angle = (subprocess.check_output(
                 ['abpackingangle', '-p', pdb_code, '-q', pdb_file])).decode("utf-8")
@@ -51,7 +50,6 @@ def calculate_packing_angles(directory):
 
 # *************************************************************************
 def read_pdbfiles_as_lines(directory) -> pd.DataFrame:
-    print('Extracting residues...')
     files = []
     for file in os.listdir(directory):
         if file.endswith(".pdb") or file.endswith(".cho"):
@@ -83,7 +81,6 @@ def read_pdbfiles_as_lines(directory) -> pd.DataFrame:
 
 # *************************************************************************
 def prep_table(df, residue_list_file):
-    print('Summarizing loop data...')
     cdrL1_pos = [f'L{i}' for i in range(24, 35)]
     cdrH2_pos = [f'H{i}' for i in range(50, 59)]
     cdrH3_pos = [f'H{i}' for i in range(95, 103)]
@@ -135,10 +132,13 @@ def pivot_df(df, directory, csv_output, angles, loop_df):
 
 # *************************************************************************
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
-    print('Pivotting and encoding table...')
+    print('Making angle table...')
     angle_df = calculate_packing_angles(directory)
+    print('Extracting residues...')
     pdb_lines = read_pdbfiles_as_lines(directory)
+    print('Summarizing loop data...')
     res_table, loop_table = prep_table(pdb_lines, residue_positions)
+    print('Pivotting and encoding table...')
     pivotted_table = pivot_df(res_table, directory,
                               csv_output, angle_df, loop_table)
     just_residues_df = pivotted_table.drop(columns='code')
