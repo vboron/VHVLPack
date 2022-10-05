@@ -1,18 +1,15 @@
 #!/usr/bin/python3
 
-# Program can be run like this:  ./gbr_angle_prediction.py --trainset 'Everything' --testset 'new_data' 
-# --modelname 'train_Everything_H100G_residues_considered_nosubsampling' 
+# Program can be run like this:  ./gbr_angle_prediction.py --trainset 'Everything' --testset 'new_data'
+# --modelname 'train_Everything_H100G_residues_considered_nosubsampling'
 # --graphname 'train_everything_test_abdbnew_nosubsampling'
 # # *************************************************************************
 import os
 import argparse
-import shutil
-import utils
 import encode_res_calc_angles as erca
 import nonred
 import graphing
 from sklearn_methods import *
-import numpy as np
 
 
 # *************************************************************************
@@ -33,14 +30,14 @@ def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, gra
     if '/' in graph_dir:
         graph_dir = graph_dir.replace('/', '')
     print('Making train and test sets...')
-    X_train, y_train, _x_, X_test, y_true, df_test = make_reg_sets_from_df(train_df, test_df)
-    print(X_test)
+    X_train, y_train, _x_, X_test, y_true, df_test = make_reg_sets_from_df(
+        train_df, test_df)
     print('Building ML model...')
-    gbr = build_GradientBoostingRegressor_model(X_train, y_train,model_name)
+    gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
     print('Running ML...')
     df = run_GradientBoostingRegressor(X_test, df_test, model_name)
-    print(df)
-    df.to_csv(os.path.join(graph_dir, f'results_for_{model_name}.csv'), index=False)
+    df.to_csv(os.path.join(
+        graph_dir, f'results_for_{model_name}.csv'), index=False)
     # print('Plotting deviance...')
     # plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
     return df
@@ -59,10 +56,14 @@ def postprocessing(df, dataset, ang_df, name):
 
 # *************************************************************************
 parser = argparse.ArgumentParser(description='Program for compiling angles')
-parser.add_argument('--trainset', required=True, help='directory of pdb files used for training model', type=str)
-parser.add_argument('--testset', required=True, help='directory of pdb files used for testing model', type=str)
-parser.add_argument('--modelname', required=True, help='name which will be given to the model that is trained', type=str)
-parser.add_argument('--graphname', required=True, help='name which will be included in the graphs', type=str)
+parser.add_argument('--trainset', required=True,
+                    help='directory of pdb files used for training model', type=str)
+parser.add_argument('--testset', required=True,
+                    help='directory of pdb files used for testing model', type=str)
+parser.add_argument('--modelname', required=True,
+                    help='name which will be given to the model that is trained', type=str)
+parser.add_argument('--graphname', required=True,
+                    help='name which will be included in the graphs', type=str)
 # parser.add_argument('--latex', action='store_true', default=False)
 
 args = parser.parse_args()
@@ -70,10 +71,11 @@ args = parser.parse_args()
 print(f'Preprocessing {args.trainset}...')
 df_train, train_angles = preprocessing(args.trainset)
 print(f'Preprocessing {args.testset}...')
-df_test, test_angles= preprocessing(args.testset)
+df_test, test_angles = preprocessing(args.testset)
 print(df_test)
 print('Processing...')
-result_df = runGBReg(df_train, df_test, args.modelname, args.graphname, args.testset)
+result_df = runGBReg(df_train, df_test, args.modelname,
+                     args.graphname, args.testset)
 print(result_df)
 print('Postprocessing...')
 postprocessing(result_df, args.testset, test_angles, args.graphname)
