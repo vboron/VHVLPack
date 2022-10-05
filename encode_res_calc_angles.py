@@ -63,6 +63,8 @@ def read_pdbfiles_as_lines(directory) -> pd.DataFrame:
         with open(structure_file, "r") as text_file:
             structure_file = structure_file.replace(f'{directory}', '')
             pdb_code = structure_file[:-4]
+            if '/' in pdb_code:
+                pdb_code = pdb_code.replace('/', '')
             for line in text_file:
                 if re_search_start.search(line) != None:
                     items = line.split()
