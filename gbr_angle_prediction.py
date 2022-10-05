@@ -67,17 +67,14 @@ parser.add_argument('--graphname', required=True, help='name which will be inclu
 
 args = parser.parse_args()
 
-# if args.latex:
-#     print('Generating LaTeX...')
-#     # ltp.generate_latex('PostAF2', 'Everything', 'GBReg_PostAF2')
-# print(f'Preprocessing {args.trainset}...')
-# df_train, train_angles = preprocessing(args.trainset)
+print(f'Preprocessing {args.trainset}...')
+df_train, train_angles = preprocessing(args.trainset)
 print(f'Preprocessing {args.testset}...')
 df_test, test_angles= preprocessing(args.testset)
 print(df_test)
 print('Processing...')
-# result_df = runGBReg(df_train, df_test, args.modelname, args.graphname, args.testset)
-# print(result_df)
+result_df = runGBReg(df_train, df_test, args.modelname, args.graphname, args.testset)
+print(result_df)
 print('Postprocessing...')
-# postprocessing(result_df, args.testset, test_angles, args.graphname)
+postprocessing(result_df, args.testset, test_angles, args.graphname)
 print('Goodbye!')
