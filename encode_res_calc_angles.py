@@ -111,17 +111,14 @@ def prep_table(df, residue_list_file):
     df = df.reset_index().drop(["index"], axis=1)
     df = df.drop_duplicates(subset=['code', 'L/H position'], keep='first')
     # df.to_csv('dummy.csv', index=False)
-    print(df)
     return df, loop_df
 
 
 # *************************************************************************
 def pivot_df(df, directory, csv_output, angles, loop_df):
-    print(df)
     df_piv = df.pivot_table(index='code', columns='L/H position', values='residue', aggfunc='sum')
     df = df_piv.reset_index()
     df = df.rename_axis(None, axis=1)
-    print(df)
     dfs = [df, loop_df, angles]
     complete_df = ft.reduce(
         lambda left, right: pd.merge(left, right, on='code'), dfs)
@@ -135,7 +132,6 @@ def pivot_df(df, directory, csv_output, angles, loop_df):
 # *************************************************************************
 def extract_and_export_packing_residues(directory, csv_output, residue_positions):
     angle_df = calculate_packing_angles(directory)
-    print('angles:', angle_df)
     pdb_lines = read_pdbfiles_as_lines(directory)
     res_table, loop_table = prep_table(pdb_lines, residue_positions)
     pivotted_table = pivot_df(res_table, directory,
@@ -150,6 +146,8 @@ def extract_and_export_packing_residues(directory, csv_output, residue_positions
         csv_output = csv_output.replace('/', '')
     csv_path = os.path.join(directory, f'{csv_output}_toH100G_4d.csv')
     final_df.to_csv(csv_path, index=False)
+    print('final_df:')
+    print(final_df)
     return final_df, angle_df
 
 
