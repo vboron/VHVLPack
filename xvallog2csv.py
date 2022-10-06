@@ -82,7 +82,7 @@ parser.add_argument('--graphname', required=True,
 args = parser.parse_args()
 
 print(f'Preprocessing {args.data}...')
-df, angles = preprocessing(args.trainset)
+df, angles = preprocessing(args.data)
 print('Processing...')
 result_df = runGBReg(df, args.modelname,
                      args.graphname, args.data)
