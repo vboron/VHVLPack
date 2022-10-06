@@ -40,7 +40,9 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     y = df[target_column].values
 
     rkf = RepeatedKFold(n_splits=10)
+    fold = 1
     for train_index, test_index in rkf.split(X, y):
+        print({fold})
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
         print(X_train, X_test)
@@ -49,10 +51,12 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     #     train_df, test_df)
         print('Building ML model...')
         gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
-    # print('Running ML...')
-    # df = run_GradientBoostingRegressor(X_test, df_test, model_name)
-    # df.to_csv(os.path.join(
-    #     graph_dir, f'results_for_{model_name}.csv'), index=False)
+        print('Running ML...')
+        df = run_GradientBoostingRegressor(X_test, df2, model_name)
+        fold+=1
+        print(df)
+        # df.to_csv(os.path.join(
+        #     graph_dir, f'results_for_{model_name}.csv'), index=False)
     # print('Plotting deviance...')
     # plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
     return df
