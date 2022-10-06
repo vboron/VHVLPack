@@ -55,7 +55,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         print('Building ML model...')
         gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
         print('Running ML...')
-        df = run_GradientBoostingRegressor(X_test, model_name)
+        df = run_GradientBoostingRegressor_(X_test, model_name)
         fold+=1
         print(df)
         # df.to_csv(os.path.join(
