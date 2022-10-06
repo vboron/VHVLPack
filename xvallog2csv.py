@@ -25,7 +25,7 @@ def preprocessing(ds):
     # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res')
     target_column = {'angle'}
     pdb_code = {'code'}
-    predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
+    predictors = list(OrderedSet(nonred_df.columns) - target_column - pdb_code)
     df2 = nonred_df[['code', 'angle']]
     X = nonred_df[predictors].values
     y = nonred_df[target_column].values
