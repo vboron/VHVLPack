@@ -1,70 +1,96 @@
-#!/usr/bin/env python3
-"""
-Function:   Produce a table of statisics from crossvalidated MLP test data.
-Description:
-============
-Program searches for the test log files and extracts the lines containing the statistics like error and RMSE. These
-stats are then put into a pandas DataFrame and exported as a .csv file.
-------------------------------------------------
-"""
+#!/usr/bin/python3
+
+# Program can be run like this:  ./gbr_angle_prediction.py --trainset 'Everything' --testset 'new_data'
+# --modelname 'train_Everything_H100G_residues_considered_nosubsampling'
+# --graphname 'train_everything_test_abdbnew_nosubsampling'
+# # *************************************************************************
 import os
-import pandas as pd
-import re
 import argparse
+import encode_res_calc_angles as erca
+import nonred
+import graphing
+from sklearn_methods import *
+from sklearn.model_selection import LeaveOneOut
+
 
 # *************************************************************************
-def stats_to_df(direct, columns, csv_out):
-    """ Read the directory and extract .log files. For each log file, extract the predicted angle, actual angle and
-        error, and put into dataframe. Export as a .csv file.
+def preprocessing(ds):
+    print('Extracting angles and residues, and encoding...')
+    encoded_df, ang_df = erca.extract_and_export_packing_residues(
+        ds, ds, 'expanded_residues.dat')
+    # encoded_df, ang_df = erca.extract_and_export_packing_residues(
+    #     ds, ds, '4d.dat')
+    print('Nonredundantizing...')
+    nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
+    # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res')
+    target_column = {'angle'}
+    pdb_code = {'code'}
+    predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
+    df2 = nonred_df[['code', 'angle']]
+    X = nonred_df[predictors].values
+    y = nonred_df[target_column].values
 
-        11.23.2021  Original   By: VAB
-    """
+    loo = LeaveOneOut()
+    for train_index, test_index in loo.split(X): # Split in X
+        print("TRAIN:", train_index, "TEST:", test_index)
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        print(X_train, X_test, y_train, y_test)
+    return nonred_df, ang_df
 
-    # Specify column names for .csv file that will be made from the log files
-    col = []
-    for i in open(columns).readlines():
-        i = i.strip('\n')
-        col.append(i)
-
-    all_data = []
-    files = []
-
-    # Open the directory and make a list of .log files that are in there
-    for i in range (1, 11):
-        test_dir = f'test_files_{i}'
-        test_dir_path = os.path.join(direct, test_dir)
-        for file in os.listdir(test_dir_path):
-            if file.endswith(".log"):
-                files.append(os.path.join(test_dir_path, file))
-
-    # Open each log file in the directory and find the relevant information
-    for log_file in files:
-        with open(log_file) as text_file:
-            for line in text_file:
-                if str(line).strip().startswith('1'):
-                    line = re.sub(' +', ' ', line)
-                    line = line.strip()
-                    line_list = line.split(' ')
-                    name = log_file.split('/')
-                    name = name[-1]
-                    code = name[:6]
-                    pred = float(line_list[2])
-                    angle = float(line_list[1])
-                    error = float(line_list[3])
-                    _all_ = [code, angle, pred, error]
-                    all_data.append(_all_)
-
-    df_a = pd.DataFrame(data=all_data, columns=col)
-    df_a.to_csv(f'{csv_out}.csv', index=False)
 
 # *************************************************************************
-# *** Main program                                                      ***
-# *************************************************************************
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
-    parser.add_argument('--directory', help='Directory where log files are', required=True)
-    parser.add_argument('--columns_postprocessing', help='Columns for postprocessing', required=True)
-    parser.add_argument('--output_name', help='name for .csv file for data ', required=True)
-    args = parser.parse_args()
+def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> pd.DataFrame:
+    if '/' in graph_dir:
+        graph_dir = graph_dir.replace('/', '')
+    print('Making train and test sets...')
+    X_train, y_train, _x_, X_test, y_true, df_test = make_reg_sets_from_df(
+        train_df, test_df)
+    print('Building ML model...')
+    gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
+    print('Running ML...')
+    df = run_GradientBoostingRegressor(X_test, df_test, model_name)
+    df.to_csv(os.path.join(
+        graph_dir, f'results_for_{model_name}.csv'), index=False)
+    # print('Plotting deviance...')
+    # plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
+    return df
 
-    stats_to_df(args.directory, args.columns_postprocessing, args.output_name)
+
+# *************************************************************************
+def postprocessing(df, dataset, ang_df, name):
+    graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
+    graphing.sq_error_vs_actual_angle(
+        dataset, df, f'{name}_sqerror_vs_actual')
+    graphing.angle_distribution(
+        dataset, ang_df, f'{name}_angledistribution')
+    graphing.error_distribution(
+        dataset, df, f'{name}_errordistribution')
+
+
+# *************************************************************************
+parser = argparse.ArgumentParser(description='Program for compiling angles')
+parser.add_argument('--trainset', required=True,
+                    help='directory of pdb files used for training model', type=str)
+parser.add_argument('--testset', required=True,
+                    help='directory of pdb files used for testing model', type=str)
+parser.add_argument('--modelname', required=True,
+                    help='name which will be given to the model that is trained', type=str)
+parser.add_argument('--graphname', required=True,
+                    help='name which will be included in the graphs', type=str)
+# parser.add_argument('--latex', action='store_true', default=False)
+
+args = parser.parse_args()
+
+print(f'Preprocessing {args.trainset}...')
+df_train, train_angles = preprocessing(args.trainset)
+# print(f'Preprocessing {args.testset}...')
+# df_test, test_angles = preprocessing(args.testset)
+# print(df_test)
+# print('Processing...')
+# result_df = runGBReg(df_train, df_test, args.modelname,
+#                      args.graphname, args.testset)
+# print(result_df)
+# print('Postprocessing...')
+# postprocessing(result_df, args.testset, test_angles, args.graphname)
+print('Goodbye!')
