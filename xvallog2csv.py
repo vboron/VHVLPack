@@ -40,7 +40,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     y = df[target_column].values
 
     rskf = RepeatedStratifiedKFold(n_splits=10)
-    for train_index, test_index in rskf.split(X, y):
+    for (train_index, test_index) in enumerate(rskf.split(X, y)):
         print("TRAIN:", train_index, "TEST:", test_index)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
