@@ -72,12 +72,12 @@ def postprocessing(df, dataset, ang_df, name):
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--trainset', required=True,
                     help='directory of pdb files used for training model', type=str)
-parser.add_argument('--testset', required=True,
-                    help='directory of pdb files used for testing model', type=str)
-parser.add_argument('--modelname', required=True,
-                    help='name which will be given to the model that is trained', type=str)
-parser.add_argument('--graphname', required=True,
-                    help='name which will be included in the graphs', type=str)
+# parser.add_argument('--testset', required=True,
+#                     help='directory of pdb files used for testing model', type=str)
+# parser.add_argument('--modelname', required=True,
+#                     help='name which will be given to the model that is trained', type=str)
+# parser.add_argument('--graphname', required=True,
+#                     help='name which will be included in the graphs', type=str)
 # parser.add_argument('--latex', action='store_true', default=False)
 
 args = parser.parse_args()
