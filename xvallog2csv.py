@@ -10,7 +10,7 @@ import encode_res_calc_angles as erca
 import nonred
 import graphing
 from sklearn_methods import *
-from sklearn.model_selection import RepeatedStratifiedKFold
+from sklearn.model_selection import RepeatedKFold
 
 
 # *************************************************************************
@@ -39,8 +39,8 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     X = df[predictors].values
     y = df[target_column].values
 
-    rskf = RepeatedStratifiedKFold(n_splits=10)
-    for (train_index, test_index) in enumerate(rskf.split(X, y)):
+    rkf = RepeatedKFold(n_splits=10)
+    for train_index, test_index in rkf.split(X, y):
         print("TRAIN:", train_index, "TEST:", test_index)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
