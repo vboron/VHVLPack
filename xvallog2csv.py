@@ -50,9 +50,9 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         y_test = y_test.flatten()
         array = np.append([y_test], [y_pred])
         assert len(y_pred) == len(y_test)
-        print(f'y_pred={y_pred}')
-        print(f'y_test={y_test}')
-        print(f'array={array}')
+        # print(f'y_pred={y_pred}')
+        # print(f'y_test={y_test}')
+        # print(f'array={array}')
         df = pd.DataFrame([y_test, y_pred]).T
         df.columns = ['angle', 'predicted']
         print(f'df={df}')
@@ -69,8 +69,9 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         # print('X_test', X_test)
         df = run_GradientBoostingRegressor_(X_test, y_test, model_name)
         df = df2.merge(df, on='angle')
-        print('df after merge:', df)
-        fold+=1
+        assert not df.empty
+        # print('df after merge:', df)
+        fold += 1
         # print('dataframe:', df)
         # df.to_csv(os.path.join(
         #     graph_dir, f'results_for_{model_name}.csv'), index=False)
