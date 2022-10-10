@@ -48,10 +48,12 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         y_pred = pickle_model.predict(X_test)
         y_test = y_test.flatten()
         array = np.append([y_test], [y_pred])
+        assert len(y_pred) == len(y_test)
         print(f'y_pred={y_pred}')
         print(f'y_test={y_test}')
         print(f'array={array}')
-        df = pd.DataFrame(y_test, y_pred, columns = ['angle', 'predicted'])
+        df = pd.DataFrame([y_pred, y_test]).T #, columns = ['angle', 'predicted'])
+        print(f'df={df}')
         # print('pred:', y_pred)
         return df
 
