@@ -36,6 +36,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     pdb_code = {'code'}
     predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
     df2 = df[['code', 'angle']]
+    print(f'df2:{df2}')
     X = df[predictors].values
     y = df[target_column].values
 
