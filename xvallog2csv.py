@@ -41,12 +41,15 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
 
     rkf = RepeatedKFold(n_splits=10)
     fold = 1
-    def run_GradientBoostingRegressor_(X_test, model_name):
+    def run_GradientBoostingRegressor_(X_test, y_test, model_name):
         pkl_filename: str = f'{model_name}.pkl'
         with open(pkl_filename, 'rb') as file:
             pickle_model = pickle.load(file)
         y_pred = pickle_model.predict(X_test)
-        print('pred:', y_pred)
+        print('pred_type:', type(y_pred))
+        print('test_type:', type(y_test))
+        # print('pred:', y_pred)
+        return y_pred
 
     for train_index, test_index in rkf.split(X, y):
         print({fold})
@@ -56,7 +59,8 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
         print('Running ML...')
         # print('X_test', X_test)
-        df = run_GradientBoostingRegressor_(X_test, model_name)
+        y_pred = run_GradientBoostingRegressor_(X_test, y_test, model_name)
+
         fold+=1
         # print('dataframe:', df)
         # df.to_csv(os.path.join(
