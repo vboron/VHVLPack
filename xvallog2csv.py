@@ -59,7 +59,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         return df
 
     for train_index, test_index in rkf.split(X, y):
-        print({fold})
+        print(f'fold:{fold}')
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
         print('Building ML model...')
@@ -68,7 +68,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         # print('X_test', X_test)
         df = run_GradientBoostingRegressor_(X_test, y_test, model_name)
         df = df2.merge(df, on='angle')
-        print(df)
+        print('df after merge:', df)
         fold+=1
         # print('dataframe:', df)
         # df.to_csv(os.path.join(
