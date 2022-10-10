@@ -51,7 +51,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         print(y_pred)
         print(y_test)
         print(array)
-        df = pd.DataFrame(array, columns = ['angle', 'predicted'])
+        df = pd.DataFrame(y_test, y_pred, columns = ['angle', 'predicted'])
         # print('pred:', y_pred)
         return df
 
