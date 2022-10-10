@@ -46,7 +46,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         with open(pkl_filename, 'rb') as file:
             pickle_model = pickle.load(file)
         y_pred = pickle_model.predict(X_test)
-        print(y_pred)
+        print('pred:', y_pred)
 
     for train_index, test_index in rkf.split(X, y):
         print({fold})
@@ -55,10 +55,10 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         print('Building ML model...')
         gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
         print('Running ML...')
-        print('X_test', X_test)
+        # print('X_test', X_test)
         df = run_GradientBoostingRegressor_(X_test, model_name)
         fold+=1
-        print('dataframe:', df)
+        # print('dataframe:', df)
         # df.to_csv(os.path.join(
         #     graph_dir, f'results_for_{model_name}.csv'), index=False)
     # print('Plotting deviance...')
