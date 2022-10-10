@@ -49,7 +49,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         y_test = y_test.flatten()
         array = np.append([y_test], [y_pred], axis=1)
         print(array)
-        df = pd.DataFrame(array, columns = ['angle', 'predicted'])
+        df = pd.DataFrame([array], columns = ['angle', 'predicted'])
         # print('pred:', y_pred)
         return df
 
