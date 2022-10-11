@@ -63,8 +63,8 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         print('Running ML...')
         # print('X_test', X_test)
         result = run_GradientBoostingRegressor_(X_test, y_test, model_name)
-        if 'predicted' not in df2.columns:
-            df = df.merge(result, on='angle')
+        if 'predicted' not in df.columns:
+            df = result
         else:
             df = pd.concat([df, result])
         assert not df.empty
