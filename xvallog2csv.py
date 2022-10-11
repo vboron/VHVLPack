@@ -40,8 +40,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     X = df[predictors].values
     y = df[target_column].values
 
-    rkf = RepeatedKFold(n_splits=10)
-    fold = 1
+    rkf = RepeatedKFold(n_splits=10, n_repeats=1)
     def run_GradientBoostingRegressor_(X_test, y_test, model_name):
         pkl_filename: str = f'{model_name}.pkl'
         with open(pkl_filename, 'rb') as file:
@@ -54,21 +53,20 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         print(f'df={df}')
         return df
 
-    while fold in range(1, 11):
-        for train_index, test_index in rkf.split(X, y):
-            print(f'fold:{fold}')
-            X_train, X_test = X[train_index], X[test_index]
-            y_train, y_test = y[train_index], y[test_index]
-            print('Building ML model...')
-            gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
-            print('Running ML...')
-            # print('X_test', X_test)
-            df = run_GradientBoostingRegressor_(X_test, y_test, model_name)
-            df = df2.merge(df, on='angle')
-            assert not df.empty
-            # print('df after merge:', df)
-            # fold += 1
-            print('dataframe:', df)
+    for train_index, test_index in rkf.split(X, y):
+        # print(f'fold:{fold}')
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        print('Building ML model...')
+        gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
+        print('Running ML...')
+        # print('X_test', X_test)
+        df = run_GradientBoostingRegressor_(X_test, y_test, model_name)
+        df = df2.merge(df, on='angle')
+        assert not df.empty
+        # print('df after merge:', df)
+        # fold += 1
+        print('dataframe:', df)
         # df.to_csv(os.path.join(
         #     graph_dir, f'results_for_{model_name}.csv'), index=False)
     # print('Plotting deviance...')
