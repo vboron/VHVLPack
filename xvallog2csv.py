@@ -62,11 +62,14 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         print('Running ML...')
         # print('X_test', X_test)
         df = run_GradientBoostingRegressor_(X_test, y_test, model_name)
-        df = df2.merge(df, on='angle')
-        assert not df.empty
+        if 'predicted' not in df2.columns:
+            df2 = df2.merge(df, on='angle')
+        else:
+            df2 = pd.concat([df2, df])
+        assert not df2.empty
         # print('df after merge:', df)
         # fold += 1
-        print('dataframe:', df)
+        print('dataframe:', df2)
         # df.to_csv(os.path.join(
         #     graph_dir, f'results_for_{model_name}.csv'), index=False)
     # print('Plotting deviance...')
