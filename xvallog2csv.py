@@ -78,6 +78,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     # df=df.groupby(by='angle')
     # print(df)
     final = df2.merge(df, on='angle')
+    final.sort_values(by='code')
     print('final:', final)
     # print('Plotting deviance...')
     # plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
