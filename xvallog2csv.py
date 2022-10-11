@@ -75,6 +75,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         #     graph_dir, f'results_for_{model_name}.csv'), index=False)
     # df2 = df2.groupby('angle').mean('predicted')
     df.reset_index()
+    print(df)
     df=df.groupby(by='angle')
     print(df)
     final = df2.merge(df, on='angle')
