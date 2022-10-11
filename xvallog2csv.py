@@ -66,6 +66,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
             df2 = df2.merge(df, on='angle')
         else:
             df2 = pd.concat([df2, df])
+            df2 = df2.groupby('angle').mean('predicted')
         assert not df2.empty
         # print('df after merge:', df)
         # fold += 1
