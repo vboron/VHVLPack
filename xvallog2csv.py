@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
-# Program can be run like this:  ./gbr_angle_prediction.py --trainset 'Everything' --testset 'new_data'
-# --modelname 'train_Everything_H100G_residues_considered_nosubsampling'
-# --graphname 'train_everything_test_abdbnew_nosubsampling'
+
 # # *************************************************************************
 import os
 import argparse
@@ -42,6 +40,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     df = pd.DataFrame()
 
     rkf = RepeatedKFold(n_splits=10, n_repeats=1)
+
     def run_GradientBoostingRegressor_(X_test, y_test, model_name):
         pkl_filename: str = f'{model_name}.pkl'
         with open(pkl_filename, 'rb') as file:
@@ -59,7 +58,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
         print('Building ML model...')
-        gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
+        build_GradientBoostingRegressor_model(X_train, y_train, model_name)
         print('Running ML...')
         # print('X_test', X_test)
         result = run_GradientBoostingRegressor_(X_test, y_test, model_name)
@@ -68,31 +67,21 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         else:
             df = pd.concat([df, result])
         assert not df.empty
-        # print('df after merge:', df)
-        # fold += 1
-        # print('dataframe:', df)
-        # df.to_csv(os.path.join(
-        #     graph_dir, f'results_for_{model_name}.csv'), index=False)
-    # df2 = df2.groupby('angle').mean('predicted')
-    df.reset_index()
-    df = df.sort_values(by='angle')
-    # df=df.groupby(by='angle')
-    print(df)
+
     final = df2.merge(df, on='angle')
     final = final.sort_values(by='code')
+    final.reset_index()
+    final['error'] = final['predicted'] - final['angle']
     print('final:', final)
-    # print('Plotting deviance...')
-    # plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
+
     return final
 
 
 # *************************************************************************
-def postprocessing(df, dataset, ang_df, name):
+def postprocessing(df, dataset, name):
     graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
         dataset, df, f'{name}_sqerror_vs_actual')
-    graphing.angle_distribution(
-        dataset, ang_df, f'{name}_angledistribution')
     graphing.error_distribution(
         dataset, df, f'{name}_errordistribution')
 
@@ -113,7 +102,7 @@ df, angles = preprocessing(args.data)
 print('Processing...')
 result_df = runGBReg(df, args.modelname,
                      args.graphname, args.data)
-# print(result_df)
+print('Results:', result_df)
 print('Postprocessing...')
-# postprocessing(result_df, args.testset, test_angles, args.graphname)
+postprocessing(result_df, args.data, args.graphname)
 print('Goodbye!')
