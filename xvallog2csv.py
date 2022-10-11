@@ -75,15 +75,13 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         #     graph_dir, f'results_for_{model_name}.csv'), index=False)
     # df2 = df2.groupby('angle').mean('predicted')
     df.reset_index()
-    print(df)
-    print(type(df))
-    df=df.groupby(by='angle').mean()
+    df=df.groupby(by='angle')
     print(df)
     final = df2.merge(df, on='angle')
     print('final:', final)
     # print('Plotting deviance...')
     # plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
-    return df
+    return final
 
 
 # *************************************************************************
@@ -113,7 +111,7 @@ df, angles = preprocessing(args.data)
 print('Processing...')
 result_df = runGBReg(df, args.modelname,
                      args.graphname, args.data)
-print(result_df)
+# print(result_df)
 print('Postprocessing...')
 # postprocessing(result_df, args.testset, test_angles, args.graphname)
 print('Goodbye!')
