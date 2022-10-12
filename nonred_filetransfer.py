@@ -20,11 +20,11 @@ def preprocessing(ds):
 
 def compare_dirs(df, dir_sept, dir_jul):
     non_red_list = df['code'].tolist()
-    print('non_red_list:', non_red_list)
+    print('non_red_list:', len(non_red_list))
     sept_files = os.listdir(dir_sept)
-    print('sept_files', sept_files)
+    print('sept_files', len(sept_files))
     jul_files = os.listdir(dir_jul)
-    print('jul_files', jul_files)
+    print('jul_files', len(jul_files))
 
     jul_nonred = []
     for file in jul_files:
@@ -37,7 +37,7 @@ def compare_dirs(df, dir_sept, dir_jul):
     print(len(jul_nonred))
 
     for file in jul_nonred:
-        print(file)
+        # print(file)
         src = os.path.join(dir_jul, file)
         dst = os.path.join(jul_dir, file)
         shutil.copy2(src, dst)
