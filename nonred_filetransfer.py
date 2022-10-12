@@ -30,6 +30,8 @@ def compare_dirs(df, dir_sept, dir_jul):
     for file in jul_files:
         if file in non_red_list:
             jul_nonred.append(file)
+            print(file)
+    
     jul_dir = 'files_july_nonred'
     sept_dir = 'files_july2sept_nonred'
     os.mkdir(jul_dir)
