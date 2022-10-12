@@ -2,7 +2,6 @@
 
 
 # # *************************************************************************
-import os
 import argparse
 import encode_res_calc_angles as erca
 import nonred
@@ -16,11 +15,8 @@ def preprocessing(ds):
     print('Extracting angles and residues, and encoding...')
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, ds, 'expanded_residues.dat')
-    # encoded_df, ang_df = erca.extract_and_export_packing_residues(
-    #     ds, ds, '4d.dat')
     print('Nonredundantizing...')
     nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
-    # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res')
     return nonred_df, ang_df
 
 
@@ -60,7 +56,6 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         print('Building ML model...')
         build_GradientBoostingRegressor_model(X_train, y_train, model_name)
         print('Running ML...')
-        # print('X_test', X_test)
         result = run_GradientBoostingRegressor_(X_test, y_test, model_name)
         if 'predicted' not in df.columns:
             df = result
