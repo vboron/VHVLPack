@@ -28,10 +28,9 @@ def compare_dirs(df, dir_sept, dir_jul):
 
     jul_nonred = []
     for file in jul_files:
-        print(file)
-        if file in non_red_list:
+        if file[:-4] in non_red_list:
             jul_nonred.append(file)
-            # print(file)
+            print(file)
     
     jul_dir = 'files_july_nonred'
     sept_dir = 'files_july2sept_nonred'
@@ -46,7 +45,7 @@ def compare_dirs(df, dir_sept, dir_jul):
         shutil.copy2(src, dst)
     sept_nonred = []
     for file in sept_files:
-        if file in non_red_list and file not in jul_nonred:
+        if file[:-4] in non_red_list and file not in jul_nonred:
             sept_nonred.append(file)
     print(len(sept_nonred))
     for file in sept_nonred:
