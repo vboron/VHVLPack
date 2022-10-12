@@ -1,105 +1,62 @@
 #!/usr/bin/env python3
-
 import argparse
 import os
-import pandas as pd
-import utils
-import math
-import graphing
+import shutil
+import nonred
+import encode_res_calc_angles as erca
 
 
-def find_norms_and_outliers(directory, csv_file):
-    path_csv_file = os.path.join(directory, csv_file)
-    df = pd.read_csv(path_csv_file)
-
-    min_norm = -48
-    max_norm = -42
-
-    # extract data where the predicted angle is within the normal range into a new dataframe
-    df_normal = df[df['angle'].between(min_norm, max_norm)]
-
-    # extract data where predicted angles are outside of the normal range and add into a new dataframe
-    outliers_max = df[df['angle'] >= max_norm]
-    outliers_min = df[df['angle'] <= min_norm]
-
-    df_outliers = pd.concat([outliers_max, outliers_min])
-
-    return df_normal, df_outliers
+def preprocessing(ds):
+    print('Extracting angles and residues, and encoding...')
+    encoded_df, _x_ = erca.extract_and_export_packing_residues(
+        ds, ds, 'expanded_residues.dat')
+    # encoded_df, ang_df = erca.extract_and_export_packing_residues(
+    #     ds, ds, '4d.dat')
+    print('Nonredundantizing...')
+    nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
+    # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res')
+    return nonred_df
 
 
-def run_outlier_correction(directory, df_out, first_m, first_c):
-    df_out.to_csv(os.path.join(
-        directory, 'Everything_NR2_GBReg_out_0.csv'), index=False)
-    m = first_m
-    c = first_c
-    for i in range(1, 6):
+def compare_dirs(df, dir_sept, dir_jul):
+    non_red_list = df['code'].tolist()
+    sept_files = os.listdir(dir_sept)
+    jul_files = os.listdir(dir_jul)
 
-        file_name = f'Everything_NR2_GBReg_out_{i}'
+    jul_nonred = []
+    for file in jul_files:
+        if file in non_red_list:
+            jul_nonred.append(file)
+    jul_dir = 'files_july_nonred'
+    sept_dir = 'files_july2sept_nonred'
+    os.mkdir(jul_dir)
+    os.mkdir(sept_dir)
+    print(len(jul_nonred))
 
-        csv_name = f'{file_name}.csv'
-        path_name = os.path.join(directory, csv_name)
-
-        cmds = ['./datarot.py', '-o', path_name, '-m', str(m), '-c', str(
-            c), '--dataFile', os.path.join(directory, f'Everything_NR2_GBReg_out_{i-1}.csv')]
-
-        utils.run_cmd(cmds, False)
-        df = pd.read_csv(path_name)
-
-        # Make table of rotated normal values and the outliers
-        df_all = pd.concat([df, df_out])
-        corr_norm_out = f'{file_name}_plus_norm.csv'
-        df_all.to_csv(os.path.join(directory, corr_norm_out), index=False)
-
-        df['abs_err'] = df['error'].abs()
-        df['sqerror'] = df['error'].pow(2)
-        df['sq_angle'] = df['angle'].pow(2)
-        sum_sqe = df['sqerror'].sum()
-        n = df['angle'].count()
-        meanabserror = (df['abs_err'].sum())/n
-        rmsd = math.sqrt(sum_sqe/n)
-        relrmse = utils.relrmse_from_df(df, rmsd)
-        # print(df, sum_sqe, n, meanabserror, rmsd, relrmse)
-
-        graphing.error_distribution(
-            directory, csv_name, f'error_dist_correction_{i}_out')
-        graphing.actual_vs_predicted_from_df(
-            df, directory, file_name, file_name)
-
-    return pd.read_csv(os.path.join(directory, 'Everything_NR2_GBReg_out_2.csv'))
+    for file in jul_nonred:
+        print(file)
+        src = os.path.join(dir_jul, file)
+        dst = os.path.join(jul_dir, file)
+        shutil.copy2(src, dst)
+    sept_nonred = []
+    for file in sept_files:
+        if file in non_red_list and file not in jul_nonred:
+            sept_nonred.append(file)
+    print(len(sept_nonred))
+    for file in sept_nonred:
+        print(file)
+        src = os.path.join(dir_sept, file)
+        dst = os.path.join(sept_dir, file)
+        shutil.copy2(src, dst)
+    check = len(non_red_list)-len(sept_nonred)-len(jul_nonred)
+    print(check)
 
 
-def plot_entire_corrected_set(directory, norm_df, out_df):
-    df = pd.concat([norm_df, out_df])
-    # print(df)
-    df = df.reset_index()
-    file_name = 'Everything_NR2_GBReg_corrected_all'
-    csv_name = f'{file_name}.csv'
-    path_name = os.path.join(directory, csv_name)
-    df.to_csv(path_name, index=False)
-    graphing.normandout_actual_vs_predicted_from_df(
-        norm_df, out_df, directory, file_name, file_name)
-    graphing.error_distribution(
-        directory, csv_name, f'error_dist_correction_all_data')
+parser = argparse.ArgumentParser(description='Program for compiling angles')
+parser.add_argument('--sept', required=True, help='Directory which is used as base')
+parser.add_argument('--jul', required=True, help='Directory from which files will be copied into new directory')
 
+args = parser.parse_args()
 
-def two_fold_correction_and_plot(directory, csv_file, slope_m, intercept_c):
-    df_norm, df_out = find_norms_and_outliers(directory, csv_file)
-    df_out_full = run_outlier_correction(
-        directory, df_out, slope_m, intercept_c)
-    plot_entire_corrected_set(directory, df_norm, df_out_full)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Program for applying a rotational correction factor recursively')
-
-    parser.add_argument('--directory', help='Directory', required=True)
-    parser.add_argument(
-        '-m', help='Slope of best fit line before correction', required=True)
-    parser.add_argument(
-        '-c', help='Intercept of best fit line before correction', required=True)
-    parser.add_argument(
-        '--csv_file', help='Uncorrected csv file', required=True)
-    args = parser.parse_args()
-
-    two_fold_correction_and_plot(args.directory, args.csv_file, args.m, args.c)
+df_nonred = preprocessing(args.sept)
+compare_dirs(df_nonred, args.sept, args.jul)
