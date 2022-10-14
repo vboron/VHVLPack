@@ -14,6 +14,7 @@ def combine(in_with_code, in_with_pred, out):
     code_list = code_df['code'].to_list()
 
     pred_df = pd.read_csv(in_with_pred)
+    print(pred_df)
     pred_df = pred_df[['code', 'predicted']]
     df = pred_df.loc[pred_df['code'].isin(code_list)]
     
