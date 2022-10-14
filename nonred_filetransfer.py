@@ -18,51 +18,25 @@ def preprocessing(ds):
     return nonred_df
 
 
-def compare_dirs(df, dir_sept, dir_jul):
+def compare_dirs(df, dir_sept):
     non_red_list = df['code'].tolist()
     print('non_red_list:', len(non_red_list))
-    sept_files = os.listdir(dir_sept)
-    print('sept_files', len(sept_files))
-    jul_files = os.listdir(dir_jul)
-    print('jul_files', len(jul_files))
-
-    jul_nonred = []
-    for file in jul_files:
-        if file[:-4] in non_red_list:
-            jul_nonred.append(file)
-    print(jul_nonred)
-
-    jul_dir = 'files_july_nonred'
-    sept_dir = 'files_july2sept_nonred'
-    os.mkdir(jul_dir)
+ 
+    sept_dir = 'files_sept_nonred'
     os.mkdir(sept_dir)
-    print(len(jul_nonred))
 
-    for file in jul_nonred:
-        # print(file)
-        src = os.path.join(dir_jul, file)
-        dst = os.path.join(jul_dir, file)
-        shutil.copy2(src, dst)
-    sept_nonred = []
-    for file in sept_files:
-        if file[:-4] in non_red_list and file not in jul_nonred:
-            sept_nonred.append(file)
-    print(sept_nonred)
-    print(len(sept_nonred))
-    for file in sept_nonred:
+    for file in non_red_list:
         print(file)
+        file = file + '.pdb'
         src = os.path.join(dir_sept, file)
         dst = os.path.join(sept_dir, file)
         shutil.copy2(src, dst)
-    check = len(non_red_list)-len(sept_nonred)-len(jul_nonred)
-    print(check)
 
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--sept', required=True, help='Directory which is used as base')
-parser.add_argument('--jul', required=True, help='Directory from which files will be copied into new directory')
 
 args = parser.parse_args()
 
 df_nonred = preprocessing(args.sept)
-compare_dirs(df_nonred, args.sept, args.jul)
+compare_dirs(df_nonred, args.sept)
