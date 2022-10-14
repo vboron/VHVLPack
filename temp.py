@@ -27,6 +27,6 @@ parser.add_argument('--in2', required=True, help='input csv', type=str)
 parser.add_argument('--out', required=True, help='output csv name', type=str)
 
 args = parser.parse_args()
-
+combine(args.in1, args.in2, args.out)
 
 print('Bye bye bye!')
