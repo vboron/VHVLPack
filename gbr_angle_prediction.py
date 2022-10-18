@@ -14,18 +14,18 @@ from sklearn_methods import *
 
 
 # *************************************************************************
-def preprocessing(ds):
+def preprocessing(ds, res_file, loop_use):
     print('Extracting angles and residues, and encoding...')
-    # encoded_df, ang_df = erca.extract_and_export_packing_residues(
-    #     ds, ds, 'expanded_residues.dat')
-    # encoded_df, ang_df = erca.extract_and_export_packing_residues(
-    #     ds, ds, '13res.dat')
-    encoded_df, ang_df = erca_nl.extract_and_export_packing_residues(
-        ds, ds, '13res.dat')
-    print('Nonredundantizing...')
-    # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
-    # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res')
-    nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res_noloops')
+    if loop_use == True:
+        encoded_df, ang_df = erca.extract_and_export_packing_residues(
+        ds, ds, res_file)
+        print('Nonredundantizing...')
+        nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_{res_file[:-4]}')
+    else:
+        encoded_df, ang_df = erca_nl.extract_and_export_packing_residues(
+        ds, ds, res_file)
+        print('Nonredundantizing...')
+        nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_{res_file[:-4]}_noloops')
     return nonred_df, ang_df
 
 
@@ -66,12 +66,15 @@ parser.add_argument('--modelname', required=True,
                     help='name which will be given to the model that is trained', type=str)
 parser.add_argument('--graphname', required=True,
                     help='name which will be included in the graphs', type=str)
-# parser.add_argument('--latex', action='store_true', default=False)
+parser.add_argument('--res', required=True,
+                    help='.dat file of residues to extract', type=str)
+parser.add_argument('--useloops', typ=bool, help='if True then loops will be added as part of encoding', 
+                    default=False)
 
 args = parser.parse_args()
 
 print(f'Preprocessing {args.trainset}...')
-df_train, train_angles = preprocessing(args.trainset)
+df_train, train_angles = preprocessing(args.trainset, args.res, args.useloops)
 print(f'Preprocessing {args.testset}...')
 df_test, test_angles = preprocessing(args.testset)
 print(df_test)
