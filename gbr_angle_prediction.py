@@ -18,7 +18,7 @@ def preprocessing(ds):
     encoded_df, ang_df = erca.extract_and_export_packing_residues(
         ds, ds, 'expanded_residues.dat')
     # encoded_df, ang_df = erca.extract_and_export_packing_residues(
-    #     ds, ds, '4d.dat')
+    #     ds, ds, '13res.dat')
     print('Nonredundantizing...')
     nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
     # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res')
@@ -26,7 +26,7 @@ def preprocessing(ds):
 
 
 # *************************************************************************
-def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> pd.DataFrame:
+def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, graph_dir) -> pd.DataFrame:
     if '/' in graph_dir:
         graph_dir = graph_dir.replace('/', '')
     print('Making train and test sets...')
@@ -38,8 +38,6 @@ def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, gra
     df = run_GradientBoostingRegressor(X_test, df_test, model_name)
     df.to_csv(os.path.join(
         graph_dir, f'results_for_{model_name}.csv'), index=False)
-    # print('Plotting deviance...')
-    # plot_deviance(gbr, os.path.join(graph_dir, f'{graph_name}_deviance'), X_test, y_true)
     return df
 
 

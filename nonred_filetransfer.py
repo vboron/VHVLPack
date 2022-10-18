@@ -11,7 +11,7 @@ def preprocessing(ds):
     encoded_df, _x_ = erca.extract_and_export_packing_residues(
         ds, ds, 'expanded_residues.dat')
     # encoded_df, ang_df = erca.extract_and_export_packing_residues(
-    #     ds, ds, '4d.dat')
+    #     ds, ds, '13res.dat')
     print('Nonredundantizing...')
     nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
     # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res')

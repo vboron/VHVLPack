@@ -228,8 +228,8 @@ def postprocessing(ds: Dataset, nr: NonRedundantization, meth: MLMethod):
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument('--dry-run', action='store_true')
-parser.add_argument('--cols-4d', default='4d.dat')
-parser.add_argument('--in4d', default='in4d.dat')
+parser.add_argument('--cols-feat', default='13res.dat')
+parser.add_argument('--infeat', default='13res.dat')
 parser.add_argument('--preprocess', action='store_true', default=False)
 parser.add_argument('--process', action='store_true', default=False)
 parser.add_argument('--postprocess', action='store_true', default=False)
