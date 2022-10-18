@@ -66,7 +66,7 @@ parser.add_argument('--modelname', required=True,
                     help='name which will be given to the model that is trained', type=str)
 parser.add_argument('--graphname', required=True,
                     help='name which will be included in the graphs', type=str)
-parser.add_argument('--res', required=True,
+parser.add_argument('--res', type=str, required=True,
                     help='.dat file of residues to extract', type=str)
 parser.add_argument('--useloops', type=bool, help='if True then loops will be added as part of encoding', 
                     default=False)
@@ -76,7 +76,7 @@ args = parser.parse_args()
 print(f'Preprocessing {args.trainset}...')
 df_train, train_angles = preprocessing(args.trainset, args.res, args.useloops)
 print(f'Preprocessing {args.testset}...')
-df_test, test_angles = preprocessing(args.testset)
+df_test, test_angles = preprocessing(args.testset, args.res, args.useloops)
 print(df_test)
 print('Processing...')
 result_df = runGBReg(df_train, df_test, args.modelname, args.testset)
