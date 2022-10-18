@@ -7,6 +7,7 @@
 import os
 import argparse
 import encode_res_calc_angles as erca
+import erca_noloops as erca_nl
 import nonred
 import graphing
 from sklearn_methods import *
@@ -15,13 +16,16 @@ from sklearn_methods import *
 # *************************************************************************
 def preprocessing(ds):
     print('Extracting angles and residues, and encoding...')
-    encoded_df, ang_df = erca.extract_and_export_packing_residues(
-        ds, ds, 'expanded_residues.dat')
+    # encoded_df, ang_df = erca.extract_and_export_packing_residues(
+    #     ds, ds, 'expanded_residues.dat')
     # encoded_df, ang_df = erca.extract_and_export_packing_residues(
     #     ds, ds, '13res.dat')
+    encoded_df, ang_df = erca_nl.extract_and_export_packing_residues(
+        ds, ds, '13res.dat')
     print('Nonredundantizing...')
-    nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
+    # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_expanded_residues')
     # nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res')
+    nonred_df = nonred.NR2(encoded_df, ds, f'{ds}_NR2_13res_noloops')
     return nonred_df, ang_df
 
 
