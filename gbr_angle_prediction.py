@@ -66,7 +66,7 @@ parser.add_argument('--modelname', required=True,
                     help='name which will be given to the model that is trained', type=str)
 parser.add_argument('--graphname', required=True,
                     help='name which will be included in the graphs', type=str)
-parser.add_argument('--res', type=str, required=True,
+parser.add_argument('--res', required=True,
                     help='.dat file of residues to extract', type=str)
 parser.add_argument('--useloops', type=bool, help='if True then loops will be added as part of encoding', 
                     default=False)
