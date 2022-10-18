@@ -68,7 +68,7 @@ parser.add_argument('--graphname', required=True,
                     help='name which will be included in the graphs', type=str)
 parser.add_argument('--res', required=True,
                     help='.dat file of residues to extract', type=str)
-parser.add_argument('--useloops', typ=bool, help='if True then loops will be added as part of encoding', 
+parser.add_argument('--useloops', type=bool, help='if True then loops will be added as part of encoding', 
                     default=False)
 
 args = parser.parse_args()
