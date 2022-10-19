@@ -4,8 +4,9 @@ import argparse
 
 def combine_dfs(code_file, pred_file):
     code_df = pd.read_csv(code_file)
-
+    print(code_df)
     pred_df = pd.read_csv(pred_file)
+    print(pred_df)
     final = code_df.merge(pred_df, on='code')
     print(final)
     final = final[['code', 'predicted']]
