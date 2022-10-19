@@ -68,7 +68,8 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     final.reset_index()
     final['error'] = final['predicted'] - final['angle']
     print('final:', final)
-    final.to_csv(f'{graph_name}.csv', index=False)
+    path = os.path.join(graph_dir, f'{graph_name}.csv')
+    final.to_csv(path, index=False)
     return final
 
 
