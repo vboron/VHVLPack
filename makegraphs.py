@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(description='Program for extracting VH/VL relev
 parser.add_argument('--dir', required=True)
 parser.add_argument('--out', required=True)
 parser.add_argument('--csv', required=True)
-parser.add_argument('--stats', required=True)
+parser.add_argument('--stat', required=True)
 args = parser.parse_args()
 
 makegraphs(args.csv, args.out, args.dir, args.stat)
