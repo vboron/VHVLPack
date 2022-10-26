@@ -31,7 +31,6 @@ def build_snns_dataframe(directory, seq_directory, papa_version):
         pred = float(subprocess.check_output([papa_version, '-q', seq_file]))
         data = [code, pred]
         file_data.append(data)
-        print(data)
 
     df_pred = pd.DataFrame(data=file_data, columns=p_col)
 
