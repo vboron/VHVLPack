@@ -80,7 +80,7 @@ def NR2(encoded_df, directory, out_file):
 
     # aggregation function specifies that when the rows are grouped, the first value of code will be kept and the
     # angles will be averaged
-    aggregation_func = {'code': 'first', 'angle': 'mean'}
+    aggregation_func = {'code': 'first', 'angle': 'first'}
 
     # make a column of rounded values for angle
     encoded_df['ang2dp']=encoded_df['angle'].round(decimals=2)
