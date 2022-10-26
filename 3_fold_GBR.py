@@ -3,8 +3,6 @@
 import argparse
 import os
 import pandas as pd
-import utils
-import math
 import graphing
 from sklearn_methods import *
 import encode_res_calc_angles as erca
@@ -20,7 +18,7 @@ def preprocessing(ds):
         ds, set_name, 'expanded_residues.dat')
     print('Nonredundantizing...')
     nonred_df = nonred.NR2(encoded_df, ds, f'{set_name}_NR2_expanded_residues')
-    return nonred_df, ang_df
+    return nonred_df
 
 
 def define_class(df):
@@ -92,10 +90,9 @@ def split_testdata_runGBR(df, train_dir):
     return df_final
 
 
-def run_graphs(df, train_dir, test_dir):
-    train_dir_name = train_dir.replace('/', '')
+def run_graphs(df, test_dir):
     test_dir_name = test_dir.replace('/', '')
-    name = f'train_{train_dir_name}_NR2_GBReg_test_{test_dir_name}_with_classification'
+    name = f'{test_dir_name}_classification'
     graphing.actual_vs_predicted_from_df(df, test_dir, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
         test_dir, df, f'{name}_sqerror_vs_actual')
@@ -104,8 +101,8 @@ def run_graphs(df, train_dir, test_dir):
 
 
 def three_fold_GBR(train_dir, test_dir):
-    encoded_train_df, train_just_angs_df = preprocessing(train_dir)
-    encoded_test_df, test_just_angs_df = preprocessing(test_dir)
+    encoded_train_df = preprocessing(train_dir)
+    encoded_test_df = preprocessing(test_dir)
     train_classed_df = define_class(encoded_train_df)
     test_classed_df = define_class(encoded_test_df)
     X_train_class, y_train_class, _x_, X_test_class, y_test_class, code_class_test_class = make_class_sets_from_df(train_classed_df, test_classed_df)
@@ -123,9 +120,9 @@ def three_fold_GBR(train_dir, test_dir):
     results = split_testdata_runGBR(pred_class_df, train_dir)
     print(results)
     test_name = test_dir.replace('/', '')
-    results_path = os.path.join(test_dir, f'results_test_{dir_name}_train_{test_name}.csv')
+    results_path = os.path.join(test_dir, f'results_{test_name}.csv')
     results.to_csv(results_path, index=False)
-    run_graphs(results, train_dir, test_dir)
+    run_graphs(results, test_dir)
 
 
 if __name__ == '__main__':
