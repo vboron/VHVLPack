@@ -43,7 +43,6 @@ def build_snns_dataframe(directory, seq_directory, papa_version):
     return df_snns
 
 def postprocessing(df, dataset, name):
-    df.to_csv(os.path.join(dataset, f'results_{name}'))
     graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
         dataset, df, f'{name}_sqerror_vs_actual')
