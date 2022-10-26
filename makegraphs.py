@@ -7,9 +7,9 @@ import os
 
 def makegraphs(csv, output, dire, df_stat):
     df = pd.read_csv(os.path.join(dire, csv))
-    error_distribution(dire, df, output)
-    sq_error_vs_actual_angle(dire, df, output)
-    actual_vs_predicted_from_df(df, dire, df_stat, output)
+    error_distribution(dire, df, f'{output}_ed')
+    sq_error_vs_actual_angle(dire, df, f'{output}_sqe')
+    actual_vs_predicted_from_df(df, dire, df_stat, f'{output}_pa')
 
 
 parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
