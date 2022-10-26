@@ -93,6 +93,10 @@ def sq_error_vs_actual_angle(directory, df, graph_name):
        x = df['angle']
        y = df['sqerror']
        plt.scatter(x, y, s=2, color='mediumturquoise')
+       axes = plt.gca()
+
+       axes.set_xlim([-65, -25])
+       axes.set_ylim([-65, -25])
 
        plt.xlabel('Actual angle')
        plt.ylabel('Square of error')

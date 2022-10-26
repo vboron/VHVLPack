@@ -50,8 +50,8 @@ def postprocessing(df, dataset, ang_df, name):
     graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
         dataset, df, f'{name}_sqerror_vs_actual')
-    graphing.angle_distribution(
-        dataset, ang_df, f'{name}_angledistribution')
+    # graphing.angle_distribution(
+    #     dataset, ang_df, f'{name}_angledistribution')
     graphing.error_distribution(
         dataset, df, f'{name}_errordistribution')
 
