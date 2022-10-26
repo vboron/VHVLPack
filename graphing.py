@@ -157,12 +157,12 @@ def actual_vs_predicted_from_df(df, directory, stats_csv_name, pa_graph_name):
        plt.ylabel('Predicted interface angle')
 
        # Adds graph annotations
-       plt.text(s='Line: y=x', x=-66, y=-37, fontsize=8)
+       plt.text(s='Line: y=x', x=-66, y=-27, fontsize=8)
 
        plt.text(s='Best fit: y={:.3f}x+{:.3f}'.format(m, b),
-              x=-66, y=-38, fontsize=8, color=color_bf_line)
+              x=-66, y=-29, fontsize=8, color=color_bf_line)
        plt.text(s='RELRMSE: {:.3}'.format(
-              float(stats['RELRMSE'])), x=-66, y=-39, fontsize=8)
+              float(stats['RELRMSE'])), x=-66, y=-31, fontsize=8)
 
        plt.tight_layout()
 
