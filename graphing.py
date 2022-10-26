@@ -97,7 +97,7 @@ def sq_error_vs_actual_angle(directory, df, graph_name):
        plt.scatter(x, y, s=2, color='mediumturquoise')
        axes = plt.gca()
 
-       axes.set_xlim([-65, -25])
+       axes.set_xlim([-70, -25])
        axes.set_ylim([0, 400])
 
        plt.xlabel('Actual angle')
@@ -147,8 +147,8 @@ def actual_vs_predicted_from_df(df, directory, stats_csv_name, pa_graph_name):
 
        # Sets the maximum and minimum values for the axes
        # axes.autoscale(tight=True)
-       axes.set_xlim([-85, -20])
-       axes.set_ylim([-85, -20])
+       axes.set_xlim([-70, -20])
+       axes.set_ylim([-70, -20])
 
        axes.axline((0, 0), (1, 1), color='k')
 
@@ -157,12 +157,12 @@ def actual_vs_predicted_from_df(df, directory, stats_csv_name, pa_graph_name):
        plt.ylabel('Predicted interface angle')
 
        # Adds graph annotations
-       plt.text(s='Line: y=x', x=-81, y=-37, fontsize=8)
+       plt.text(s='Line: y=x', x=-66, y=-37, fontsize=8)
 
        plt.text(s='Best fit: y={:.3f}x+{:.3f}'.format(m, b),
-              x=-81, y=-38, fontsize=8, color=color_bf_line)
+              x=-66, y=-38, fontsize=8, color=color_bf_line)
        plt.text(s='RELRMSE: {:.3}'.format(
-              float(stats['RELRMSE'])), x=-81, y=-39, fontsize=8)
+              float(stats['RELRMSE'])), x=-66, y=-39, fontsize=8)
 
        plt.tight_layout()
 
