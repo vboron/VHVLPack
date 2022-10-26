@@ -60,6 +60,6 @@ parser.add_argument('--which_papa', help='Specify the name of the papa version b
 args = parser.parse_args()
 
 result = build_snns_dataframe(args.directory, args.seq_directory, args.which_papa)
-path = os.path.join(args.directory, f'{args.csv_output}.csv')
+path = os.path.join(args.directory, f'results_{args.csv_output}.csv')
 result.to_csv(path, index=False)
 postprocessing(result, args.directory, args.csv_output)
