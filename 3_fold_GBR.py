@@ -53,7 +53,6 @@ def determine_class(X_train, y_train, X_test, df_test, set_name):
     build_GradientBoostingClassifier_model(X_train, y_train, f'gbc_{set_name}')
     class_df = run_GradientBoostingClassifier(
         X_test, df_test, f'gbc_{set_name}')
-    # print(class_df.value_counts())
     return class_df
 
 
@@ -61,7 +60,6 @@ def make_sets_train_model_gbr(df, model_name):
     print('Making GBR training sets...')
     df = df.drop(['class'], axis=1)
     X_train, y_train, _x_ = make_sets(df)
-    # print(X_train)
     build_GradientBoostingRegressor_model(X_train, y_train, model_name)
 
 
@@ -100,27 +98,23 @@ def run_graphs(df, test_dir):
         test_dir, df, f'{name}_errordistribution')
 
 
-def three_fold_GBR(train_dir, test_dir):
+def three_fold_GBR(train_dir, test_dir, output):
     encoded_train_df = preprocessing(train_dir)
     encoded_test_df = preprocessing(test_dir)
     train_classed_df = define_class(encoded_train_df)
     test_classed_df = define_class(encoded_test_df)
     X_train_class, y_train_class, _x_, X_test_class, y_test_class, code_class_test_class = make_class_sets_from_df(train_classed_df, test_classed_df)
     pred_class_df = determine_class(X_train_class, y_train_class, X_test_class, test_classed_df, test_dir)
-    # print(pred_class_df)
 
     # # Train 3 regression models for normal and min/max outliers
     print('Training GBReg models...')
     train_df_norm, train_df_out_max, train_df_out_min = make_norm_out_dfs(encoded_train_df)
     dir_name = train_dir.replace('/', '')
-    # print(train_df_norm)
     make_sets_train_model_gbr(train_df_norm, f'norm_class_{dir_name}')
     make_sets_train_model_gbr(train_df_out_max, f'max_out_class_{dir_name}')
     make_sets_train_model_gbr(train_df_out_min, f'min_out_class_{dir_name}')
     results = split_testdata_runGBR(pred_class_df, train_dir)
-    # print(results)
-    test_name = test_dir.replace('/', '')
-    results_path = os.path.join(test_dir, f'results_{test_name}.csv')
+    results_path = os.path.join(test_dir, f'results_{output}.csv')
     results.to_csv(results_path, index=False)
     run_graphs(results, test_dir)
 
@@ -132,6 +126,8 @@ if __name__ == '__main__':
         '--trainset', help='Directory with files that will be used to train models', required=True)
     parser.add_argument(
         '--testset', help='Directory with files that will be used to test models', required=True)
+    parser.add_argument(
+        '--out', help='Name for output file: results_outputname.csv', required=True)
     args = parser.parse_args()
 
-    three_fold_GBR(args.trainset, args.testset)
+    three_fold_GBR(args.trainset, args.testset, args.out)
