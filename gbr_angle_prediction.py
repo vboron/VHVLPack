@@ -41,7 +41,7 @@ def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, gra
     print('Running ML...')
     df = run_GradientBoostingRegressor(X_test, df_test, model_name)
     df.to_csv(os.path.join(
-        graph_dir, f'results_for_{model_name}.csv'), index=False)
+        graph_dir, f'results_{model_name}.csv'), index=False)
     return df
 
 
