@@ -30,7 +30,6 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     pdb_code = {'code'}
     predictors = list(OrderedSet(df.columns) - target_column - pdb_code)
     df2 = df[['code', 'angle']]
-    print(f'df2:{df2}')
     X = df[predictors].values
     y = df[target_column].values
     df = pd.DataFrame()
@@ -46,7 +45,6 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
         assert len(y_pred) == len(y_test)
         df = pd.DataFrame([y_test, y_pred]).T
         df.columns = ['angle', 'predicted']
-        print(f'df={df}')
         return df
 
     for train_index, test_index in rkf.split(X, y):
@@ -67,8 +65,7 @@ def runGBReg(df: pd.DataFrame, model_name: str, graph_name: str, graph_dir) -> p
     final = final.sort_values(by='code')
     final.reset_index()
     final['error'] = final['predicted'] - final['angle']
-    print('final:', final)
-    path = os.path.join(graph_dir, f'{graph_name}.csv')
+    path = os.path.join(graph_dir, f'results_{graph_name}.csv')
     final.to_csv(path, index=False)
     return final
 
@@ -98,7 +95,6 @@ df, angles = preprocessing(args.data)
 print('Processing...')
 result_df = runGBReg(df, args.modelname,
                      args.graphname, args.data)
-print('Results:', result_df)
 print('Postprocessing...')
 postprocessing(result_df, args.data, args.graphname)
 print('Goodbye!')
