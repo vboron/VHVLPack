@@ -46,7 +46,7 @@ def calculate_packing_angles(directory, angle_file):
         print('No missing angles.')
     df_pred['predicted'] = df_pred['predicted'].astype(float)
     final = df_pred.merge(ang_df, on='code')
-    final.to_csv(os.path.join(directory, 'results_abymod.cav'), index=False)
+    final.to_csv(os.path.join(directory, 'results_abymod.csv'), index=False)
 
 parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
 parser.add_argument('--dir', help='Directory of datset', required=True)
