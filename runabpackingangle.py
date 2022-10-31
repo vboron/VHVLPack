@@ -54,7 +54,8 @@ def calculate_packing_angles(directory, angle_file):
 
 parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
 parser.add_argument('--dir', help='Directory of datset', required=True)
-parser.add_argument('--ang', help='Directory where .seq files are', required=True)
+parser.add_argument('--ang', help='File which has actual angles', required=True)
+parser.add_argument('--out', help='Output name', required=True)
 args = parser.parse_args()
 
 calculate_packing_angles(args.dir, args.ang)
