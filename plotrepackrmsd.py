@@ -17,7 +17,7 @@ def readandplot(file):
         plt.plot(df_count)
         axes = plt.gca()
         axes.set_xlim([0, 6])
-        axes.set_ylim([0, 250])
+        axes.set_ylim([0, 150])
         plt.xlabel('RMSD')
         plt.ylabel('Frequency')
 
