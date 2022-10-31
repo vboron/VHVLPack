@@ -7,8 +7,6 @@ import os
 
 def readandplot(file):
     df_ = pd.read_csv(file)
-    plotgraphs(df_, 'abYmod', 'RMSD abYmod')
-    plotgraphs(df_, 'repacked', 'RMSD Repacked abYmod')
 
     def plotgraphs(df, dataset, column):
         plt.figure()
@@ -26,6 +24,8 @@ def readandplot(file):
         plt.tight_layout()
         plt.savefig(f'{dataset}.jpg', format='jpg')
         plt.close()
+    plotgraphs(df_, 'abYmod', 'RMSD abYmod')
+    plotgraphs(df_, 'repacked', 'RMSD Repacked abYmod')
 
 parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
 parser.add_argument('--csv', required=True)
