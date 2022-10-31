@@ -31,6 +31,7 @@ def calculate_packing_angles(directory, angle_file):
             error_files.append(code)
 
     ang_df = pd.read_csv(angle_file)
+    ang_df = [['code', 'angle']]
     data_list = []
     error_files = []
     for file in os.listdir(directory):
