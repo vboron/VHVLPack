@@ -32,6 +32,7 @@ def calculate_packing_angles(directory, angle_file):
 
     ang_df = pd.read_csv(angle_file)
     ang_df = [['code', 'angle']]
+    print(ang_df)
     data_list = []
     error_files = []
     for file in os.listdir(directory):
@@ -46,6 +47,7 @@ def calculate_packing_angles(directory, angle_file):
     except:
         print('No missing angles.')
     df_pred['predicted'] = df_pred['predicted'].astype(float)
+    print(df_pred)
     final = df_pred.merge(ang_df, on='code')
     final['error'] = final['predicted'] - final['angle']
     final.to_csv(os.path.join(directory, 'results_abymod.csv'), index=False)
