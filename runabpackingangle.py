@@ -9,7 +9,7 @@ import re
 
 
 # *************************************************************************
-def calculate_packing_angles(directory, angle_file):
+def calculate_packing_angles(directory, angle_file, out):
     """Run 'abpackingangle' on all files in directory by using the header and .pdb outputs produced and output the
     pdb name followed by the VH-VL packing angle
     e.g.
@@ -50,7 +50,7 @@ def calculate_packing_angles(directory, angle_file):
     print(df_pred)
     final = df_pred.merge(ang_df, on='code')
     final['error'] = final['predicted'] - final['angle']
-    final.to_csv(os.path.join(directory, 'results_abymod.csv'), index=False)
+    final.to_csv(os.path.join(directory, f'{out}.csv'), index=False)
 
 parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
 parser.add_argument('--dir', help='Directory of datset', required=True)
@@ -58,4 +58,4 @@ parser.add_argument('--ang', help='File which has actual angles', required=True)
 parser.add_argument('--out', help='Output name', required=True)
 args = parser.parse_args()
 
-calculate_packing_angles(args.dir, args.ang)
+calculate_packing_angles(args.dir, args.ang, args.out)
