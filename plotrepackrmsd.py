@@ -13,13 +13,16 @@ def readandplot(file):
     axes.set_ylim([0, 120])
     plt.xlabel('RMSD')
     plt.ylabel('Frequency')
-    def plotgraphs(df, label, column, color):
+    def plotgraphs(df, label, column, color, y):
         df = df.round({column: 1})
         df_count=df[column].value_counts().sort_index()
         plt.plot(df_count, label=label, color=color)
+        sd = df[column].std()
+        mean = df[column].mean()
+        plt.text(x = 3, y = y, s = f'mean: {mean}, StDev: {sd}', color = color)
   
-    plotgraphs(df_, 'abYmod', 'RMSD abYmod', 'aquamarine')
-    plotgraphs(df_, 'repacked', 'RMSD Repacked abYmod', 'mediumpurple')
+    plotgraphs(df_, 'abYmod', 'RMSD abYmod', 'aquamarine', 100)
+    plotgraphs(df_, 'repacked', 'RMSD Repacked abYmod', 'mediumpurple', 95)
     plt.tight_layout()
     plt.legend()
     plt.savefig(f'repack.jpg', format='jpg')
