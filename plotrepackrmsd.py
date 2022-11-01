@@ -21,6 +21,7 @@ def readandplot(file):
     plotgraphs(df_, 'abYmod', 'RMSD abYmod', 'aquamarine')
     plotgraphs(df_, 'repacked', 'RMSD Repacked abYmod', 'mediumpurple')
     plt.tight_layout()
+    plt.legend()
     plt.savefig(f'repack.jpg', format='jpg')
     plt.close()
 
