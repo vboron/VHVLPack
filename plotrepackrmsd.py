@@ -19,7 +19,7 @@ def readandplot(file):
         plt.plot(df_count, label=label, color=color)
         sd = df[column].std()
         mean = df[column].mean()
-        plt.text(x = 2.3, y = y, s = f'mean: {mean:.3f}, StDev: {sd:.3f}', color = color)
+        plt.text(x = 2.7, y = y, s = f'mean: {mean:.3f}, StDev: {sd:.3f}', color = color)
   
     plotgraphs(df_, 'abYmod', 'RMSD abYmod', 'aquamarine', 100)
     plotgraphs(df_, 'repacked', 'RMSD Repacked abYmod', 'mediumpurple', 95)
