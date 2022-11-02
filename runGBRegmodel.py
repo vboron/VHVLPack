@@ -76,13 +76,14 @@ def seq2df(seq_file):
         pdb_code = seq_file[:-4]
         lines = f.readlines()
         for line in lines:
-            print(line)
-            line_elements = line.split()
-            print(line_elements)
-            lhposition = line_elements[0]
-            residue = line_elements[1]
-            data = [pdb_code, lhposition, residue]
-            res_info.append(data)
+            if line.startswith('L') or line.startswith('H'):
+                print(line)
+                line_elements = line.split()
+                print(line_elements)
+                lhposition = line_elements[0]
+                residue = line_elements[1]
+                data = [pdb_code, lhposition, residue]
+                res_info.append(data)
     df = pd.DataFrame(data=res_info, columns=col)
     print(df)
     return df
