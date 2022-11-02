@@ -77,15 +77,12 @@ def seq2df(seq_file):
         lines = f.readlines()
         for line in lines:
             if line.startswith('L') or line.startswith('H'):
-                print(line)
                 line_elements = line.split()
-                print(line_elements)
                 lhposition = line_elements[0]
                 residue = line_elements[1]
                 data = [pdb_code, lhposition, residue]
                 res_info.append(data)
     df = pd.DataFrame(data=res_info, columns=col)
-    print(df)
     return df
 
 
@@ -110,7 +107,6 @@ def prep_table(df):
     loop_df = ft.reduce(lambda left, right: pd.merge(
         left, right, on='code'), loop_dfs)
     loop_df = loop_df.reset_index()
-    print(loop_df)
     return loop_df
 
 
@@ -119,7 +115,14 @@ def encode_df(df):
                       'L96', 'L98', 'H33', 'H35', 'H39', 'H42', 'H45', 'H47', 'H50', 'H60', 'H62', 'H91', 'H99', 'H100', 
                       'H100A', 'H100B', 'H100C', 'H100D', 'H100E', 'H100F', 'H1003G', 'H103', 'H105']
     df = df[df['L/H position'].isin(good_positions)]
+    print(df)
     df = df.drop_duplicates(subset=['code', 'L/H position'], keep='first')
+    print(df)
+    df_piv = df.pivot_table(index='code', columns='L/H position', values='residue', aggfunc='sum')
+    print(df_piv)
+    df = df_piv.reset_index()
+    print(df)
+    df = df.rename_axis(None, axis=1)
     print(df)
 
 
