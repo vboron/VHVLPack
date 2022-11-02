@@ -136,7 +136,7 @@ def predict_angle(df, model_path):
     pdb_code = {'code'}
     predictors = list(OrderedSet(df.columns) - pdb_code)
     X_test = df[predictors].values
-    pkl_filename: str = os.path.join(model_path, 'july_tenth_expres.pkl')
+    pkl_filename = os.path.join(model_path, 'july_tenth_expres.pkl')
     with open(pkl_filename, 'rb') as file:
         pickle_model = pickle.load(file)
     y_pred = pickle_model.predict(X_test)
@@ -150,7 +150,7 @@ parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument(
     '--resfile', help='file with the residue sequences', required=True)
 parser.add_argument(
-    '--model', help='path to trained model dir', required=True)
+    '--modeldir', help='path to trained model dir', required=True)
 args = parser.parse_args()
 
 data = seq2df(args.resfile)
