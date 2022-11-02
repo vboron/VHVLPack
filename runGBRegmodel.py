@@ -60,11 +60,12 @@ def charge(resi):
 # *************************************************************************
 def encode_4d(df):
     for column in df:
-        df[f'{column}a'] = df[column].apply(lambda x: nr_side_chain_atoms(x))
-        df[f'{column}b'] = df[column].apply(lambda x: charge(x))
-        df[f'{column}c'] = df[column].apply(lambda x: compactness(x))
-        df[f'{column}d'] = df[column].apply(lambda x: hydrophobicity(x))
-        del df[column]
+        if column != 'index':
+            df[f'{column}a'] = df[column].apply(lambda x: nr_side_chain_atoms(x))
+            df[f'{column}b'] = df[column].apply(lambda x: charge(x))
+            df[f'{column}c'] = df[column].apply(lambda x: compactness(x))
+            df[f'{column}d'] = df[column].apply(lambda x: hydrophobicity(x))
+            del df[column]
     return df
 
 
