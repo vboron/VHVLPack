@@ -140,7 +140,8 @@ def predict_angle(df, model_path):
     with open(pkl_filename, 'rb') as file:
         pickle_model = pickle.load(file)
     y_pred = pickle_model.predict(X_test)
-    return y_pred
+    angle = y_pred[0]
+    return angle
 
 
 
