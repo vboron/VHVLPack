@@ -87,7 +87,7 @@ def seq2df(seq_file):
 
 
 # *************************************************************************
-def prep_table(df):
+def loop_df(df):
     cdrL1_pos = [f'L{i}' for i in range(24, 35)]
     cdrH2_pos = [f'H{i}' for i in range(50, 59)]
     cdrH3_pos = [f'H{i}' for i in range(95, 103)]
@@ -127,7 +127,7 @@ def encode_df(df):
     df = df.rename_axis(None, axis=1)
     df = df.drop(columns='index')
     encoded_table = encode_4d(df)
-    print(encoded_table)
+    return df
 
 
 
@@ -139,14 +139,7 @@ def run_models(df, model_directory):
             y_pred = model.predict(X_test)
             return y_pred
 
-    classifier_model = os.path.join(model_directory, 'gbc_files_until_July2022.pkl')
-    predictors = list(OrderedSet(df.columns))
-    X_test = df[predictors].values
-    y_pred = apply_model(classifier_model)
-    assert len(y_pred) == 1
-    filename_prefix = {'normal': 'norm', 'max_out': 'max_out', 'min_out': 'min_out'}[y_pred[0]]
-    y_pred = float(apply_model(os.path.join(model_directory, f'{filename_prefix}_class_files_until_Dec2021.pkl'))) 
-    print(y_pred)
+
 
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
@@ -157,6 +150,8 @@ parser.add_argument(
 args = parser.parse_args()
 
 data = seq2df(args.seqfile)
-prep_table(data)
-encode_df(data)
+loopdf = loop_df(data)
+encdf = encode_df(data)
+fulldf = encdf.merge(loopdf)
+print(fulldf)
 # run_models(data, args.model_dir)
