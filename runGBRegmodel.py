@@ -125,10 +125,8 @@ def encode_df(df):
             df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
     df_piv = df.pivot_table(columns='L/H position', values='residue', aggfunc='sum')
     df = df_piv.reset_index()
-    df = df.drop(columns='L/H position')
-    print(df)
-    df = df_piv.reset_index()
     df = df.rename_axis(None, axis=1)
+    print(df)
     encoded_table = encode_4d(df)
     print(encoded_table)
 
