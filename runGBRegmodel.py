@@ -121,7 +121,7 @@ def encode_df(df):
     for pos in good_positions:
         if pos not in df.columns.values.tolist():
             new_row = pd.Series({'L/H position': pos, 'residue': float('nan')})
-            pd.concat([df, new_row.to_frame().T], ignore_index=True)
+            df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
     print(df)
     df_piv = df.pivot_table(index='code', columns='L/H position', values='residue', aggfunc='sum')
     df = df_piv.reset_index()
