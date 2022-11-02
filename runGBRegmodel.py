@@ -118,9 +118,9 @@ def encode_df(df):
     df = df[df['L/H position'].isin(good_positions)]
     print('good_pos:', df)
     df = df.drop_duplicates(subset=['code', 'L/H position'], keep='first')
-    print('reset:', df)
-    df = df.reset_index()
     print('drop_dups:', df)
+    df = df.reset_index()
+    print('reset:', df)
     df_piv = df.pivot_table(index='code', columns='L/H position', values='residue', aggfunc='sum')
     print('pivot:', df_piv)
     df = df_piv.reset_index()
