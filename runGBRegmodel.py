@@ -121,6 +121,7 @@ def encode_df(df):
     col_list = df.columns.values.tolist()
     for pos in good_positions:
         if pos not in col_list:
+            print(pos)
             new_row = pd.Series({'L/H position': pos, 'residue': float('nan')})
             df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
     print(df)
