@@ -127,6 +127,8 @@ def encode_df(df):
     df = df_piv.reset_index()
     df = df.rename_axis(None, axis=1)
     print(df)
+    df = df.drop(columns='index')
+    print(df)
     encoded_table = encode_4d(df)
     print(encoded_table)
 
