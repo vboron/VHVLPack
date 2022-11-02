@@ -76,7 +76,9 @@ def seq2df(seq_file):
         pdb_code = seq_file[:-4]
         lines = f.readlines()
         for line in lines:
+            print(line)
             line_elements = line.split()
+            print(line_elements)
             lhposition = line_elements[0]
             residue = line_elements[1]
             data = [pdb_code, lhposition, residue]
