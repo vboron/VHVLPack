@@ -124,6 +124,7 @@ def encode_df(df):
             new_row = pd.Series({'L/H position': pos, 'residue': float('nan')})
             df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
     df_piv = df.pivot_table(columns='L/H position', values='residue', aggfunc='sum')
+    df = df.drop(columns='L/H position')
     print(df_piv)
     df = df_piv.reset_index()
     df = df.rename_axis(None, axis=1)
