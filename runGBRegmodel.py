@@ -111,19 +111,20 @@ def prep_table(df):
 
 
 def encode_df(df):
+    print('orig:', df)
     good_positions = ['L32', 'L34', 'L36', 'L38', 'L40', 'L41', 'L43', 'L44', 'L46', 'L50', 'L86', 'L87', 'L89', 'L91', 
                       'L96', 'L98', 'H33', 'H35', 'H39', 'H42', 'H45', 'H47', 'H50', 'H60', 'H62', 'H91', 'H99', 'H100', 
                       'H100A', 'H100B', 'H100C', 'H100D', 'H100E', 'H100F', 'H1003G', 'H103', 'H105']
     df = df[df['L/H position'].isin(good_positions)]
-    print(df)
+    print('good_pos:', df)
     df = df.drop_duplicates(subset=['code', 'L/H position'], keep='first')
-    print(df)
+    print('drop_dups:', df)
     df_piv = df.pivot_table(index='code', columns='L/H position', values='residue', aggfunc='sum')
-    print(df_piv)
+    print('pivot:', df_piv)
     df = df_piv.reset_index()
-    print(df)
+    print('rest_index:', df)
     df = df.rename_axis(None, axis=1)
-    print(df)
+    print('rename:', df)
 
 
 
