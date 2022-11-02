@@ -111,16 +111,23 @@ def prep_table(df):
 
 
 def encode_df(df):
+    df = df.drop_duplicates(subset=['code', 'L/H position'], keep='first')
+    df = df.drop(columns='code')
+    print(df)
     good_positions = ['L32', 'L34', 'L36', 'L38', 'L40', 'L41', 'L43', 'L44', 'L46', 'L50', 'L86', 'L87', 'L89', 'L91', 
                       'L96', 'L98', 'H33', 'H35', 'H39', 'H42', 'H45', 'H47', 'H50', 'H60', 'H62', 'H91', 'H99', 'H100', 
                       'H100A', 'H100B', 'H100C', 'H100D', 'H100E', 'H100F', 'H1003G', 'H103', 'H105']
     df = df[df['L/H position'].isin(good_positions)]
-    df = df.drop_duplicates(subset=['code', 'L/H position'], keep='first')
+    for pos in good_positions:
+        if pos not in df.columns.values.tolist():
+            new_row = pd.Series({'L/H position': pos, 'residue': float('nan')})
+            pd.concat([df, new_row.to_frame().T], ignore_index=True)
+    print(df)
     df_piv = df.pivot_table(index='code', columns='L/H position', values='residue', aggfunc='sum')
     df = df_piv.reset_index()
     df = df.rename_axis(None, axis=1)
-    just_residues_df = df.drop(columns='code')
-    encoded_table = encode_4d(just_residues_df)
+    
+    encoded_table = encode_4d(df)
     print(encoded_table)
 
 
