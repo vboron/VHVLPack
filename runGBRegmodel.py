@@ -152,7 +152,7 @@ parser.add_argument(
     '--model', help='path to trained model', required=True)
 args = parser.parse_args()
 
-data = seq2df(args.seqfile)
+data = seq2df(args.resfile)
 loopdf = loop_df(data)
 encdf = encode_df(data)
 fulldf = pd.concat([encdf, loopdf], axis=1)
