@@ -126,27 +126,30 @@ def encode_df(df):
     df = df_piv.reset_index()
     df = df.rename_axis(None, axis=1)
     df = df.drop(columns='index')
-    encoded_table = encode_4d(df)
+    df = encode_4d(df)
     return df
 
 
 
 # *************************************************************************
-def run_models(df, model_directory):
-    def apply_model(model):
-            with open(model, 'rb') as file:
-                model = pickle.load(file)
-            y_pred = model.predict(X_test)
-            return y_pred
+def predict_angle(df, model_path):
+    pdb_code = {'code'}
+    predictors = list(OrderedSet(df.columns) - pdb_code)
+    X_test = df[predictors].values
+    pkl_filename: str = model_path
+    with open(pkl_filename, 'rb') as file:
+        pickle_model = pickle.load(file)
+    y_pred = pickle_model.predict(X_test)
+    return y_pred
 
 
 
 
 parser = argparse.ArgumentParser(description='Program for compiling angles')
 parser.add_argument(
-    '--seqfile', help='.seq file for VHVL packing', required=True)
+    '--resfile', help='file with the residue sequences', required=True)
 parser.add_argument(
-    '--model_dir', help='location of .pkl models', required=True)
+    '--model', help='path to trained model', required=True)
 args = parser.parse_args()
 
 data = seq2df(args.seqfile)
@@ -154,4 +157,4 @@ loopdf = loop_df(data)
 encdf = encode_df(data)
 fulldf = pd.concat([encdf, loopdf], axis=1)
 print(fulldf)
-# run_models(data, args.model_dir)
+print(predict_angle(fulldf, args.model))
