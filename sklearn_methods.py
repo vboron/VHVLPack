@@ -105,6 +105,7 @@ def build_GradientBoostingClassifier_model(X_train, y_train, model_name):
     gbc = GradientBoostingClassifier(**gbc_params).fit(X_train, y_train.ravel())
     # Save to file in the current working directory
     pkl_filename: str = f'{model_name}.pkl'
+    print('Making .pkl file...')
     with open(pkl_filename, 'wb') as file:
         pickle.dump(gbc, file)
 
