@@ -118,8 +118,9 @@ def encode_df(df):
                       'L96', 'L98', 'H33', 'H35', 'H39', 'H42', 'H45', 'H47', 'H50', 'H60', 'H62', 'H91', 'H99', 'H100', 
                       'H100A', 'H100B', 'H100C', 'H100D', 'H100E', 'H100F', 'H1003G', 'H103', 'H105']
     df = df[df['L/H position'].isin(good_positions)]
+    col_list = df.columns.values.tolist()
     for pos in good_positions:
-        if pos not in df.columns.values.tolist():
+        if pos not in col_list:
             new_row = pd.Series({'L/H position': pos, 'residue': float('nan')})
             df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
     print(df)
