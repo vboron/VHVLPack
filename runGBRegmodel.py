@@ -60,12 +60,12 @@ def charge(resi):
 # *************************************************************************
 def encode_4d(df):
     for column in df:
-        # if column != 'index':
-        df[f'{column}a'] = df[column].apply(lambda x: nr_side_chain_atoms(x))
-        df[f'{column}b'] = df[column].apply(lambda x: charge(x))
-        df[f'{column}c'] = df[column].apply(lambda x: compactness(x))
-        df[f'{column}d'] = df[column].apply(lambda x: hydrophobicity(x))
-        del df[column]
+        if column != 'index':
+            df[f'{column}a'] = df[column].apply(lambda x: nr_side_chain_atoms(x))
+            df[f'{column}b'] = df[column].apply(lambda x: charge(x))
+            df[f'{column}c'] = df[column].apply(lambda x: compactness(x))
+            df[f'{column}d'] = df[column].apply(lambda x: hydrophobicity(x))
+            del df[column]
     return df
 
 
@@ -124,9 +124,9 @@ def encode_df(df):
             new_row = pd.Series({'L/H position': pos, 'residue': float('nan')})
             df = pd.concat([df, new_row.to_frame().T], ignore_index=True)
     df_piv = df.pivot_table(columns='L/H position', values='residue', aggfunc='sum')
+    print(df_piv)
     df = df_piv.reset_index()
     df = df.rename_axis(None, axis=1)
-    df = df.reset_index()
     encoded_table = encode_4d(df)
     print(encoded_table)
 
