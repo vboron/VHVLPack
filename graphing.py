@@ -2,6 +2,7 @@
 # Import libraries 
 
 import os
+from turtle import color
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -28,7 +29,9 @@ def angle_distribution(directory, df, graph_name):
     df = df.round({'angle': 1})
 
     df_count=df['angle'].value_counts().sort_index()
-    plt.plot(df_count)
+    plt.plot(df_count, color='mediumpurple')
+    axes = plt.gca()
+    axes.set_xlim([-70, -20])
 
     # Add axis labels to graph
     plt.xlabel('VH-VL Packing Angle')
