@@ -29,7 +29,7 @@ def angle_distribution(directory, df_ang, graph_name):
 #     w = 0.5
 #     n = math.ceil((df_ang['angle'].max() - df_ang['angle'].min()) / w)
 #     plt.hist(df_ang['angle'], bins=n, edgecolor='k', color='rosybrown')
-    df_count=df['angle'].value_counts().sort_index()
+    df_count=df['angle'].value_counts()
     plt.plot(df_count, color='rebeccapurple')
     # Add axis labels to graph
     plt.xlabel('VH-VL Packing Angle')
