@@ -2,6 +2,7 @@
 # Import libraries 
 
 import os
+from turtle import color
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -26,10 +27,11 @@ def angle_distribution(directory, df_ang, graph_name):
     df_ang['angle'] = (df_ang['angle']).astype(float)
 
     # Specify the mean width of bins and make them equidistant
-    w = 0.5
-    n = math.ceil((df_ang['angle'].max() - df_ang['angle'].min()) / w)
-    plt.hist(df_ang['angle'], bins=n, edgecolor='k', color='rosybrown')
-
+#     w = 0.5
+#     n = math.ceil((df_ang['angle'].max() - df_ang['angle'].min()) / w)
+#     plt.hist(df_ang['angle'], bins=n, edgecolor='k', color='rosybrown')
+    df_count=df_ang['angle'].value_counts().sort_index()
+    plt.plot(df_count, color='mediumpurple')
     # Add axis labels to graph
     plt.xlabel('VH-VL Packing Angle')
     plt.ylabel('Frequency')
