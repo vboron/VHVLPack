@@ -11,7 +11,7 @@ from sklearn.metrics import mean_squared_error
 
 
 # *************************************************************************
-def angle_distribution(directory, df_ang, graph_name):
+def angle_distribution(directory, df, graph_name):
     """Plot a histogram of the VH-VL packing angle distribution
 
     Input: directory    --- directory where the data can be found and where the graph will be saved
@@ -35,11 +35,11 @@ def angle_distribution(directory, df_ang, graph_name):
     plt.ylabel('Frequency')
 
     # Add a black, dashed line at the mean
-    plt.axvline(df_ang['angle'].mean(), color='k', linestyle='dashed', linewidth=1)
+    plt.axvline(df['angle'].mean(), color='k', linestyle='dashed', linewidth=1)
 
     # Add 'Mean: ' label to graph, the first number specifies the x-position of the label and the second the y-position
     _, max_ylim = plt.ylim()
-    plt.text(df_ang['angle'].mean() * 0.9, max_ylim * 0.9, 'Mean: {:.2f}'.format(df_ang['angle'].mean()))
+    plt.text(df['angle'].mean() * 0.9, max_ylim * 0.9, 'Mean: {:.2f}'.format(df['angle'].mean()))
 
     # plt.suptitle(f'{graph_title}', fontsize=14)
 
