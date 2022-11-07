@@ -23,14 +23,13 @@ def angle_distribution(directory, df_ang, graph_name):
 
     plt.figure()
 
-    df_ang['angle'] = (df_ang['angle']).astype(float)
-    df = df_ang[['code', 'angle']]
-    # Specify the mean width of bins and make them equidistant
-#     w = 0.5
-#     n = math.ceil((df_ang['angle'].max() - df_ang['angle'].min()) / w)
-#     plt.hist(df_ang['angle'], bins=n, edgecolor='k', color='rosybrown')
-    df_count=df['angle'].value_counts()
-    plt.plot(df_count, color='rebeccapurple')
+    plt.figure()
+
+    df = df.round({'angle': 1})
+
+    df_count=df['angle'].value_counts().sort_index()
+    plt.plot(df_count)
+
     # Add axis labels to graph
     plt.xlabel('VH-VL Packing Angle')
     plt.ylabel('Frequency')
