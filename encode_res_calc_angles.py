@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+import subprocess
 import functools as ft
 import os
 import pandas as pd
