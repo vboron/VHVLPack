@@ -22,7 +22,7 @@ def readandplot(file):
         plt.text(x = 2.5, y = y, s = f'mean: {mean:.3f}, StDev: {sd:.3f}', color = color)
   
     plotgraphs(df_, 'abYmod', 'RMSD abYmod', 'dimgray', 100)
-    plotgraphs(df_, 'repacked', 'RMSD Repacked abYmod', 'mediumpurple', 95)
+    plotgraphs(df_, 'repacked', 'RMSD Repacked abYmod', 'black', 95)
     plt.tight_layout()
     plt.legend()
     plt.savefig(f'repack.jpg', format='jpg')
