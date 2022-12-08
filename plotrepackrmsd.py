@@ -21,7 +21,7 @@ def readandplot(file):
         mean = df[column].mean()
         plt.text(x = 2.5, y = y, s = f'mean: {mean:.3f}, StDev: {sd:.3f}', color = color)
   
-    plotgraphs(df_, 'abYmod', 'RMSD abYmod', 'aquamarine', 100)
+    plotgraphs(df_, 'abYmod', 'RMSD abYmod', 'dimgray', 100)
     plotgraphs(df_, 'repacked', 'RMSD Repacked abYmod', 'mediumpurple', 95)
     plt.tight_layout()
     plt.legend()
