@@ -45,9 +45,9 @@ def build_snns_dataframe(directory, seq_directory, papa_version):
 def postprocessing(df, dataset, name):
     graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
-        dataset, df, f'{name}_sqerror_vs_actual')
+        dataset, df, f'{name}_sqe')
     graphing.error_distribution(
-        dataset, df, f'{name}_errordistribution')
+        dataset, df, f'{name}_ed')
 
 # *************************************************************************
 # *** Main program                                                      ***
