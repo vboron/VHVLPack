@@ -11,7 +11,7 @@ def extract_data(directory, file):
     with open(os.path.join(directory, file), 'r') as f:
         lines = f.readlines()
         print(lines)
-    lines = [i for i in lines if i != '------------------------------------']
+    lines = [i for i in lines if '------------------------------------' not in i]
     print(lines)
 
 
