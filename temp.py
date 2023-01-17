@@ -9,8 +9,8 @@ import os
 def extract_data(directory, file):
     lines = []
     with open(os.path.join(directory, file), 'r') as f:
-        # f = f.replace('------------------------------------', '')
         lines = f.readline().strip()
+        print(lines)
     lines = [i for i in lines if i != '------------------------------------']
     print(lines)
 
