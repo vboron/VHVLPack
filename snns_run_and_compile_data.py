@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-Function:   Compile the data from .log produced when dataset is run through machine learning model.
-Description:
-============
-Program extracts lines of statistics from .log files produced using MLP through Weka framework and converts them into a
-dataframe.
 
-------------------------------------------------
-"""
 import argparse
 import os
 import pandas as pd
