@@ -9,7 +9,7 @@ import os
 def extract_data(directory, file):
     lines = []
     with open(os.path.join(directory, file), 'r') as f:
-        lines = f.readline().strip()
+        lines = f.readline()
         print(lines)
     lines = [i for i in lines if i != '------------------------------------']
     print(lines)
