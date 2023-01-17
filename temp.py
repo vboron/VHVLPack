@@ -9,9 +9,9 @@ import os
 def extract_data(directory, file):
     lines = []
     with open(os.path.join(directory, file), 'r') as f:
-        lines = f.readlines()
+        lines = f.split('------------------------------------\n')
         print(lines)
-    lines = [i for i in lines if '------------------------------------' not in i]
+    # lines = [i for i in lines if '------------------------------------' not in i]
     print(lines)
 
 
