@@ -43,6 +43,8 @@ def combine_pred_actual(directory, actualfile, pred_df):
 parser = argparse.ArgumentParser(description='Program for extracting VH/VL relevant residues')
 parser.add_argument('--directory', required=True)
 parser.add_argument('--file', required=True)
+parser.add_argument('--actualfile', required=True)
 args = parser.parse_args()
 
-extract_data(args.directory, args.file)
+pred_df = extract_data(args.directory, args.file)
+combine_pred_actual(args.directory, args.file, args.actualfile)
