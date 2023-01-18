@@ -16,10 +16,10 @@ def extract_data(directory, file):
     angles = []
     for line in lines:
         if line.startswith('PDB Code:'):
-            line.replace('PDB Code: ', '')
+            line = line.replace('PDB Code: ', '')
             codes.append(line.strip())
         if line.startswith('Torsion angle:'):
-            line.replace('Torsion angle: ', '')
+            line = line.replace('Torsion angle: ', '')
             angles.append(float(line.strip()))
     # print(lines)
     print('codes: ', codes)
