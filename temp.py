@@ -10,8 +10,6 @@ def extract_data(directory, file):
     lines = []
     with open(os.path.join(directory, file), 'r') as f:
         lines = f.readlines()
-        print(lines)
-    # lines = [i.strip() for i in lines if '------------------------------------' not in i]
     codes = []
     angles = []
     for line in lines:
@@ -21,9 +19,6 @@ def extract_data(directory, file):
         if line.startswith('Torsion angle:'):
             line = line.replace('Torsion angle: ', '')
             angles.append(float(line.strip()))
-    # print(lines)
-    # print('codes: ', codes)
-    # print('angles: ', angles)
     data = zip(codes, angles)
     newpapa_df = pd.DataFrame(data = data, columns = ['code', 'predicted'])
     print(newpapa_df)
