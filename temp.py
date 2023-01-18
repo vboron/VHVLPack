@@ -22,8 +22,11 @@ def extract_data(directory, file):
             line = line.replace('Torsion angle: ', '')
             angles.append(float(line.strip()))
     # print(lines)
-    print('codes: ', codes)
-    print('angles: ', angles)
+    # print('codes: ', codes)
+    # print('angles: ', angles)
+    data = zip(codes, angles)
+    newpapa_df = pd.DataFrame(data = data, columns = ['code', 'predicted'])
+    print(newpapa_df)
 
 
 # *************************************************************************
