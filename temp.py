@@ -24,10 +24,19 @@ def extract_data(directory, file):
             angles.append(float(line.strip()))
     data = zip(codes, angles)
     newpapa_df = pd.DataFrame(data = data, columns = ['code', 'predicted'])
-    print(newpapa_df)
-    newpapa_df.to_csv(os.path.join(directory, 'results_newpapa.csv'), index=False)
+    # print(newpapa_df)
+    return newpapa_df
+    # newpapa_df.to_csv(os.path.join(directory, 'results_newpapa.csv'), index=False)
 
 
+def combine_pred_actual(directory, actualfile, pred_df):
+    actual_df = pd.read_csv(os.path.join(directory, actualfile))
+    final_df = pd.merge(actual_df, pred_df, how="right", on='code', sort=False)
+    final_df = final_df.dropna()
+    final_df.reset_index()
+
+    final_df['error'] = final_df['predicted'] - final_df['angle']
+    print(final_df)
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
