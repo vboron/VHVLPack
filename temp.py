@@ -19,9 +19,9 @@ def extract_data(directory, file):
             codes.append(line)
         if line.startswith('Torsion angle:'):
             angles.append(line)
-    print(lines)
+    # print(lines)
     print('codes: ', codes)
-    print('lines: ', lines)
+    print('angles: ', angles)
 
 
 # *************************************************************************
