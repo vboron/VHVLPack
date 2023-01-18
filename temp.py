@@ -11,8 +11,17 @@ def extract_data(directory, file):
     with open(os.path.join(directory, file), 'r') as f:
         lines = f.readlines()
         print(lines)
-    lines = [i.strip() for i in lines if '------------------------------------' not in i]
+    # lines = [i.strip() for i in lines if '------------------------------------' not in i]
+    codes = []
+    angles = []
+    for line in lines:
+        if line.startswith('PDB Code:'):
+            codes.append(line)
+        if line.startswith('Torsion angle:'):
+            angles.append(line)
     print(lines)
+    print('codes: ', codes)
+    print('lines: ', lines)
 
 
 # *************************************************************************
