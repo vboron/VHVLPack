@@ -22,6 +22,7 @@ def extract_data(directory, file):
     data = zip(codes, angles)
     newpapa_df = pd.DataFrame(data = data, columns = ['code', 'predicted'])
     print(newpapa_df)
+    newpapa_df.to_csv(os.path.join(directory, 'results_newpapa.csv'), index=False)
 
 
 # *************************************************************************
