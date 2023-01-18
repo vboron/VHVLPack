@@ -3,7 +3,7 @@
 import pandas as pd
 import argparse
 import os
-
+from encode_res_calc_angles import calculate_packing_angles
 
 # *************************************************************************
 def extract_data(directory, file):
@@ -29,8 +29,8 @@ def extract_data(directory, file):
     # newpapa_df.to_csv(os.path.join(directory, 'results_newpapa.csv'), index=False)
 
 
-def combine_pred_actual(directory, actualfile, pred_df):
-    actual_df = pd.read_csv(os.path.join(directory, actualfile))
+def combine_pred_actual(directory, pred_df):
+    actual_df = calculate_packing_angles(directory)
     final_df = pd.merge(actual_df, pred_df, how="right", on='code', sort=False)
     final_df = final_df.dropna()
     final_df.reset_index()
@@ -47,4 +47,4 @@ parser.add_argument('--actualfile', required=True)
 args = parser.parse_args()
 
 pred_df = extract_data(args.directory, args.file)
-combine_pred_actual(args.directory, args.file, args.actualfile)
+combine_pred_actual(args.directory, pred_df)
