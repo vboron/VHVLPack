@@ -15,6 +15,8 @@ def extract_data(directory, file):
     for line in lines:
         if line.startswith('PDB Code:'):
             line = line.replace('PDB Code: ', '')
+            if '_' not in line:
+                line = line + '_0'
             codes.append(line.strip().upper())
         if line.startswith('Torsion angle:'):
             line = line.replace('Torsion angle: ', '')
