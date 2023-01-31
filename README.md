@@ -5,7 +5,7 @@ The torsion angle which was defined as part of Abhinadan and Martin's<sup>1</sup
 ## Using regression models to predict the torsion angle
 The main program is run in the following way:  
 
-./gbr_angle_prediction.py --trainset [name of directory with training pdb files] --testset [name of directory with testing pdb files] --modelname [name which will be applied to the final model] --graphname [name for graph output .jpg] --res [.dat file containing the feature residues] --useloops [True/False]  
+`./gbr_angle_prediction.py --trainset [name of directory with training pdb files] --testset [name of directory with testing pdb files] --modelname [name which will be applied to the final model] --graphname [name for graph output .jpg] --res [.dat file containing the feature residues] --useloops [True/False]`  
 
 Here a gradient boosted regression model is trained by using defined sets of pdb files as test and train data. The defined .dat file contains a list of residues which are used as features with(out) including the lengths of the CDR L1, L2, and H3. The output of the file is a series of graphs showing the predicted vs actual angles, the squared error vs actual angle, and frequency vs errors in prediction. Also outputted are .csv files with the pdb name, actual angle, predicted angle and error, and summarised statistics for the run.  
 
