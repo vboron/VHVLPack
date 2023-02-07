@@ -7,7 +7,7 @@ import os
 def make_list(dire):
     with open('500files.txt', 'a') as f:
         for file in os.listdir(dire):
-            f.write(f'{file[:6]}, ')
+            f.write(f'{file[:5]}, ')
 # *************************************************************************
 # *** Main program                                                      ***
 # *************************************************************************
