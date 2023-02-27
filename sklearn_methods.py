@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import matthews_corrcoef
 
 gbr_params = {'alpha': 0.01,
               # 'ccp_alpha': 0.00001,
@@ -119,6 +120,8 @@ def run_GradientBoostingClassifier(X_test, df: pd.DataFrame, model_name):
     y_pred = pickle_model.predict(X_test)
     df['predclass'] = y_pred
     df['result'] = df['predclass'].apply(set) == df['class'].apply(set)
+    mcc = matthews_corrcoef(y_true = df['class'], y_pred=df['predclass'])
+    print(f'MCC: {mcc}')
     print(df['result'].value_counts())
     print(df['class'].value_counts())
     print(df['predclass'].value_counts())
