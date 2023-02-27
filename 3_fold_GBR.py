@@ -105,7 +105,7 @@ def three_fold_GBR(train_dir, test_dir, output):
     test_classed_df = define_class(encoded_test_df)
     X_train_class, y_train_class, _x_, X_test_class, y_test_class, code_class_test_class = make_class_sets_from_df(train_classed_df, test_classed_df)
     pred_class_df = determine_class(X_train_class, y_train_class, X_test_class, test_classed_df, test_dir)
-
+    print(pred_class_df)
     # # Train 3 regression models for normal and min/max outliers
     # print('Training GBReg models...')
     # train_df_norm, train_df_out_max, train_df_out_min = make_norm_out_dfs(encoded_train_df)
