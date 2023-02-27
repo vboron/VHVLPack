@@ -107,16 +107,16 @@ def three_fold_GBR(train_dir, test_dir, output):
     pred_class_df = determine_class(X_train_class, y_train_class, X_test_class, test_classed_df, test_dir)
 
     # # Train 3 regression models for normal and min/max outliers
-    print('Training GBReg models...')
-    train_df_norm, train_df_out_max, train_df_out_min = make_norm_out_dfs(encoded_train_df)
-    dir_name = train_dir.replace('/', '')
-    make_sets_train_model_gbr(train_df_norm, f'norm_class_{dir_name}')
-    make_sets_train_model_gbr(train_df_out_max, f'max_out_class_{dir_name}')
-    make_sets_train_model_gbr(train_df_out_min, f'min_out_class_{dir_name}')
-    results = split_testdata_runGBR(pred_class_df, train_dir)
-    results_path = os.path.join(test_dir, f'results_{output}.csv')
-    results.to_csv(results_path, index=False)
-    run_graphs(results, test_dir)
+    # print('Training GBReg models...')
+    # train_df_norm, train_df_out_max, train_df_out_min = make_norm_out_dfs(encoded_train_df)
+    # dir_name = train_dir.replace('/', '')
+    # make_sets_train_model_gbr(train_df_norm, f'norm_class_{dir_name}')
+    # make_sets_train_model_gbr(train_df_out_max, f'max_out_class_{dir_name}')
+    # make_sets_train_model_gbr(train_df_out_min, f'min_out_class_{dir_name}')
+    # results = split_testdata_runGBR(pred_class_df, train_dir)
+    # results_path = os.path.join(test_dir, f'results_{output}.csv')
+    # results.to_csv(results_path, index=False)
+    # run_graphs(results, test_dir)
 
 
 if __name__ == '__main__':
