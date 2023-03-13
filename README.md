@@ -10,3 +10,7 @@ The main program is run in the following way:
 Here a gradient boosted regression model is trained by using defined sets of pdb files as test and train data. The defined .dat file contains a list of residues which are used as features with(out) including the lengths of the CDR L1, L2, and H3. The output of the file is a series of graphs showing the predicted vs actual angles, the squared error vs actual angle, and frequency vs errors in prediction. Also outputted are .csv files with the pdb name, actual angle, predicted angle and error, and summarised statistics for the run.  
 
 <sup>1</sup> Abhinandan KR, Martin AC. Analysis and prediction of VH/VL packing in antibodies. Protein Eng Des Sel. 2010;23(9):689-697. doi:10.1093/protein/gzq043
+
+### Other modules
+The main `gbr_angle_prediction.py` is dependent on the following modules in this repo:
+`encode_res_calc_angles.py`, `utils.py`, `erca_noloops.py`, `nonred.py`, and `graphing.py`.
