@@ -13,4 +13,4 @@ Here a gradient boosted regression model is trained by using defined sets of pdb
 
 ### Other modules
 The main `gbr_angle_prediction.py` is dependent on the following modules in this repo:
-`encode_res_calc_angles.py`, `utils.py`, `erca_noloops.py`, `nonred.py`, and `graphing.py`.
+`encode_res_calc_angles.py`, `utils.py`, `erca_noloops.py`, `sklearn_methods.py`, `nonred.py`, and `graphing.py`.
