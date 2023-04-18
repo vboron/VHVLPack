@@ -21,5 +21,7 @@ Input file e.g.<br>
       L3 ALA<br>
       L4 LEU<br>
       L5 THR...<br>
-To run single file use: `./abYpack_singfile.py --resfile [path of the .seq file for which an angle is to be predicted] --model [path for the .pkl model (here jul2sept_expres.pkl is the most complete model, used for testing the independent set)]`
+To run single file use: <br>
+`./abYpack_singfile.py --resfile [path of the .seq file for which an angle is to be predicted] --model [path for the .pkl model (here jul2sept_expres.pkl is the most complete model, used for testing the independent set)]`<br>
+This script has only standard module dependencies.
 
