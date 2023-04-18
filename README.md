@@ -14,3 +14,12 @@ Here a gradient boosted regression model is trained by using defined sets of pdb
 ### Other modules
 The main `gbr_angle_prediction.py` is dependent on the following modules in this repo:
 `encode_res_calc_angles.py`, `utils.py`, `erca_noloops.py`, `sklearn_methods.py`, `nonred.py`, and `graphing.py`.
+
+## Running a single sequence file
+Input file e.g.
+      L2 SER
+      L3 ALA
+      L4 LEU
+      L5 THR...
+To run single file use: `./abYpack_singfile.py --resfile [path of the .seq file for which an angle is to be predicted] --model [path for the .pkl model (here jul2sept_expres.pkl is the most complete model, used for testing the independent set)]`
+
