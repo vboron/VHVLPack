@@ -61,14 +61,12 @@ def make_reg_sets_from_df(df_train, df_test):
 # X_test, y_true, df_test = make_sets('PostAF2/PostAF2_NR2_4d.csv')
 
 
-def run_MLPRegressor(X_train, y_train, X_test, df):
+def build_MLPRegressor(X_train, y_train, model_name):
     mlp = MLPRegressor(hidden_layer_sizes=15, max_iter=12000).fit(
         X_train, y_train.ravel())
-    y_pred = mlp.predict(X_test)
-    y_pred = mlp.predict(X_test)
-    df['predicted'] = y_pred
-    df['error'] = df['predicted']-df['angle']
-    return df
+    pkl_filename: str = f'{model_name}.pkl'
+    with open(pkl_filename, 'wb') as file:
+        pickle.dump(mlp, file)
 
 def build_GradientBoostingRegressor_model(X_train, y_train, model_name):
     gbr = GradientBoostingRegressor(**gbr_params).fit(X_train, y_train.ravel())
@@ -78,12 +76,11 @@ def build_GradientBoostingRegressor_model(X_train, y_train, model_name):
         pickle.dump(gbr, file)
     return gbr
 
-def run_GradientBoostingRegressor(X_test, df: pd.DataFrame, model_name):
+def run_model(X_test, df: pd.DataFrame, model_name):
     pkl_filename: str = f'{model_name}.pkl'
     with open(pkl_filename, 'rb') as file:
         pickle_model = pickle.load(file)
     y_pred = pickle_model.predict(X_test)
-
     df['predicted'] = y_pred
     df['error'] = df['predicted']-df['angle']
     return df

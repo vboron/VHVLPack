@@ -37,9 +37,9 @@ def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, gra
     X_train, y_train, _x_, X_test, y_true, df_test = make_reg_sets_from_df(
         train_df, test_df)
     print('Building ML model...')
-    gbr = build_GradientBoostingRegressor_model(X_train, y_train, model_name)
+    build_GradientBoostingRegressor_model(X_train, y_train, model_name)
     print('Running ML...')
-    df = run_GradientBoostingRegressor(X_test, df_test, model_name)
+    df = run_model(X_test, df_test, model_name)
     df.to_csv(os.path.join(
         graph_dir, f'results_{model_name}.csv'), index=False)
     return df
@@ -49,11 +49,11 @@ def runGBReg(train_df: pd.DataFrame, test_df: pd.DataFrame, model_name: str, gra
 def postprocessing(df, dataset, ang_df, name):
     graphing.actual_vs_predicted_from_df(df, dataset, name, f'{name}_pa')
     graphing.sq_error_vs_actual_angle(
-        dataset, df, f'{name}_sqerror_vs_actual')
+        dataset, df, f'{name}_sqe')
     # graphing.angle_distribution(
     #     dataset, ang_df, f'{name}_angledistribution')
     graphing.error_distribution(
-        dataset, df, f'{name}_errordistribution')
+        dataset, df, f'{name}_ed')
 
 
 # *************************************************************************
